@@ -10,4 +10,6 @@ import com.gotogether.domain.user.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByIdAndIsDeletedFalse(Long userId);
+
+	Optional<User> findByEmailAndIsDeletedFalse(String email);
 }

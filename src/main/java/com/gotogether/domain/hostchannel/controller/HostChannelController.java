@@ -59,4 +59,11 @@ public class HostChannelController {
 		hostChannelService.deleteHostChannel(hostChannelId);
 		return ApiResponse.onSuccess("호스트 채널 삭제 성공");
 	}
+
+	@PostMapping("/{hostChannelId}/members")
+	public ApiResponse<?> addMember(@PathVariable Long hostChannelId,
+		@RequestParam(value = "email") String email) {
+		hostChannelService.addMember(hostChannelId, email);
+		return ApiResponse.onSuccess("멤버 초대 성공");
+	}
 }

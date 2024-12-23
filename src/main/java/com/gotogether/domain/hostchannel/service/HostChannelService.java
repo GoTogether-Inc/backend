@@ -15,4 +15,6 @@ public interface HostChannelService {
 	void deleteHostChannel(Long hostChannelId);
 
 	HostChannel updateHostChannel(Long hostChannelId, HostChannelRequestDTO request);
+
+	void addMember(Long hostChannelId, String email);
 }

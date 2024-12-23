@@ -69,6 +69,18 @@ public class HostChannelServiceImpl implements HostChannelService {
 		return hostChannelRepository.save(hostChannel);
 	}
 
+	@Override
+	@Transactional
+	public void addMember(Long hostChannelId, String email) {
+		HostChannel hostChannel = getHostChannel(hostChannelId);
+		User user = getUserByEmail(email);
+
+		validateHostChannelExistMember(user, hostChannel);
+
+		createChannelOrganizer(user, hostChannel);
+		channelOrganizerRepository.save(createChannelOrganizer(user, hostChannel));
+	}
+
 	private User getUser(Long userId) {
 		return userRepository.findByIdAndIsDeletedFalse(userId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
@@ -79,8 +91,16 @@ public class HostChannelServiceImpl implements HostChannelService {
 			.orElseThrow(() -> new GeneralException(ErrorStatus._HOST_CHANNEL_NOT_FOUND));
 	}
 
+	private User getUserByEmail(String email) {
+		return userRepository.findByEmailAndIsDeletedFalse(email)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
+	}
+
 	private ChannelOrganizer createChannelOrganizer(User user, HostChannel hostChannel) {
-		return ChannelOrganizer.builder().user(user).hostChannel(hostChannel).build();
+		return ChannelOrganizer.builder()
+			.user(user)
+			.hostChannel(hostChannel)
+			.build();
 	}
 
 	private void validateHostChannelDelete(HostChannel hostChannel) {
@@ -88,6 +108,12 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 		if (organizerCount > 1) {
 			throw new GeneralException(ErrorStatus._HOST_CHANNEL_DELETE_FAILED_MEMBERS_EXIST);
+		}
+	}
+
+	private void validateHostChannelExistMember(User user, HostChannel hostChannel) {
+		if (channelOrganizerRepository.existsByUserAndHostChannel(user, hostChannel)) {
+			throw new GeneralException(ErrorStatus._HOST_CHANNEL_MEMBER_ALREADY_EXISTS);
 		}
 	}
 
