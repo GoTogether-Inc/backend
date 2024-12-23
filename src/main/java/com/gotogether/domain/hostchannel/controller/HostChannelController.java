@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,5 +44,11 @@ public class HostChannelController {
 		Pageable pageable = PageRequest.of(page, size);
 		Page<HostChannelListResponseDTO> hostChannels = hostChannelService.getHostChannels(userId, pageable);
 		return ApiResponse.onSuccess(hostChannels.getContent());
+	}
+
+	@DeleteMapping("/{hostChannelId}")
+	public ApiResponse<?> deleteHostChannel(@PathVariable Long hostChannelId) {
+		hostChannelService.deleteHostChannel(hostChannelId);
+		return ApiResponse.onSuccess("호스트 채널 삭제 성공");
 	}
 }

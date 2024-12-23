@@ -12,4 +12,5 @@ public interface HostChannelService {
 
 	Page<HostChannelListResponseDTO> getHostChannels(Long userId, Pageable pageable);
 
+	void deleteHostChannel(Long hostChannelId);
 }

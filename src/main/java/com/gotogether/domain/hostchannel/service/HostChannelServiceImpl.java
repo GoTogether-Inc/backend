@@ -46,7 +46,18 @@ public class HostChannelServiceImpl implements HostChannelService {
 	public Page<HostChannelListResponseDTO> getHostChannels(Long userId, Pageable pageable) {
 		User user = getUser(userId);
 		Page<HostChannel> hostChannels = hostChannelRepository.findByUser(user, pageable);
+
 		return hostChannels.map(HostChannelConverter::toHostChannelListResponseDTO);
+	}
+
+	@Override
+	@Transactional
+	public void deleteHostChannel(Long hostChannelId) {
+		HostChannel hostChannel = getHostChannel(hostChannelId);
+		validateHostChannelDelete(hostChannel);
+
+		channelOrganizerRepository.deleteByHostChannel(hostChannel);
+		hostChannelRepository.delete(hostChannel);
 	}
 
 	private User getUser(Long userId) {
@@ -54,7 +65,20 @@ public class HostChannelServiceImpl implements HostChannelService {
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 	}
 
+	private HostChannel getHostChannel(Long hostChannelId) {
+		return hostChannelRepository.findByIdAndIsDeletedFalse(hostChannelId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._HOST_CHANNEL_NOT_FOUND));
+	}
+
 	private ChannelOrganizer createChannelOrganizer(User user, HostChannel hostChannel) {
 		return ChannelOrganizer.builder().user(user).hostChannel(hostChannel).build();
+	}
+
+	private void validateHostChannelDelete(HostChannel hostChannel) {
+		long organizerCount = channelOrganizerRepository.countByHostChannel(hostChannel);
+
+		if (organizerCount > 1) {
+			throw new GeneralException(ErrorStatus._HOST_CHANNEL_DELETE_FAILED_MEMBERS_EXIST);
+		}
 	}
 }
