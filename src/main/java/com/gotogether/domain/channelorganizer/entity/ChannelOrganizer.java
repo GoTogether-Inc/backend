@@ -27,11 +27,11 @@ public class ChannelOrganizer extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "host_channel_id")
+	@JoinColumn(name = "host_channel_id", nullable = false)
 	private HostChannel hostChannel;
 
 	@Builder
