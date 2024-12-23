@@ -60,6 +60,15 @@ public class HostChannelServiceImpl implements HostChannelService {
 		hostChannelRepository.delete(hostChannel);
 	}
 
+	@Override
+	@Transactional
+	public HostChannel updateHostChannel(Long hostChannelId, HostChannelRequestDTO request) {
+		HostChannel hostChannel = getHostChannel(hostChannelId);
+		hostChannel.update(request);
+
+		return hostChannelRepository.save(hostChannel);
+	}
+
 	private User getUser(Long userId) {
 		return userRepository.findByIdAndIsDeletedFalse(userId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
@@ -81,4 +90,5 @@ public class HostChannelServiceImpl implements HostChannelService {
 			throw new GeneralException(ErrorStatus._HOST_CHANNEL_DELETE_FAILED_MEMBERS_EXIST);
 		}
 	}
+
 }

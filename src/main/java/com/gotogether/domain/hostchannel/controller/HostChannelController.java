@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,6 +45,13 @@ public class HostChannelController {
 		Pageable pageable = PageRequest.of(page, size);
 		Page<HostChannelListResponseDTO> hostChannels = hostChannelService.getHostChannels(userId, pageable);
 		return ApiResponse.onSuccess(hostChannels.getContent());
+	}
+
+	@PutMapping("/{hostChannelId}")
+	public ApiResponse<?> updateHostChannel(@PathVariable Long hostChannelId,
+		@RequestBody HostChannelRequestDTO request) {
+		HostChannel hostChannel = hostChannelService.updateHostChannel(hostChannelId, request);
+		return ApiResponse.onSuccess("hostChannelId: " + hostChannel.getId());
 	}
 
 	@DeleteMapping("/{hostChannelId}")

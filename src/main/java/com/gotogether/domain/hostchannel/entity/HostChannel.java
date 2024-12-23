@@ -4,15 +4,16 @@ import java.util.List;
 
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.global.common.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,10 +42,10 @@ public class HostChannel extends BaseEntity {
 	@Column(name = "profile_image_url", nullable = false)
 	private String profileImageUrl;
 
-	@OneToOne(mappedBy = "hostChannel")
-	private Event event;
+	@OneToMany(mappedBy = "hostChannel", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	private List<Event> events;
 
-	@OneToMany(mappedBy = "hostChannel")
+	@OneToMany(mappedBy = "hostChannel", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<ChannelOrganizer> channelOrganizers;
 
 	@Builder
@@ -53,5 +54,20 @@ public class HostChannel extends BaseEntity {
 		this.email = email;
 		this.description = description;
 		this.profileImageUrl = profileImageUrl;
+	}
+
+	public void update(HostChannelRequestDTO request) {
+		if (request.getName() != null) {
+			this.name = request.getName();
+		}
+		if (request.getEmail() != null) {
+			this.email = request.getEmail();
+		}
+		if (request.getDescription() != null) {
+			this.description = request.getDescription();
+		}
+		if (request.getProfileImageUrl() != null) {
+			this.profileImageUrl = request.getProfileImageUrl();
+		}
 	}
 }
