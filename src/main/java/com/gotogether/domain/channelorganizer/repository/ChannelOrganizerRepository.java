@@ -1,5 +1,7 @@
 package com.gotogether.domain.channelorganizer.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +16,6 @@ public interface ChannelOrganizerRepository extends JpaRepository<ChannelOrganiz
 	long countByHostChannel(HostChannel hostChannel);
 
 	boolean existsByUserAndHostChannel(User user, HostChannel hostChannel);
+
+	List<ChannelOrganizer> findByHostChannel(HostChannel hostChannel);
 }

@@ -1,5 +1,7 @@
 package com.gotogether.domain.hostchannel.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import com.gotogether.domain.channelorganizer.repository.ChannelOrganizerReposit
 import com.gotogether.domain.hostchannel.converter.HostChannelConverter;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
 import com.gotogether.domain.user.entity.User;
@@ -79,6 +82,18 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 		createChannelOrganizer(user, hostChannel);
 		channelOrganizerRepository.save(createChannelOrganizer(user, hostChannel));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<HostChannelMemberResponseDTO> getMembers(Long hostChannelId) {
+		HostChannel hostChannel = getHostChannel(hostChannelId);
+
+		List<ChannelOrganizer> organizers = channelOrganizerRepository.findByHostChannel(hostChannel);
+
+		return organizers.stream()
+			.map(HostChannelConverter::toHostChannelMemberResponseDTO)
+			.toList();
 	}
 
 	private User getUser(Long userId) {

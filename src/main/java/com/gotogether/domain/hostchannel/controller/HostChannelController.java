@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.service.HostChannelService;
 import com.gotogether.global.apipayload.ApiResponse;
@@ -65,5 +66,11 @@ public class HostChannelController {
 		@RequestParam(value = "email") String email) {
 		hostChannelService.addMember(hostChannelId, email);
 		return ApiResponse.onSuccess("멤버 초대 성공");
+	}
+
+	@GetMapping("/{hostChannelId}/members")
+	public ApiResponse<?> getMembers(@PathVariable Long hostChannelId) {
+		List<HostChannelMemberResponseDTO> members = hostChannelService.getMembers(hostChannelId);
+		return ApiResponse.onSuccess(members);
 	}
 }
