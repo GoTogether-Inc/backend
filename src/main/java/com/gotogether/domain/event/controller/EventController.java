@@ -66,7 +66,7 @@ public class EventController {
 	}
 
 	@GetMapping("/search")
-	public ApiResponse<?> getEventsSearch(
+	public ApiResponse<List<EventListResponseDTO>> getEventsSearch(
 		@RequestParam(required = false) String keyword,
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size) {
