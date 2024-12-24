@@ -91,6 +91,17 @@ public class EventServiceImpl implements EventService {
 	@Transactional
 	public void deleteEvent(Long eventId) {
 		Event event = getEvent(eventId);
+
+		List<Hashtag> existingHashtags = eventHashtagRepository.findHashtagsByEvent(event);
+
+		eventHashtagRepository.deleteByEvent(event);
+
+		for (Hashtag hashtag : existingHashtags) {
+			if (eventHashtagRepository.countByHashtag(hashtag) == 0) {
+				hashtagRepository.delete(hashtag);
+			}
+		}
+
 		eventRepository.delete(event);
 	}
 
@@ -173,7 +184,7 @@ public class EventServiceImpl implements EventService {
 		eventHashtagRepository.deleteByEvent(event);
 	}
 
-	public String normalizeHashtag(String hashtag) {
+	private String normalizeHashtag(String hashtag) {
 		if (hashtag == null) {
 			return null;
 		}
