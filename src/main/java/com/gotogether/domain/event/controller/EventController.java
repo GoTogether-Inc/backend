@@ -64,4 +64,14 @@ public class EventController {
 		Page<EventListResponseDTO> events = eventService.getEventsByTag(tags, pageable);
 		return ApiResponse.onSuccess(events.getContent());
 	}
+
+	@GetMapping("/search")
+	public ApiResponse<?> getEventsSearch(
+		@RequestParam(required = false) String keyword,
+		@RequestParam(value = "page", defaultValue = "0") int page,
+		@RequestParam(value = "size", defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<EventListResponseDTO> events = eventService.searchEvents(keyword, pageable);
+		return ApiResponse.onSuccess(events.getContent());
+	}
 }

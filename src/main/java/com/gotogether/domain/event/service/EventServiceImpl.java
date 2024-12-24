@@ -106,6 +106,13 @@ public class EventServiceImpl implements EventService {
 		return events.map(EventConverter::toEventListResponseDTO);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Page<EventListResponseDTO> searchEvents(String keyword, Pageable pageable) {
+		Page<Event> events = eventRepository.findEventsByFilter(keyword, pageable);
+		return events.map(EventConverter::toEventListResponseDTO);
+	}
+
 	private Event getEvent(Long eventId) {
 		return eventRepository.findByIdAndIsDeletedFalse(eventId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._EVENT_NOT_FOUND));
