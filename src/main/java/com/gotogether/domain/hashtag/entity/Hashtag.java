@@ -1,16 +1,17 @@
 package com.gotogether.domain.hashtag.entity;
 
-import com.gotogether.domain.event.entity.Event;
+import java.util.List;
+
+import com.gotogether.domain.eventhashtag.entity.EventHashtag;
 import com.gotogether.global.common.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,16 +28,14 @@ public class Hashtag extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "event_id", nullable = false)
-	private Event event;
-
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 
+	@OneToMany(mappedBy = "hashtag", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	private List<EventHashtag> eventHashtags;
+
 	@Builder
-	public Hashtag(Event event, String name) {
-		this.event = event;
+	public Hashtag(String name) {
 		this.name = name;
 	}
 }

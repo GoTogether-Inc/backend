@@ -2,11 +2,13 @@ package com.gotogether.domain.event.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.SQLDelete;
 
 import com.gotogether.domain.alert.entity.Alert;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
+import com.gotogether.domain.eventhashtag.entity.EventHashtag;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.entity.ReferenceLink;
@@ -78,7 +80,7 @@ public class Event extends BaseEntity {
 	private List<Ticket> tickets;
 
 	@OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<Hashtag> hashtags;
+	private List<EventHashtag> eventHashtags;
 
 	@OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Alert> alerts;
@@ -114,5 +116,11 @@ public class Event extends BaseEntity {
 		this.category = request.getCategory();
 		this.hostEmail = request.getHostEmail();
 		this.hostPhoneNumber = request.getHostPhoneNumber();
+	}
+
+	public List<Hashtag> getHashtags() {
+		return this.eventHashtags.stream()
+			.map(EventHashtag::getHashtag)
+			.collect(Collectors.toList());
 	}
 }
