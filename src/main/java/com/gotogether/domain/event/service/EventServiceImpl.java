@@ -15,6 +15,8 @@ import com.gotogether.domain.event.dto.response.EventDetailResponseDTO;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.repository.EventRepository;
+import com.gotogether.domain.eventhashtag.entity.EventHashtag;
+import com.gotogether.domain.eventhashtag.repository.EventHashtagRepository;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hashtag.repository.HashtagRepository;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
@@ -34,6 +36,7 @@ public class EventServiceImpl implements EventService {
 	private final ReferenceLinkRepository referenceLinkRepository;
 	private final HashtagRepository hashtagRepository;
 	private final HostChannelRepository hostChannelRepository;
+	private final EventHashtagRepository eventHashtagRepository;
 
 	@Override
 	@Transactional
@@ -77,7 +80,7 @@ public class EventServiceImpl implements EventService {
 		}
 
 		if (request.getHashtags() != null) {
-			hashtagRepository.deleteAll(event.getHashtags());
+			deleteUnusedHashtags(event, request.getHashtags());
 			saveHashtags(event, request.getHashtags());
 		}
 
@@ -124,11 +127,24 @@ public class EventServiceImpl implements EventService {
 	}
 
 	private void saveHashtags(Event event, List<String> hashtags) {
-		List<Hashtag> hashtagList = hashtags.stream()
-			.map(hashtag -> Hashtag.builder().event(event).name(hashtag).build())
-			.collect(Collectors.toList());
+		List<EventHashtag> eventHashtags = hashtags.stream().map(hashtag -> {
 
-		hashtagRepository.saveAll(hashtagList);
+			String normalizeHashtag = normalizeHashtag(hashtag);
+
+			Hashtag existingHashtag = hashtagRepository.findByName(normalizeHashtag)
+				.orElseGet(() ->
+					hashtagRepository.save(Hashtag.builder()
+						.name(normalizeHashtag)
+						.build()));
+
+			return EventHashtag.builder()
+				.event(event)
+				.hashtag(existingHashtag)
+				.build();
+
+		}).collect(Collectors.toList());
+
+		eventHashtagRepository.saveAll(eventHashtags);
 	}
 
 	private void saveReferenceLinks(Event event, Map<String, String> referenceLinks) {
@@ -138,5 +154,30 @@ public class EventServiceImpl implements EventService {
 			.collect(Collectors.toList());
 
 		referenceLinkRepository.saveAll(referenceLinkList);
+	}
+
+	private void deleteUnusedHashtags(Event event, List<String> hashtags) {
+		List<Hashtag> existingHashtags = eventHashtagRepository.findHashtagsByEvent(event);
+
+		List<Hashtag> unUsedHashtags = existingHashtags.stream()
+			.filter(existingHashtag -> hashtags.stream()
+				.noneMatch(hashtag -> normalizeHashtag(hashtag).equals(existingHashtag.getName())))
+			.toList();
+
+		for (Hashtag hashtag : unUsedHashtags) {
+			if (eventHashtagRepository.countByHashtag(hashtag) == 1) {
+				hashtagRepository.delete(hashtag);
+			}
+		}
+
+		eventHashtagRepository.deleteByEvent(event);
+	}
+
+	public String normalizeHashtag(String hashtag) {
+		if (hashtag == null) {
+			return null;
+		}
+
+		return hashtag.replaceAll("\\s+", "").toLowerCase();
 	}
 }
