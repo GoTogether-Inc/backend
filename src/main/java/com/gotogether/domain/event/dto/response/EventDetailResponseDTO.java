@@ -1,6 +1,5 @@
 package com.gotogether.domain.event.dto.response;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 import lombok.Builder;
@@ -13,8 +12,10 @@ public class EventDetailResponseDTO {
 	private String bannerImageUrl;
 	private String title;
 	private int participantCount;
-	private LocalDateTime startDate;
-	private LocalDateTime endDate;
+	private String startDate;
+	private String endDate;
+	private String startTime;
+	private String endTime;
 	private String location;
 	private String description;
 	private String hostChannelName;

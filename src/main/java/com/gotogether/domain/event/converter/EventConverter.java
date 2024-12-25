@@ -1,5 +1,7 @@
 package com.gotogether.domain.event.converter;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -13,12 +15,15 @@ import com.gotogether.domain.referencelink.entity.ReferenceLink;
 
 public class EventConverter {
 
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
 	public static Event of(EventRequestDTO request, HostChannel hostChannel) {
 		return Event.builder()
 			.title(request.getTitle())
 			.description(request.getDescription())
-			.startDate(request.getStartDateTime())
-			.endDate(request.getEndDateTime())
+			.startDate(request.getStartDate().atTime(LocalTime.parse(request.getStartTime())))
+			.endDate(request.getEndDate().atTime(LocalTime.parse(request.getEndTime())))
 			.bannerImageUrl(request.getBannerImageUrl())
 			.location(request.getLocation())
 			.onlineType(request.getOnlineType())
@@ -46,8 +51,10 @@ public class EventConverter {
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
 			.participantCount((int)ticketCount)
-			.startDate(event.getStartDate())
-			.endDate(event.getEndDate())
+			.startDate(event.getStartDate().format(DATE_FORMATTER))
+			.endDate(event.getEndDate().format(DATE_FORMATTER))
+			.startTime(event.getStartDate().format(TIME_FORMATTER))
+			.endTime(event.getEndDate().format(TIME_FORMATTER))
 			.location(event.getLocation())
 			.description(event.getDescription())
 			.hostChannelName(hostChannel.getName())
@@ -64,7 +71,7 @@ public class EventConverter {
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
 			.hostChannelName(event.getHostChannel().getName())
-			.startDate(event.getStartDate())
+			.startDate(event.getStartDate().toLocalDate().format(DATE_FORMATTER))
 			.location(event.getLocation())
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)

@@ -1,6 +1,7 @@
 package com.gotogether.domain.event.entity;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,8 +109,8 @@ public class Event extends BaseEntity {
 	public void update(EventRequestDTO request) {
 		this.title = request.getTitle();
 		this.description = request.getDescription();
-		this.startDate = request.getStartDateTime();
-		this.endDate = request.getEndDateTime();
+		this.startDate = request.getStartDate().atTime(LocalTime.parse(request.getStartTime()));
+		this.endDate = request.getEndDate().atTime(LocalTime.parse(request.getEndTime()));
 		this.bannerImageUrl = request.getBannerImageUrl();
 		this.location = request.getLocation();
 		this.onlineType = request.getOnlineType();

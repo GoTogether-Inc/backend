@@ -1,9 +1,10 @@
 package com.gotogether.domain.event.dto.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.OnlineType;
@@ -18,11 +19,19 @@ public class EventRequestDTO {
 	@JsonProperty("title")
 	private String title;
 
-	@JsonProperty("startDateTime")
-	private LocalDateTime startDateTime;
+	@JsonProperty("startDate")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+	private LocalDate startDate;
 
-	@JsonProperty("endDateTime")
-	private LocalDateTime endDateTime;
+	@JsonProperty("endDate")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+	private LocalDate endDate;
+
+	@JsonProperty("startTime")
+	private String startTime;
+
+	@JsonProperty("endTime")
+	private String endTime;
 
 	@JsonProperty("bannerImageUrl")
 	private String bannerImageUrl;
