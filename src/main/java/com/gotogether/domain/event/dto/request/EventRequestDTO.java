@@ -2,16 +2,18 @@ package com.gotogether.domain.event.dto.request;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.OnlineType;
+import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class EventRequestDTO {
 	@JsonProperty("hostChannelId")
 	private Long hostChannelId;
@@ -40,7 +42,7 @@ public class EventRequestDTO {
 	private String description;
 
 	@JsonProperty("referenceLinks")
-	private Map<String, String> referenceLinks;
+	private List<ReferenceLinkDTO> referenceLinks;
 
 	@JsonProperty("onlineType")
 	private OnlineType onlineType;

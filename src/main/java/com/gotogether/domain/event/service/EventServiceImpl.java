@@ -1,7 +1,6 @@
 package com.gotogether.domain.event.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -21,6 +20,7 @@ import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hashtag.repository.HashtagRepository;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
+import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 import com.gotogether.domain.referencelink.entity.ReferenceLink;
 import com.gotogether.domain.referencelink.repository.ReferenceLinkRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -158,10 +158,13 @@ public class EventServiceImpl implements EventService {
 		eventHashtagRepository.saveAll(eventHashtags);
 	}
 
-	private void saveReferenceLinks(Event event, Map<String, String> referenceLinks) {
-		List<ReferenceLink> referenceLinkList = referenceLinks.entrySet()
-			.stream()
-			.map(entry -> ReferenceLink.builder().event(event).name(entry.getKey()).toGoUrl(entry.getValue()).build())
+	private void saveReferenceLinks(Event event, List<ReferenceLinkDTO> referenceLinks) {
+		List<ReferenceLink> referenceLinkList = referenceLinks.stream()
+			.map(link -> ReferenceLink.builder()
+				.event(event)
+				.name(link.getTitle())
+				.toGoUrl(link.getUrl())
+				.build())
 			.collect(Collectors.toList());
 
 		referenceLinkRepository.saveAll(referenceLinkList);

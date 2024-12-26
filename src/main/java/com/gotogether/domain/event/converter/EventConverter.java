@@ -2,7 +2,7 @@ package com.gotogether.domain.event.converter;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
@@ -11,7 +11,7 @@ import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
-import com.gotogether.domain.referencelink.entity.ReferenceLink;
+import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 
 public class EventConverter {
 
@@ -35,12 +35,13 @@ public class EventConverter {
 	}
 
 	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, HostChannel hostChannel) {
-		Map<String, String> links = event.getReferenceLinks().stream()
+		List<ReferenceLinkDTO> links = event.getReferenceLinks().stream()
 			.filter(link -> !link.isDeleted())
-			.collect(Collectors.toMap(
-				ReferenceLink::getName,
-				ReferenceLink::getToGoUrl
-			));
+			.map(link -> ReferenceLinkDTO.builder()
+				.title(link.getName())
+				.url(link.getToGoUrl())
+				.build())
+			.collect(Collectors.toList());
 
 		long ticketCount = event.getTickets().stream()
 			.filter(ticket -> !ticket.isDeleted())

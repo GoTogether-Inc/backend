@@ -1,6 +1,8 @@
 package com.gotogether.domain.event.dto.response;
 
-import java.util.Map;
+import java.util.List;
+
+import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -22,5 +24,5 @@ public class EventDetailResponseDTO {
 	private String hostChannelDescription;
 	private String hostEmail;
 	private String hostPhoneNumber;
-	private Map<String, String> referenceLinks;
+	private List<ReferenceLinkDTO> referenceLinks;
 }
