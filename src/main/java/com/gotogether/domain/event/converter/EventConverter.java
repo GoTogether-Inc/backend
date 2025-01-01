@@ -36,22 +36,17 @@ public class EventConverter {
 
 	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, HostChannel hostChannel) {
 		List<ReferenceLinkDTO> links = event.getReferenceLinks().stream()
-			.filter(link -> !link.isDeleted())
 			.map(link -> ReferenceLinkDTO.builder()
 				.title(link.getName())
 				.url(link.getToGoUrl())
 				.build())
 			.collect(Collectors.toList());
 
-		long ticketCount = event.getTickets().stream()
-			.filter(ticket -> !ticket.isDeleted())
-			.count();
-
 		return EventDetailResponseDTO.builder()
 			.id(event.getId())
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
-			.participantCount((int)ticketCount)
+			.participantCount(event.getTickets().size())
 			.startDate(event.getStartDate().format(DATE_FORMATTER))
 			.endDate(event.getEndDate().format(DATE_FORMATTER))
 			.startTime(event.getStartDate().format(TIME_FORMATTER))
