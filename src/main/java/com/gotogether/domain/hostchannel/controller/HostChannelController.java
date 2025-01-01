@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
@@ -48,6 +49,11 @@ public class HostChannelController {
 		return ApiResponse.onSuccess(hostChannels.getContent());
 	}
 
+	@GetMapping("/{hostChannelId}")
+	public ApiResponse<HostChannelDetailResponseDTO> getDetailHostChannel(@PathVariable Long hostChannelId) {
+		return ApiResponse.onSuccess(hostChannelService.getDetailHostChannel(hostChannelId));
+	}
+
 	@PutMapping("/{hostChannelId}")
 	public ApiResponse<?> updateHostChannel(@PathVariable Long hostChannelId,
 		@RequestBody HostChannelRequestDTO request) {
@@ -69,8 +75,8 @@ public class HostChannelController {
 	}
 
 	@GetMapping("/{hostChannelId}/members")
-	public ApiResponse<?> getMembers(@PathVariable Long hostChannelId) {
-		List<HostChannelMemberResponseDTO> members = hostChannelService.getMembers(hostChannelId);
-		return ApiResponse.onSuccess(members);
+	public ApiResponse<List<HostChannelMemberResponseDTO>> getMembers(
+		@PathVariable Long hostChannelId) {
+		return ApiResponse.onSuccess(hostChannelService.getMembers(hostChannelId));
 	}
 }

@@ -11,6 +11,7 @@ import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.channelorganizer.repository.ChannelOrganizerRepository;
 import com.gotogether.domain.hostchannel.converter.HostChannelConverter;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
@@ -51,6 +52,14 @@ public class HostChannelServiceImpl implements HostChannelService {
 		Page<HostChannel> hostChannels = hostChannelRepository.findByUser(user, pageable);
 
 		return hostChannels.map(HostChannelConverter::toHostChannelListResponseDTO);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public HostChannelDetailResponseDTO getDetailHostChannel(Long hostChannelId) {
+		HostChannel hostChannel = getHostChannel(hostChannelId);
+
+		return HostChannelConverter.toHostChannelDetailResponseDTO(hostChannel);
 	}
 
 	@Override
@@ -97,17 +106,17 @@ public class HostChannelServiceImpl implements HostChannelService {
 	}
 
 	private User getUser(Long userId) {
-		return userRepository.findByIdAndIsDeletedFalse(userId)
+		return userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 	}
 
 	private HostChannel getHostChannel(Long hostChannelId) {
-		return hostChannelRepository.findByIdAndIsDeletedFalse(hostChannelId)
+		return hostChannelRepository.findById(hostChannelId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._HOST_CHANNEL_NOT_FOUND));
 	}
 
 	private User getUserByEmail(String email) {
-		return userRepository.findByEmailAndIsDeletedFalse(email)
+		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 	}
 
