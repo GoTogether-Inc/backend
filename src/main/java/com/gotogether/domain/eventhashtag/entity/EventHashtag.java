@@ -1,9 +1,9 @@
-package com.gotogether.domain.referencelink.entity;
+package com.gotogether.domain.eventhashtag.entity;
 
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.global.common.BaseEntity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,27 +20,24 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "reference_link")
-public class ReferenceLink extends BaseEntity {
+@Table(name = "event_hashtag")
+public class EventHashtag extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "name", nullable = false)
-	private String name;
-
-	@Column(name = "to_go_url", nullable = false)
-	private String toGoUrl;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_id", nullable = false)
 	private Event event;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "hashtag_id", nullable = false)
+	private Hashtag hashtag;
+
 	@Builder
-	public ReferenceLink(Event event, String name, String toGoUrl) {
-		this.name = name;
-		this.toGoUrl = toGoUrl;
+	public EventHashtag(Event event, Hashtag hashtag) {
 		this.event = event;
+		this.hashtag = hashtag;
 	}
 }

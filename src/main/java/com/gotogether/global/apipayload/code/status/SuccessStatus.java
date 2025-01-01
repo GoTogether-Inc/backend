@@ -8,7 +8,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SuccessStatus {
-	_OK(HttpStatus.OK, "200", "okay");
+	_OK(HttpStatus.OK, "200", "OK"),
+	_CRATED(HttpStatus.CREATED, "201", "Created");
 
 	private final HttpStatus httpStatus;
 	private final String code;
