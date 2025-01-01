@@ -5,8 +5,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.SQLDelete;
-
 import com.gotogether.domain.alert.entity.Alert;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
 import com.gotogether.domain.eventhashtag.entity.EventHashtag;
@@ -35,7 +33,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE event SET is_deleted = true WHERE id = ?")
 @Table(name = "event")
 public class Event extends BaseEntity {
 
@@ -73,6 +70,9 @@ public class Event extends BaseEntity {
 	@Column(name = "host_phone_number", nullable = false)
 	private String hostPhoneNumber;
 
+	@Column(name = "status", nullable = false)
+	private EventStatus status;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "host_channel_id", nullable = false)
 	private HostChannel hostChannel;
@@ -104,6 +104,7 @@ public class Event extends BaseEntity {
 		this.hostEmail = hostEmail;
 		this.hostPhoneNumber = hostPhoneNumber;
 		this.hostChannel = hostChannel;
+		this.status = EventStatus.PROGRESS;
 	}
 
 	public void update(EventRequestDTO request) {
@@ -123,5 +124,9 @@ public class Event extends BaseEntity {
 		return this.eventHashtags.stream()
 			.map(EventHashtag::getHashtag)
 			.collect(Collectors.toList());
+	}
+
+	public void updateStatus(EventStatus status) {
+		this.status = status;
 	}
 }
