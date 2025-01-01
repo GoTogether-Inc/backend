@@ -42,6 +42,9 @@ public class HostChannel extends BaseEntity {
 	@Column(name = "profile_image_url", nullable = false)
 	private String profileImageUrl;
 
+	@Column(name = "status", nullable = false)
+	private HostChannelStatus status;
+
 	@OneToMany(mappedBy = "hostChannel", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Event> events;
 
@@ -54,6 +57,11 @@ public class HostChannel extends BaseEntity {
 		this.email = email;
 		this.description = description;
 		this.profileImageUrl = profileImageUrl;
+		this.status = HostChannelStatus.ACTIVE;
+	}
+
+	public void updateStatus(HostChannelStatus status) {
+		this.status = status;
 	}
 
 	public void update(HostChannelRequestDTO request) {

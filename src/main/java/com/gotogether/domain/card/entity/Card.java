@@ -55,6 +55,9 @@ public class Card extends BaseEntity {
 	@Column(name = "is_default", nullable = false, columnDefinition = "bit(1) default 0")
 	private boolean isDefault;
 
+	@Column(name = "status", nullable = false)
+	private CardStatus status;
+
 	@Builder
 	public Card(User user, String name, String code, String number, String password, String billingKey,
 		String expirationDate, String owner, boolean isDefault) {
@@ -67,6 +70,11 @@ public class Card extends BaseEntity {
 		this.expirationDate = expirationDate;
 		this.owner = owner;
 		this.isDefault = isDefault;
+		this.status = CardStatus.ACTIVE;
+	}
+
+	public void updateStatus(CardStatus status) {
+		this.status = status;
 	}
 }
 

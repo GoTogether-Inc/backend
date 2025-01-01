@@ -39,6 +39,9 @@ public class User extends BaseEntity {
 	@Column(name = "email", nullable = false)
 	private String email;
 
+	@Column(name = "status", nullable = false)
+	private UserStatus status;
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Card> cards;
 
@@ -53,5 +56,10 @@ public class User extends BaseEntity {
 		this.name = name;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
+		this.status = UserStatus.ACTIVE;
+	}
+
+	public void updateStatus(UserStatus status) {
+		this.status = status;
 	}
 }

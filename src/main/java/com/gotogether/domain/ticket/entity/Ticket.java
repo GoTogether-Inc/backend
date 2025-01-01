@@ -53,6 +53,9 @@ public class Ticket extends BaseEntity {
 	@Column(name = "end_date", nullable = false)
 	private LocalDateTime endDate;
 
+	@Column(name = "status", nullable = false)
+	private TicketStatus status;
+
 	@OneToOne(mappedBy = "ticket")
 	private TicketQrCode ticketQrCode;
 
@@ -66,5 +69,10 @@ public class Ticket extends BaseEntity {
 		this.availableQuantity = availableQuantity;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.status = TicketStatus.AVAILABLE;
+	}
+
+	public void updateStatus(TicketStatus status) {
+		this.status = status;
 	}
 }
