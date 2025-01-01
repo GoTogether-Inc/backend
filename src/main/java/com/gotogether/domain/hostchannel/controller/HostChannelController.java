@@ -36,7 +36,7 @@ public class HostChannelController {
 	public ApiResponse<?> createEvent(@RequestParam(value = "userId") Long userId,
 		@RequestBody HostChannelRequestDTO request) {
 		HostChannel hostChannel = hostChannelService.createHostChannel(userId, request);
-		return ApiResponse.onSuccess("hostChannelId: " + hostChannel.getId());
+		return ApiResponse.onSuccessCreated("hostChannelId: " + hostChannel.getId());
 	}
 
 	@GetMapping
