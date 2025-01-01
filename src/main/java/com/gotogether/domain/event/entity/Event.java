@@ -70,6 +70,9 @@ public class Event extends BaseEntity {
 	@Column(name = "host_phone_number", nullable = false)
 	private String hostPhoneNumber;
 
+	@Column(name = "status", nullable = false)
+	private EventStatus status;
+
 	@OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Ticket> tickets;
 
@@ -97,5 +100,10 @@ public class Event extends BaseEntity {
 		this.category = category;
 		this.hostEmail = hostEmail;
 		this.hostPhoneNumber = hostPhoneNumber;
+		this.status = EventStatus.PROGRESS;
+	}
+
+	public void updateStatus(EventStatus status) {
+		this.status = status;
 	}
 }
