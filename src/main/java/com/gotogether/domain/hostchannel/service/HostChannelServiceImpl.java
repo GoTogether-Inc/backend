@@ -15,6 +15,7 @@ import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseD
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
+import com.gotogether.domain.hostchannel.entity.HostChannelStatus;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
@@ -69,7 +70,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 		validateHostChannelDelete(hostChannel);
 
 		channelOrganizerRepository.deleteByHostChannel(hostChannel);
-		hostChannelRepository.delete(hostChannel);
+		hostChannel.updateStatus(HostChannelStatus.INACTIVE);
 	}
 
 	@Override
