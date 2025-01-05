@@ -16,9 +16,9 @@ public class HostChannelConverter {
 	public static HostChannel toEntity(HostChannelRequestDTO request) {
 		return HostChannel.builder()
 			.profileImageUrl(request.getProfileImageUrl())
-			.name(request.getName())
-			.email(request.getEmail())
-			.description(request.getDescription())
+			.name(request.getHostChannelName())
+			.email(request.getHostEmail())
+			.description(request.getChannelDescription())
 			.build();
 	}
 
@@ -27,7 +27,7 @@ public class HostChannelConverter {
 		return HostChannelListResponseDTO.builder()
 			.id(hostChannel.getId())
 			.profileImageUrl(hostChannel.getProfileImageUrl())
-			.name(hostChannel.getName())
+			.hostChannelName(hostChannel.getName())
 			.build();
 	}
 
@@ -54,8 +54,8 @@ public class HostChannelConverter {
 		return HostChannelDetailResponseDTO.builder()
 			.id(hostChannel.getId())
 			.profileImageUrl(hostChannel.getProfileImageUrl())
-			.name(hostChannel.getName())
-			.description(hostChannel.getDescription())
+			.hostChannelName(hostChannel.getName())
+			.channelDescription(hostChannel.getDescription())
 			.events(eventListResponseDTOList)
 			.build();
 	}
@@ -63,7 +63,7 @@ public class HostChannelConverter {
 	public static HostChannelMemberResponseDTO toHostChannelMemberResponseDTO(ChannelOrganizer channelOrganizer) {
 		return HostChannelMemberResponseDTO.builder()
 			.id(channelOrganizer.getUser().getId())
-			.name(channelOrganizer.getUser().getName())
+			.memberName(channelOrganizer.getUser().getName())
 			.build();
 	}
 }

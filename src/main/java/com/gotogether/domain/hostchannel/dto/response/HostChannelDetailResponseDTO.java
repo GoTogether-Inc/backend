@@ -12,7 +12,7 @@ import lombok.Getter;
 public class HostChannelDetailResponseDTO {
 	private Long id;
 	private String profileImageUrl;
-	private String name;
-	private String description;
+	private String hostChannelName;
+	private String channelDescription;
 	private List<EventListResponseDTO> events;
 }

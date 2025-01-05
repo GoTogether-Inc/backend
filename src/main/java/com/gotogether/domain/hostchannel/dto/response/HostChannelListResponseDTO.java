@@ -8,5 +8,5 @@ import lombok.Getter;
 public class HostChannelListResponseDTO {
 	private Long id;
 	private String profileImageUrl;
-	private String name;
+	private String hostChannelName;
 }

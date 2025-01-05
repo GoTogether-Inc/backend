@@ -38,7 +38,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 	public HostChannel createHostChannel(Long userId, HostChannelRequestDTO request) {
 		User user = getUser(userId);
 
-		Optional<HostChannel> existingHostChannel = hostChannelRepository.findByNameAndUser(request.getName(), user);
+		Optional<HostChannel> existingHostChannel = hostChannelRepository.findByNameAndUser(request.getHostChannelName(), user);
 
 		if (existingHostChannel.isPresent()) {
 
@@ -47,7 +47,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 			return hostChannel;
 		}
 
-		if (hostChannelRepository.findByName(request.getName().trim()).isPresent()) {
+		if (hostChannelRepository.findByName(request.getHostChannelName().trim()).isPresent()) {
 			throw new GeneralException(ErrorStatus._HOST_CHANNEL_EXISTS);
 		}
 

@@ -65,14 +65,14 @@ public class HostChannel extends BaseEntity {
 	}
 
 	public void update(HostChannelRequestDTO request) {
-		if (request.getName() != null) {
-			this.name = request.getName();
+		if (request.getHostChannelName() != null) {
+			this.name = request.getHostChannelName();
 		}
-		if (request.getEmail() != null) {
-			this.email = request.getEmail();
+		if (request.getHostEmail() != null) {
+			this.email = request.getHostEmail();
 		}
-		if (request.getDescription() != null) {
-			this.description = request.getDescription();
+		if (request.getChannelDescription() != null) {
+			this.description = request.getChannelDescription();
 		}
 		if (request.getProfileImageUrl() != null) {
 			this.profileImageUrl = request.getProfileImageUrl();

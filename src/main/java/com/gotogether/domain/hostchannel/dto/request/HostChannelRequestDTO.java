@@ -13,12 +13,12 @@ public class HostChannelRequestDTO {
 	@JsonProperty("profileImageUrl")
 	private String profileImageUrl;
 
-	@JsonProperty("name")
-	private String name;
+	@JsonProperty("hostChannelName")
+	private String hostChannelName;
 
-	@JsonProperty("email")
-	private String email;
+	@JsonProperty("hostEmail")
+	private String hostEmail;
 
-	@JsonProperty("description")
-	private String description;
+	@JsonProperty("channelDescription")
+	private String channelDescription;
 }

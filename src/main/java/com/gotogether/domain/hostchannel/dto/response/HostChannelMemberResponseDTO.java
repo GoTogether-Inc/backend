@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class HostChannelMemberResponseDTO {
 	private Long id;
-	private String name;
+	private String memberName;
 }
