@@ -14,7 +14,8 @@ import com.gotogether.domain.user.entity.User;
 
 @Repository
 public interface HostChannelRepository extends JpaRepository<HostChannel, Long> {
-	@Query("SELECT h FROM HostChannel h " + "JOIN h.channelOrganizers co " + "WHERE co.user = :user")
+	@Query("SELECT h FROM HostChannel h " + "JOIN h.channelOrganizers co " + "WHERE co.user = :user"
+		+ " AND h.status != com.gotogether.domain.hostchannel.entity.HostChannelStatus.INACTIVE")
 	Page<HostChannel> findByUser(@Param("user") User user, Pageable pageable);
 
 	Optional<HostChannel> findByName(String name);
