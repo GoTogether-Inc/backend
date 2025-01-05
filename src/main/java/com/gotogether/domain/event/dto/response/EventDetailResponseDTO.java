@@ -22,7 +22,7 @@ public class EventDetailResponseDTO {
 	private String description;
 	private String hostChannelName;
 	private String hostChannelDescription;
-	private String hostEmail;
-	private String hostPhoneNumber;
+	private String organizerEmail;
+	private String organizerPhoneNumber;
 	private List<ReferenceLinkDTO> referenceLinks;
 }
