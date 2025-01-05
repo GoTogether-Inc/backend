@@ -11,8 +11,6 @@ import com.gotogether.domain.user.entity.User;
 
 @Repository
 public interface ChannelOrganizerRepository extends JpaRepository<ChannelOrganizer, Long> {
-	void deleteByHostChannel(HostChannel hostChannel);
-
 	long countByHostChannel(HostChannel hostChannel);
 
 	boolean existsByUserAndHostChannel(User user, HostChannel hostChannel);

@@ -1,6 +1,7 @@
 package com.gotogether.domain.hostchannel.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,13 +38,26 @@ public class HostChannelServiceImpl implements HostChannelService {
 	public HostChannel createHostChannel(Long userId, HostChannelRequestDTO request) {
 		User user = getUser(userId);
 
-		HostChannel hostChannel = HostChannelConverter.toEntity(request);
-		hostChannelRepository.save(hostChannel);
+		Optional<HostChannel> existingHostChannel = hostChannelRepository.findByNameAndUser(request.getName(), user);
 
-		ChannelOrganizer channelOrganizer = createChannelOrganizer(user, hostChannel);
+		if (existingHostChannel.isPresent()) {
+
+			HostChannel hostChannel = existingHostChannel.get();
+			hostChannel.updateStatus(HostChannelStatus.ACTIVE);
+			return hostChannel;
+		}
+
+		if (hostChannelRepository.findByName(request.getName().trim()).isPresent()) {
+			throw new GeneralException(ErrorStatus._HOST_CHANNEL_EXISTS);
+		}
+
+		HostChannel newHostChannel = HostChannelConverter.toEntity(request);
+		hostChannelRepository.save(newHostChannel);
+
+		ChannelOrganizer channelOrganizer = createChannelOrganizer(user, newHostChannel);
 		channelOrganizerRepository.save(channelOrganizer);
 
-		return hostChannel;
+		return newHostChannel;
 	}
 
 	@Override
@@ -69,7 +83,6 @@ public class HostChannelServiceImpl implements HostChannelService {
 		HostChannel hostChannel = getHostChannel(hostChannelId);
 		validateHostChannelDelete(hostChannel);
 
-		channelOrganizerRepository.deleteByHostChannel(hostChannel);
 		hostChannel.updateStatus(HostChannelStatus.INACTIVE);
 	}
 
