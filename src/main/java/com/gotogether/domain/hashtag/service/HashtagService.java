@@ -12,5 +12,7 @@ public interface HashtagService {
 
 	Page<HashtagListResponseDTO> getHashtags(Pageable pageable);
 
+	Hashtag updateHashtag(Long hashtagId, HashtagRequestDTO request);
+
 	void deleteHashtag(Long hashtagId);
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,6 +41,13 @@ public class HashtagController {
 		Pageable pageable = PageRequest.of(page, size);
 		Page<HashtagListResponseDTO> hostChannels = hashtagService.getHashtags(pageable);
 		return ApiResponse.onSuccess(hostChannels.getContent());
+	}
+
+	@PutMapping("/{hashtagId}")
+	public ApiResponse<?> updateHashtag(@PathVariable Long hashtagId,
+		@RequestBody HashtagRequestDTO request) {
+		Hashtag hashtag = hashtagService.updateHashtag(hashtagId, request);
+		return ApiResponse.onSuccess("hashtagId: " + hashtag.getId());
 	}
 
 	@DeleteMapping("/{hashtagId}")

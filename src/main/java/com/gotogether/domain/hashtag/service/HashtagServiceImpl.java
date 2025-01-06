@@ -43,6 +43,17 @@ public class HashtagServiceImpl implements HashtagService {
 	}
 
 	@Override
+	public Hashtag updateHashtag(Long hashtagId, HashtagRequestDTO request) {
+		Hashtag hashtag = hashtagRepository.findById(hashtagId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._HASHTAG_NOT_FOUND));
+
+		hashtag.update(request.getHashtagName());
+
+		hashtagRepository.save(hashtag);
+		return hashtag;
+	}
+
+	@Override
 	@Transactional
 	public void deleteHashtag(Long hashtagId) {
 		Hashtag hashtag = hashtagRepository.findById(hashtagId)

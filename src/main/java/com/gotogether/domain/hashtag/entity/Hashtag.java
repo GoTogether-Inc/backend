@@ -38,4 +38,8 @@ public class Hashtag extends BaseEntity {
 	public Hashtag(String name) {
 		this.name = name;
 	}
+
+	public void update(String hashtagName) {
+		this.name = hashtagName;
+	}
 }
