@@ -1,10 +1,13 @@
 package com.gotogether.domain.hashtag.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gotogether.domain.hashtag.converter.HashtagConverter;
 import com.gotogether.domain.hashtag.dto.request.HashtagRequestDTO;
+import com.gotogether.domain.hashtag.dto.response.HashtagListResponseDTO;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hashtag.repository.HashtagRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -29,5 +32,13 @@ public class HashtagServiceImpl implements HashtagService {
 		Hashtag hashtag = HashtagConverter.of(request);
 		return hashtagRepository.save(hashtag);
 
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<HashtagListResponseDTO> getHashtags(Pageable pageable) {
+		Page<Hashtag> hashtags = hashtagRepository.findAll(pageable);
+
+		return hashtags.map(HashtagConverter::toHostChannelListResponseDTO);
 	}
 }
