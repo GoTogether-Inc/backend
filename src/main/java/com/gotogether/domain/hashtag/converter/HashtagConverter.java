@@ -16,7 +16,7 @@ public class HashtagConverter {
 		Hashtag hashtag) {
 		return HashtagListResponseDTO.builder()
 			.id(hashtag.getId())
-			.name(hashtag.getName())
+			.hashtagName(hashtag.getName())
 			.build();
 	}
 }
