@@ -28,8 +28,8 @@ public class EventConverter {
 			.location(request.getLocation())
 			.onlineType(request.getOnlineType())
 			.category(request.getCategory())
-			.hostEmail(request.getHostEmail())
-			.hostPhoneNumber(request.getHostPhoneNumber())
+			.organizerEmail(request.getOrganizerEmail())
+			.organizerPhoneNumber(request.getOrganizerPhoneNumber())
 			.hostChannel(hostChannel)
 			.build();
 	}
@@ -55,8 +55,8 @@ public class EventConverter {
 			.description(event.getDescription())
 			.hostChannelName(hostChannel.getName())
 			.hostChannelDescription(hostChannel.getDescription())
-			.hostEmail(event.getHostEmail())
-			.hostPhoneNumber(event.getHostPhoneNumber())
+			.organizerEmail(event.getOrganizerEmail())
+			.organizerPhoneNumber(event.getOrganizerPhoneNumber())
 			.referenceLinks(links)
 			.build();
 	}
