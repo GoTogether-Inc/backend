@@ -64,11 +64,11 @@ public class Event extends BaseEntity {
 	@Column(name = "category", nullable = false)
 	private Category category;
 
-	@Column(name = "host_email", nullable = false)
-	private String hostEmail;
+	@Column(name = "organizer_email", nullable = false)
+	private String organizerEmail;
 
-	@Column(name = "host_phone_number", nullable = false)
-	private String hostPhoneNumber;
+	@Column(name = "organizer_phone_number", nullable = false)
+	private String organizerPhoneNumber;
 
 	@Column(name = "status", nullable = false)
 	private EventStatus status;
@@ -92,7 +92,7 @@ public class Event extends BaseEntity {
 	@Builder
 	public Event(String title, String description, LocalDateTime startDate,
 		LocalDateTime endDate, String bannerImageUrl, String location, OnlineType onlineType, Category category,
-		String hostEmail, String hostPhoneNumber, HostChannel hostChannel) {
+		String organizerEmail, String organizerPhoneNumber, HostChannel hostChannel) {
 		this.title = title;
 		this.description = description;
 		this.startDate = startDate;
@@ -101,8 +101,8 @@ public class Event extends BaseEntity {
 		this.location = location;
 		this.onlineType = onlineType;
 		this.category = category;
-		this.hostEmail = hostEmail;
-		this.hostPhoneNumber = hostPhoneNumber;
+		this.organizerEmail = organizerEmail;
+		this.organizerPhoneNumber = organizerPhoneNumber;
 		this.hostChannel = hostChannel;
 		this.status = EventStatus.PROGRESS;
 	}
@@ -116,8 +116,8 @@ public class Event extends BaseEntity {
 		this.location = request.getLocation();
 		this.onlineType = request.getOnlineType();
 		this.category = request.getCategory();
-		this.hostEmail = request.getHostEmail();
-		this.hostPhoneNumber = request.getHostPhoneNumber();
+		this.organizerEmail = request.getOrganizerEmail();
+		this.organizerPhoneNumber = request.getOrganizerPhoneNumber();
 	}
 
 	public List<Hashtag> getHashtags() {
