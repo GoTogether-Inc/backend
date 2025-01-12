@@ -16,7 +16,9 @@ public enum ErrorStatus implements BaseErrorCode {
 	_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON4000", "잘못된 요청"),
 	_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER4001", "사용자가 없습니다."),
 	_HOST_CHANNEL_NOT_FOUND(HttpStatus.NOT_FOUND, "HOST_CHANNEL4001", "호스트 채널이 없습니다."),
-	_EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "EVENT4001", "이벤트가 없습니다.");
+	_EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "EVENT4001", "이벤트가 없습니다."),
+	_HASHTAG_NOT_FOUND(HttpStatus.NOT_FOUND, "HASHTAG4001", "해시태그가 없습니다."),
+	_HASHTAG_EXIST(HttpStatus.BAD_REQUEST, "HASHTAG4002", "해시태그가 이미 존재합니다.");
 
 	private HttpStatus httpStatus;
 	private String code;
