@@ -56,9 +56,9 @@ public class EventRequestDTO {
 	@JsonProperty("hashtags")
 	private List<String> hashtags;
 
-	@JsonProperty("hostEmail")
-	private String hostEmail;
+	@JsonProperty("organizerEmail")
+	private String organizerEmail;
 
-	@JsonProperty("hostPhoneNumber")
-	private String hostPhoneNumber;
+	@JsonProperty("organizerPhoneNumber")
+	private String organizerPhoneNumber;
 }
