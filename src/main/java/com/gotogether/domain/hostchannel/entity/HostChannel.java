@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.global.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
@@ -29,7 +30,7 @@ public class HostChannel extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 
 	@Column(name = "email", nullable = false)
@@ -61,5 +62,20 @@ public class HostChannel extends BaseEntity {
 
 	public void updateStatus(HostChannelStatus status) {
 		this.status = status;
+	}
+
+	public void update(HostChannelRequestDTO request) {
+		if (request.getHostChannelName() != null) {
+			this.name = request.getHostChannelName();
+		}
+		if (request.getHostEmail() != null) {
+			this.email = request.getHostEmail();
+		}
+		if (request.getChannelDescription() != null) {
+			this.description = request.getChannelDescription();
+		}
+		if (request.getProfileImageUrl() != null) {
+			this.profileImageUrl = request.getProfileImageUrl();
+		}
 	}
 }
