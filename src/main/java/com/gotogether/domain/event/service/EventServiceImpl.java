@@ -13,18 +13,16 @@ import com.gotogether.domain.event.dto.request.EventRequestDTO;
 import com.gotogether.domain.event.dto.response.EventDetailResponseDTO;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.eventhashtag.entity.EventHashtag;
 import com.gotogether.domain.eventhashtag.repository.EventHashtagRepository;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hashtag.repository.HashtagRepository;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
-import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
 import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 import com.gotogether.domain.referencelink.entity.ReferenceLink;
 import com.gotogether.domain.referencelink.repository.ReferenceLinkRepository;
-import com.gotogether.global.apipayload.code.status.ErrorStatus;
-import com.gotogether.global.apipayload.exception.GeneralException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,13 +33,13 @@ public class EventServiceImpl implements EventService {
 	private final EventRepository eventRepository;
 	private final ReferenceLinkRepository referenceLinkRepository;
 	private final HashtagRepository hashtagRepository;
-	private final HostChannelRepository hostChannelRepository;
 	private final EventHashtagRepository eventHashtagRepository;
+	private final EventFacade eventFacade;
 
 	@Override
 	@Transactional
 	public Event createEvent(EventRequestDTO request) {
-		HostChannel hostChannel = getHostChannel(request.getHostChannelId());
+		HostChannel hostChannel = eventFacade.getHostChannelById(request.getHostChannelId());
 		Event event = EventConverter.of(request, hostChannel);
 
 		eventRepository.save(event);
@@ -60,8 +58,8 @@ public class EventServiceImpl implements EventService {
 	@Override
 	@Transactional(readOnly = true)
 	public EventDetailResponseDTO getDetailEvent(Long eventId) {
-		Event event = getEvent(eventId);
-		HostChannel hostChannel = getHostChannel(event.getHostChannel().getId());
+		Event event = eventFacade.getEventById(eventId);
+		HostChannel hostChannel = eventFacade.getHostChannelById(event.getHostChannel().getId());
 
 		return EventConverter.toEventDetailResponseDTO(event, hostChannel);
 	}
@@ -69,7 +67,7 @@ public class EventServiceImpl implements EventService {
 	@Override
 	@Transactional
 	public Event updateEvent(Long eventId, EventRequestDTO request) {
-		Event event = getEvent(eventId);
+		Event event = eventFacade.getEventById(eventId);
 		event.update(request);
 
 		eventRepository.save(event);
@@ -90,7 +88,7 @@ public class EventServiceImpl implements EventService {
 	@Override
 	@Transactional
 	public void deleteEvent(Long eventId) {
-		Event event = getEvent(eventId);
+		Event event = eventFacade.getEventById(eventId);
 
 		List<Hashtag> existingHashtags = eventHashtagRepository.findHashtagsByEvent(event);
 
@@ -125,16 +123,6 @@ public class EventServiceImpl implements EventService {
 	public Page<EventListResponseDTO> searchEvents(String keyword, Pageable pageable) {
 		Page<Event> events = eventRepository.findEventsByFilter(keyword, pageable);
 		return events.map(EventConverter::toEventListResponseDTO);
-	}
-
-	private Event getEvent(Long eventId) {
-		return eventRepository.findById(eventId)
-			.orElseThrow(() -> new GeneralException(ErrorStatus._EVENT_NOT_FOUND));
-	}
-
-	private HostChannel getHostChannel(Long hostChannelId) {
-		return hostChannelRepository.findById(hostChannelId)
-			.orElseThrow(() -> new GeneralException(ErrorStatus._HOST_CHANNEL_NOT_FOUND));
 	}
 
 	private void saveHashtags(Event event, List<String> hashtags) {
