@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
-import com.gotogether.global.common.BaseEntity;
+import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
