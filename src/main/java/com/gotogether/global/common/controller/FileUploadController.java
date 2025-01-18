@@ -2,7 +2,6 @@ package com.gotogether.global.common.controller;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,16 +16,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileUploadController {
 
-	private final FileUploadService awsS3Service;
-
-	@Value("${amazon.aws.bucket}")
-	private String bucketName;
+	private final FileUploadService fileUploadService;
 
 	@GetMapping("/api/generate-presigned-url")
-	public ApiResponse<?> generatePresignedUrl(@RequestParam String extension) {
+	public ApiResponse<?> generatePresignedUrl(@RequestParam String fileName) {
 		return ApiResponse.onSuccess(
-			awsS3Service.generatePreSignUrl(UUID.randomUUID() + "." + extension,
-				bucketName, HttpMethod.PUT));
+			fileUploadService.generatePreSignUrl(UUID.randomUUID() + fileName, HttpMethod.PUT));
 	}
-
 }
