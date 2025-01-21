@@ -1,7 +1,7 @@
 package com.gotogether.domain.bookmark.entity;
 
 import com.gotogether.domain.user.entity.User;
-import com.gotogether.global.common.BaseEntity;
+import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

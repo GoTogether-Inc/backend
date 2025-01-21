@@ -1,7 +1,7 @@
 package com.gotogether.domain.ticketqrcode.entity;
 
 import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.global.common.BaseEntity;
+import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

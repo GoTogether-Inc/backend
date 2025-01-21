@@ -5,7 +5,7 @@ import java.util.List;
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
-import com.gotogether.global.common.BaseEntity;
+import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
