@@ -12,6 +12,8 @@ import com.gotogether.domain.ticket.dto.request.TicketRequestDTO;
 import com.gotogether.domain.ticket.dto.response.TicketListResponseDTO;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,5 +42,17 @@ public class TicketServiceImpl implements TicketService {
 		return tickets.stream()
 			.map(TicketConverter::toTicketListResponseDTO)
 			.toList();
+	}
+
+	@Override
+	@Transactional
+	public void deleteTicket(Long ticketId) {
+		Ticket ticket = getTicketById(ticketId);
+		ticketRepository.delete(ticket);
+	}
+
+	private Ticket getTicketById(Long ticketId) {
+		return ticketRepository.findById(ticketId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 	}
 }

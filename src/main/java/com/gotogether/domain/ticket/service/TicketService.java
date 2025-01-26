@@ -11,4 +11,6 @@ public interface TicketService {
 	Ticket createTicket(TicketRequestDTO request);
 
 	List<TicketListResponseDTO> getTickets(Long userId);
+
+	void deleteTicket(Long ticketId);
 }
