@@ -72,8 +72,8 @@ class EventControllerTest {
 			.bannerImageUrl("http://example.com/banner.jpg")
 			.location("Test Location")
 			.hashtags(List.of("test", "event"))
-			.hostEmail("test@example.com")
-			.hostPhoneNumber("010-1234-5678")
+			.organizerEmail("test@example.com")
+			.organizerPhoneNumber("010-1234-5678")
 			.referenceLinks(List.of(
 				ReferenceLinkDTO.builder()
 					.title("Test Site")
@@ -91,8 +91,8 @@ class EventControllerTest {
 			.location("Test Location")
 			.onlineType(OnlineType.ONLINE)
 			.category(Category.DEVELOPMENT_STUDY)
-			.hostEmail("test@example.com")
-			.hostPhoneNumber("010-1234-5678")
+			.organizerEmail("test@example.com")
+			.organizerPhoneNumber("010-1234-5678")
 			.hostChannel(testHostChannel)
 			.build();
 
@@ -123,8 +123,8 @@ class EventControllerTest {
 			.bannerImageUrl("http://example.com/banner.jpg")
 			.location("Test Location")
 			.hashtags(List.of("test", "event"))
-			.hostEmail("test@example.com")
-			.hostPhoneNumber("010-1234-5678")
+			.organizerEmail("test@example.com")
+			.organizerPhoneNumber("010-1234-5678")
 			.referenceLinks(List.of(
 				ReferenceLinkDTO.builder()
 					.title("Test Site")
@@ -161,8 +161,8 @@ class EventControllerTest {
 			.description("This is a test event")
 			.hostChannelName("Test Channel")
 			.hostChannelDescription("This is a test channel")
-			.hostEmail("test@example.com")
-			.hostPhoneNumber("010-1234-5678")
+			.organizerEmail("test@example.com")
+			.organizerPhoneNumber("010-1234-5678")
 			.referenceLinks(List.of(
 				ReferenceLinkDTO.builder()
 					.title("Test Site")
@@ -181,7 +181,7 @@ class EventControllerTest {
 			.andExpect(jsonPath("$.result.id").value(eventId))
 			.andExpect(jsonPath("$.result.title").value("Test Event"))
 			.andExpect(jsonPath("$.result.location").value("Test Location"))
-			.andExpect(jsonPath("$.result.hostEmail").value("test@example.com"))
+			.andExpect(jsonPath("$.result.organizerEmail").value("test@example.com"))
 			.andExpect(jsonPath("$.result.referenceLinks[0].title").value("Test Site"))
 			.andExpect(jsonPath("$.result.referenceLinks[0].url").value("http://test.com"));
 	}
@@ -201,8 +201,8 @@ class EventControllerTest {
 			.description("This is a test event")
 			.hostChannelName("Test Channel")
 			.hostChannelDescription("This is a test channel")
-			.hostEmail("test@example.com")
-			.hostPhoneNumber("010-1234-5678")
+			.organizerEmail("test@example.com")
+			.organizerPhoneNumber("010-1234-5678")
 			.referenceLinks(List.of(
 				ReferenceLinkDTO.builder()
 					.title("Test Site")
@@ -245,8 +245,8 @@ class EventControllerTest {
 			.onlineType(OnlineType.ONLINE)
 			.category(Category.CONFERENCE)
 			.hashtags(List.of("test", "event"))
-			.hostEmail("test@example.com")
-			.hostPhoneNumber("010-1234-5678")
+			.organizerEmail("test@example.com")
+			.organizerPhoneNumber("010-1234-5678")
 			.build();
 
 		Event updatedEvent = Event.builder()
@@ -258,8 +258,8 @@ class EventControllerTest {
 			.location("Updated Location")
 			.onlineType(OnlineType.ONLINE)
 			.category(Category.CONFERENCE)
-			.hostEmail("test@example.com")
-			.hostPhoneNumber("010-1234-5678")
+			.organizerEmail("test@example.com")
+			.organizerPhoneNumber("010-1234-5678")
 			.build();
 
 		when(eventService.updateEvent(eq(eventId), any(EventRequestDTO.class))).thenReturn(updatedEvent);
@@ -298,8 +298,8 @@ class EventControllerTest {
 			.onlineType(OnlineType.ONLINE)
 			.category(Category.CONFERENCE)
 			.hashtags(List.of("test", "event"))
-			.hostEmail("test@example.com")
-			.hostPhoneNumber("010-1234-5678")
+			.organizerEmail("test@example.com")
+			.organizerPhoneNumber("010-1234-5678")
 			.build();
 
 		when(eventService.updateEvent(eq(eventId), any(EventRequestDTO.class)))
