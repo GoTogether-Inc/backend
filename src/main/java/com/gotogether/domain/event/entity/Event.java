@@ -12,7 +12,7 @@ import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.entity.ReferenceLink;
 import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.global.common.BaseEntity;
+import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

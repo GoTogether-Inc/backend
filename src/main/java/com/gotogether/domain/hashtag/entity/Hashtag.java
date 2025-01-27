@@ -3,7 +3,7 @@ package com.gotogether.domain.hashtag.entity;
 import java.util.List;
 
 import com.gotogether.domain.eventhashtag.entity.EventHashtag;
-import com.gotogether.global.common.BaseEntity;
+import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -2,7 +2,7 @@ package com.gotogether.domain.channelorganizer.entity;
 
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.user.entity.User;
-import com.gotogether.global.common.BaseEntity;
+import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

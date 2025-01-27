@@ -5,7 +5,7 @@ import java.util.List;
 import com.gotogether.domain.bookmark.entity.Bookmark;
 import com.gotogether.domain.card.entity.Card;
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
-import com.gotogether.global.common.BaseEntity;
+import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
