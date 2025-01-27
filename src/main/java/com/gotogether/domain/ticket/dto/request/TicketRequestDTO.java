@@ -21,11 +21,11 @@ public class TicketRequestDTO {
 	@JsonProperty("ticketName")
 	private String ticketName;
 
-	@JsonProperty("description")
-	private String description;
+	@JsonProperty("ticketDescription")
+	private String ticketDescription;
 
-	@JsonProperty("price")
-	private int price;
+	@JsonProperty("ticketPrice")
+	private int ticketPrice;
 
 	@JsonProperty("availableQuantity")
 	private int availableQuantity;

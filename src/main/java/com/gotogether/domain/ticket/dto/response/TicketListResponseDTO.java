@@ -14,5 +14,5 @@ public class TicketListResponseDTO {
 
 	private int ticketPrice;
 
-	private int ticketQuantity;
+	private int availableQuantity;
 }

@@ -16,8 +16,8 @@ public class TicketConverter {
 			.type(request.getTicketType())
 			.event(event)
 			.name(request.getTicketName())
-			.description(request.getDescription())
-			.price(request.getPrice())
+			.description(request.getTicketDescription())
+			.price(request.getTicketPrice())
 			.availableQuantity(request.getAvailableQuantity())
 			.startDate(request.getStartDate().atTime(LocalTime.parse(request.getStartTime())))
 			.endDate(request.getEndDate().atTime(LocalTime.parse(request.getEndTime())))
@@ -31,7 +31,7 @@ public class TicketConverter {
 			.ticketName(ticket.getName())
 			.ticketDescription(ticket.getDescription())
 			.ticketPrice(ticket.getPrice())
-			.ticketQuantity(ticket.getAvailableQuantity())
+			.availableQuantity(ticket.getAvailableQuantity())
 			.build();
 	}
 }
