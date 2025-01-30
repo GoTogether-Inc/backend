@@ -3,7 +3,6 @@ package com.gotogether.domain.ticket.entity;
 import java.time.LocalDateTime;
 
 import com.gotogether.domain.event.entity.Event;
-import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -14,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -53,18 +51,12 @@ public class Ticket extends BaseEntity {
 	@Column(name = "end_date", nullable = false)
 	private LocalDateTime endDate;
 
-	@Column(name = "status", nullable = false)
-	private TicketStatus status;
-
 	@Column(name = "type", nullable = false)
 	private TicketType type;
 
-	@OneToOne(mappedBy = "ticket")
-	private TicketQrCode ticketQrCode;
-
 	@Builder
 	public Ticket(Event event, String name, int price, String description, int availableQuantity,
-		LocalDateTime startDate, LocalDateTime endDate, TicketStatus status, TicketType type) {
+		LocalDateTime startDate, LocalDateTime endDate, TicketType type) {
 		this.event = event;
 		this.name = name;
 		this.price = price;
@@ -72,11 +64,6 @@ public class Ticket extends BaseEntity {
 		this.availableQuantity = availableQuantity;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.status = status;
 		this.type = type;
-	}
-
-	public void updateStatus(TicketStatus status) {
-		this.status = status;
 	}
 }
