@@ -56,12 +56,15 @@ public class Ticket extends BaseEntity {
 	@Column(name = "status", nullable = false)
 	private TicketStatus status;
 
+	@Column(name = "type", nullable = false)
+	private TicketType type;
+
 	@OneToOne(mappedBy = "ticket")
 	private TicketQrCode ticketQrCode;
 
 	@Builder
 	public Ticket(Event event, String name, int price, String description, int availableQuantity,
-		LocalDateTime startDate, LocalDateTime endDate) {
+		LocalDateTime startDate, LocalDateTime endDate, TicketStatus status, TicketType type) {
 		this.event = event;
 		this.name = name;
 		this.price = price;
@@ -69,7 +72,8 @@ public class Ticket extends BaseEntity {
 		this.availableQuantity = availableQuantity;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.status = TicketStatus.AVAILABLE;
+		this.status = status;
+		this.type = type;
 	}
 
 	public void updateStatus(TicketStatus status) {

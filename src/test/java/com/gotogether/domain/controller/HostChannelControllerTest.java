@@ -51,8 +51,8 @@ public class HostChannelControllerTest {
 	void testCreateHostChannel_onSuccess() throws Exception {
 		// GIVEN
 		HostChannelRequestDTO request = HostChannelRequestDTO.builder()
-			.name("Test Channel")
-			.description("This is a test channel")
+			.hostChannelName("Test Channel")
+			.channelDescription("This is a test channel")
 			.build();
 
 		HostChannel mockHostChannel = HostChannel.builder()
@@ -81,8 +81,8 @@ public class HostChannelControllerTest {
 		HostChannelDetailResponseDTO responseDTO = HostChannelDetailResponseDTO.builder()
 			.id(1L)
 			.profileImageUrl("http://example.com/profile.jpg")
-			.name("Test Channel")
-			.description("This is a test channel")
+			.hostChannelName("Test Channel")
+			.channelDescription("This is a test channel")
 			.events(Collections.emptyList())
 			.build();
 
@@ -96,8 +96,8 @@ public class HostChannelControllerTest {
 			.andExpect(jsonPath("$.isSuccess").value(true))
 			.andExpect(jsonPath("$.code").value("200"))
 			.andExpect(jsonPath("$.result.id").value(1L))
-			.andExpect(jsonPath("$.result.name").value("Test Channel"))
-			.andExpect(jsonPath("$.result.description").value("This is a test channel"))
+			.andExpect(jsonPath("$.result.hostChannelName").value("Test Channel"))
+			.andExpect(jsonPath("$.result.channelDescription").value("This is a test channel"))
 			.andExpect(jsonPath("$.result.profileImageUrl").value("http://example.com/profile.jpg"))
 			.andExpect(jsonPath("$.result.events").isArray());
 
@@ -108,8 +108,8 @@ public class HostChannelControllerTest {
 	void testUpdateHostChannel_onSuccess() throws Exception {
 		// GIVEN
 		HostChannelRequestDTO request = HostChannelRequestDTO.builder()
-			.name("Updated Channel")
-			.description("Updated Description")
+			.hostChannelName("Updated Channel")
+			.channelDescription("Updated Description")
 			.build();
 
 		HostChannel updatedHostChannel = HostChannel.builder()
@@ -163,7 +163,7 @@ public class HostChannelControllerTest {
 		// GIVEN
 		HostChannelMemberResponseDTO member = HostChannelMemberResponseDTO.builder()
 			.id(1L)
-			.name("test")
+			.memberName("test")
 			.build();
 
 		when(hostChannelService.getMembers(anyLong()))
@@ -172,6 +172,6 @@ public class HostChannelControllerTest {
 		// WHEN & THEN
 		mockMvc.perform(get("/api/v1/host-channels/{hostChannelId}/members", 1L))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.result[0].name").value("test"));
+			.andExpect(jsonPath("$.result[0].memberName").value("test"));
 	}
 }
