@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -31,7 +32,8 @@ public class TicketQrCode extends BaseEntity {
 	@JoinColumn(name = "order_id")
 	private Order order;
 
-	@Column(name = "qr_code_image_url", nullable = false)
+	@Lob
+	@Column(name = "qr_code_image_url", columnDefinition = "TEXT", nullable = false)
 	private String qrCodeImageUrl;
 
 	@Column(name = "is_used", nullable = false, columnDefinition = "bit(1) default 0")
@@ -42,5 +44,9 @@ public class TicketQrCode extends BaseEntity {
 		this.order = order;
 		this.qrCodeImageUrl = qrCodeImageUrl;
 		this.isUsed = isUsed;
+	}
+
+	public void updateOrder(Order order) {
+		this.order = order;
 	}
 }

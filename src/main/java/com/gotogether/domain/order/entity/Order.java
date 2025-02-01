@@ -7,6 +7,8 @@ import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,6 +32,7 @@ public class Order extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private TicketStatus status;
 
@@ -45,10 +48,14 @@ public class Order extends BaseEntity {
 	private TicketQrCode ticketQrCode;
 
 	@Builder
-	public Order(TicketStatus status, User user, Ticket ticket, TicketQrCode ticketQrCode) {
+	public Order(TicketStatus status, User user, Ticket ticket) {
 		this.status = status;
 		this.user = user;
 		this.ticket = ticket;
+	}
+
+	public void updateTicketQrCode(TicketQrCode ticketQrCode) {
 		this.ticketQrCode = ticketQrCode;
+		ticketQrCode.updateOrder(this);
 	}
 }

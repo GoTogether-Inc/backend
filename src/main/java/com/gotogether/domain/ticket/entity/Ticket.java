@@ -7,6 +7,8 @@ import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -51,6 +53,7 @@ public class Ticket extends BaseEntity {
 	@Column(name = "end_date", nullable = false)
 	private LocalDateTime endDate;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "type", nullable = false)
 	private TicketType type;
 
@@ -65,5 +68,9 @@ public class Ticket extends BaseEntity {
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.type = type;
+	}
+
+	public void decreaseAvailableQuantity() {
+		this.availableQuantity--;
 	}
 }
