@@ -1,6 +1,6 @@
 package com.gotogether.domain.ticketqrcode.entity;
 
-import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.order.entity.Order;
 import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "ticket_qr_code")
+@Table(name = "ticket_qr_codes")
 public class TicketQrCode extends BaseEntity {
 
 	@Id
@@ -28,8 +28,8 @@ public class TicketQrCode extends BaseEntity {
 	private Long id;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ticket_id", nullable = false)
-	private Ticket ticket;
+	@JoinColumn(name = "order_id")
+	private Order order;
 
 	@Column(name = "qr_code_image_url", nullable = false)
 	private String qrCodeImageUrl;
@@ -38,8 +38,8 @@ public class TicketQrCode extends BaseEntity {
 	private boolean isUsed;
 
 	@Builder
-	public TicketQrCode(Ticket ticket, String qrCodeImageUrl, boolean isUsed) {
-		this.ticket = ticket;
+	public TicketQrCode(Order order, String qrCodeImageUrl, boolean isUsed) {
+		this.order = order;
 		this.qrCodeImageUrl = qrCodeImageUrl;
 		this.isUsed = isUsed;
 	}
