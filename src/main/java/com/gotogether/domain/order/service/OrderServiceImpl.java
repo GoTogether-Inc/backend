@@ -1,5 +1,7 @@
 package com.gotogether.domain.order.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -7,6 +9,7 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.converter.OrderConverter;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
+import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.TicketStatus;
 import com.gotogether.domain.order.repository.OrderRepository;
@@ -47,6 +50,15 @@ public class OrderServiceImpl implements OrderService {
 		return order;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable) {
+
+		Page<Order> orders = orderRepository.findByUserId(userId, pageable);
+
+		return orders.map(OrderConverter::toOrderedTicketResponseDTO);
+	}
+
 	private void checkTicketAvailableQuantity(Ticket ticket, int ticketCnt) {
 
 		if (ticket.getAvailableQuantity() < ticketCnt) {
@@ -63,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
 
 			ticketQrCode = ticketQrCodeService.createQrCode(event, ticket);
 			ticketStatus = TicketStatus.AVAILABLE;
-		}else{
+		} else {
 
 			ticketStatus = TicketStatus.PENDING;
 		}
