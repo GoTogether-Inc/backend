@@ -2,7 +2,6 @@ package com.gotogether.domain.order.converter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -16,11 +15,7 @@ import com.gotogether.domain.user.entity.User;
 public class OrderConverter {
 
 	public static Order of(User user, Ticket ticket, TicketStatus ticketStatus) {
-		return Order.builder()
-			.user(user)
-			.ticket(ticket)
-			.status(ticketStatus)
-			.build();
+		return Order.builder().user(user).ticket(ticket).status(ticketStatus).build();
 	}
 
 	public static OrderedTicketResponseDTO toOrderedTicketResponseDTO(Order order) {
@@ -30,24 +25,26 @@ public class OrderConverter {
 			.bannerImageUrl(order.getTicket().getEvent().getBannerImageUrl())
 			.title(order.getTicket().getEvent().getTitle())
 			.hostChannelName(order.getTicket().getEvent().getHostChannel().getName())
-			.startDate(order.getTicket().getEvent().getStartDate()
-				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+			.startDate(order.getTicket().getEvent().getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
 			.location(order.getTicket().getEvent().getLocation())
 			.ticketName(order.getTicket().getName())
 			.ticketStatus(order.getStatus().name())
-			.remainDays(getDdayStatus(LocalDate.from(order.getTicket().getEvent().getStartDate())))
+			.remainDays(getDdayStatus(
+				LocalDate.from(order.getTicket().getEvent().getStartDate()),
+				LocalDate.from(order.getTicket().getEvent().getEndDate())))
 			.build();
 	}
 
-	private static String getDdayStatus(LocalDate startDate) {
+	private static String getDdayStatus(LocalDate startDate, LocalDate endDate) {
 		LocalDate today = LocalDate.now();
-		long daysUntilStart = startDate.toEpochDay() - today.toEpochDay();
+		long remainDays = startDate.toEpochDay() - today.toEpochDay();
+		long remainDaysEnd = endDate.toEpochDay() - today.toEpochDay();
 
-		if (daysUntilStart > 7) {
+		if (remainDays > 7) {
 			return "false";
-		} else if (daysUntilStart > 0) {
-			return "D-" + daysUntilStart;
-		} else if (daysUntilStart == 0) {
+		} else if (remainDays > 0) {
+			return "D-" + remainDays;
+		} else if (remainDays <= 0 && remainDaysEnd >= 0) {
 			return "진행중";
 		} else {
 			return "종료";
