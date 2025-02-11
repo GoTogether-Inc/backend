@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
+import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.user.entity.User;
@@ -15,7 +16,12 @@ import com.gotogether.domain.user.entity.User;
 public class OrderConverter {
 
 	public static Order of(User user, Ticket ticket, TicketStatus ticketStatus) {
-		return Order.builder().user(user).ticket(ticket).status(ticketStatus).build();
+		return Order.builder()
+			.user(user)
+			.ticket(ticket)
+			.ticketStatus(ticketStatus)
+			.orderStatus(OrderStatus.COMPLETED)
+			.build();
 	}
 
 	public static OrderedTicketResponseDTO toOrderedTicketResponseDTO(Order order) {
@@ -28,7 +34,7 @@ public class OrderConverter {
 			.startDate(order.getTicket().getEvent().getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
 			.location(order.getTicket().getEvent().getLocation())
 			.ticketName(order.getTicket().getName())
-			.ticketStatus(order.getStatus().name())
+			.ticketStatus(order.getTicketStatus().name())
 			.remainDays(getDdayStatus(
 				LocalDate.from(order.getTicket().getEvent().getStartDate()),
 				LocalDate.from(order.getTicket().getEvent().getEndDate())))

@@ -33,8 +33,12 @@ public class Order extends BaseEntity {
 	private Long id;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status", nullable = false)
-	private TicketStatus status;
+	@Column(name = "ticket_status", nullable = false)
+	private TicketStatus ticketStatus;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "order_status", nullable = false)
+	private OrderStatus orderStatus;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
@@ -48,8 +52,9 @@ public class Order extends BaseEntity {
 	private TicketQrCode ticketQrCode;
 
 	@Builder
-	public Order(TicketStatus status, User user, Ticket ticket) {
-		this.status = status;
+	public Order(TicketStatus ticketStatus, OrderStatus orderStatus, User user, Ticket ticket) {
+		this.ticketStatus = ticketStatus;
+		this.orderStatus = orderStatus;
 		this.user = user;
 		this.ticket = ticket;
 	}
@@ -57,5 +62,13 @@ public class Order extends BaseEntity {
 	public void updateTicketQrCode(TicketQrCode ticketQrCode) {
 		this.ticketQrCode = ticketQrCode;
 		ticketQrCode.updateOrder(this);
+	}
+
+	public void cancelOrder() {
+		this.orderStatus = OrderStatus.CANCELED;
+	}
+
+	public void pendingTicket() {
+		this.ticketStatus = TicketStatus.PENDING;
 	}
 }
