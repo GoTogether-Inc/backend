@@ -9,6 +9,7 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.converter.OrderConverter;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
+import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.TicketStatus;
@@ -34,7 +35,6 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional
 	public Order createOrder(OrderRequestDTO request, Long userId) {
-
 		User user = eventFacade.getUserById(userId);
 		Ticket ticket = eventFacade.getTicketById(request.getTicketId());
 		Event event = eventFacade.getEventById(request.getEventId());
@@ -62,6 +62,25 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public OrderedDetailResponseDTO getDetailOrder(Long userId, Long orderId) {
+		User user = eventFacade.getUserById(userId);
+
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
+
+		Event event = eventFacade.getEventById(order.getTicket().getEvent().getId());
+
+		Ticket ticket = eventFacade.getTicketById(order.getTicket().getId());
+
+		if (!order.getUser().equals(user)) {
+			throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
+		}
+
+		return OrderConverter.toOrderedDetailResponseDTO(order, event, ticket);
+	}
+
+	@Override
 	@Transactional
 	public void cancelOrder(Long userId, Long orderId) {
 		User user = eventFacade.getUserById(userId);
@@ -86,14 +105,12 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	private void checkTicketAvailableQuantity(Ticket ticket, int ticketCnt) {
-
 		if (ticket.getAvailableQuantity() < ticketCnt) {
 			throw new GeneralException(ErrorStatus._TICKET_NOT_ENOUGH);
 		}
 	}
 
 	private Order createTicketOrder(User user, Ticket ticket, Event event) {
-
 		TicketStatus ticketStatus;
 		TicketQrCode ticketQrCode = null;
 

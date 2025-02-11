@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Component;
 
+import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
@@ -55,5 +57,23 @@ public class OrderConverter {
 		} else {
 			return "종료";
 		}
+	}
+
+	public static OrderedDetailResponseDTO toOrderedDetailResponseDTO(
+		Order order, Event event, Ticket ticket) {
+		return OrderedDetailResponseDTO.builder()
+			.id(order.getId())
+			.ticketQrCode(order.getTicketQrCode().getQrCodeImageUrl())
+			.title(event.getTitle())
+			.hostChannelName(event.getHostChannel().getName())
+			.startDate(event.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+			.location(event.getLocation())
+			.ticketName(order.getTicket().getName())
+			.ticketPrice(order.getTicket().getPrice())
+			.ticketStatus(order.getTicketStatus().name())
+			.remainDays(getDdayStatus(
+				LocalDate.from(event.getStartDate()),
+				LocalDate.from(event.getEndDate())))
+			.build();
 	}
 }
