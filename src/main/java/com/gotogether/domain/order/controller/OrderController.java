@@ -43,4 +43,11 @@ public class OrderController {
 		Page<OrderedTicketResponseDTO> purchasedTickets = orderService.getPurchasedTickets(userId, pageable);
 		return ApiResponse.onSuccess(purchasedTickets.getContent());
 	}
+
+	@PostMapping("/cancel")
+	public ApiResponse<?> cancelOrder(@RequestParam(value = "userId") Long userId,
+		@RequestParam(value = "orderId") Long orderId) {
+		orderService.cancelOrder(userId, orderId);
+		return ApiResponse.onSuccess("주문 취소 성공");
+	}
 }

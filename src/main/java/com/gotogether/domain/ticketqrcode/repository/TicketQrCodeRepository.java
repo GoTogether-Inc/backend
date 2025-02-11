@@ -7,4 +7,5 @@ import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 
 @Repository
 public interface TicketQrCodeRepository extends JpaRepository<TicketQrCode, Long> {
+	void deleteByOrderId(Long orderId);
 }

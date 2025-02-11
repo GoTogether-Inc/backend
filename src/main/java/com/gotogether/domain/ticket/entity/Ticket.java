@@ -73,4 +73,8 @@ public class Ticket extends BaseEntity {
 	public void decreaseAvailableQuantity() {
 		this.availableQuantity--;
 	}
+
+	public void increaseAvailableQuantity() {
+		this.availableQuantity++;
+	}
 }

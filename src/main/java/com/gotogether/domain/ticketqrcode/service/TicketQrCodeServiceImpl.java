@@ -41,6 +41,12 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 		return ticketQrCode;
 	}
 
+	@Override
+	@Transactional
+	public void deleteQrCode(Long orderId) {
+		ticketQrCodeRepository.deleteByOrderId(orderId);
+	}
+
 	private String generateQrCodeImageUrl(Event Event, Ticket ticket) {
 
 		try {

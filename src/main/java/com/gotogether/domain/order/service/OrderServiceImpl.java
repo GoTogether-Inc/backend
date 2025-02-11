@@ -61,6 +61,30 @@ public class OrderServiceImpl implements OrderService {
 		return orders.map(OrderConverter::toOrderedTicketResponseDTO);
 	}
 
+	@Override
+	@Transactional
+	public void cancelOrder(Long userId, Long orderId) {
+		User user = eventFacade.getUserById(userId);
+
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
+
+		Ticket ticket = eventFacade.getTicketById(order.getTicket().getId());
+
+		if (!order.getUser().equals(user)) {
+			throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
+		}
+
+		order.cancelOrder();
+		order.pendingTicket();
+
+		ticket.increaseAvailableQuantity();
+
+		ticketQrCodeService.deleteQrCode(orderId);
+
+		orderRepository.save(order);
+	}
+
 	private void checkTicketAvailableQuantity(Ticket ticket, int ticketCnt) {
 
 		if (ticket.getAvailableQuantity() < ticketCnt) {

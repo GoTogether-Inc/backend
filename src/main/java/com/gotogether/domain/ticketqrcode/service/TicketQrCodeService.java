@@ -6,4 +6,6 @@ import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 
 public interface TicketQrCodeService {
 	TicketQrCode createQrCode(Event event, Ticket ticket);
+
+	void deleteQrCode(Long orderId);
 }

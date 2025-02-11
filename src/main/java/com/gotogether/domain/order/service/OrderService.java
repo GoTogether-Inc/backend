@@ -11,4 +11,6 @@ public interface OrderService {
 	Order createOrder(OrderRequestDTO request, Long userId);
 
 	Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable);
+
+	void cancelOrder(Long userId, Long orderId);
 }
