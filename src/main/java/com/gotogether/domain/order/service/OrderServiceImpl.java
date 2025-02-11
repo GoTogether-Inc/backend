@@ -50,11 +50,13 @@ public class OrderServiceImpl implements OrderService {
 		return order;
 	}
 
+	//TODO 정렬 리펙토링
 	@Override
 	@Transactional(readOnly = true)
 	public Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable) {
+		User user = eventFacade.getUserById(userId);
 
-		Page<Order> orders = orderRepository.findByUserId(userId, pageable);
+		Page<Order> orders = orderRepository.findByUserIdSortedByClosestEvent(user, pageable);
 
 		return orders.map(OrderConverter::toOrderedTicketResponseDTO);
 	}
