@@ -1,5 +1,8 @@
 package com.gotogether.domain.order.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional
-	public Order createOrder(OrderRequestDTO request, Long userId) {
+	public List<Order> createOrder(OrderRequestDTO request, Long userId) {
 		User user = eventFacade.getUserById(userId);
 		Ticket ticket = eventFacade.getTicketById(request.getTicketId());
 		Event event = eventFacade.getEventById(request.getEventId());
@@ -42,12 +45,16 @@ public class OrderServiceImpl implements OrderService {
 		int ticketCnt = request.getTicketCnt();
 		checkTicketAvailableQuantity(ticket, ticketCnt);
 
-		Order order = null;
+		List<Order> orders = new ArrayList<>();
+
 		for (int i = 0; i < ticketCnt; i++) {
 
-			order = createTicketOrder(user, ticket, event);
+			Order order = createTicketOrder(user, ticket, event);
+
+			orders.add(order);
 		}
-		return order;
+
+		return orders;
 	}
 
 	//TODO 정렬 리펙토링

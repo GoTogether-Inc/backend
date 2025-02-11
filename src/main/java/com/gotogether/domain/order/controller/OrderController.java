@@ -32,8 +32,13 @@ public class OrderController {
 	@PostMapping
 	public ApiResponse<?> createOrder(@RequestParam(value = "userId") Long userId,
 		@RequestBody OrderRequestDTO request) {
-		Order order = orderService.createOrder(request, userId);
-		return ApiResponse.onSuccessCreated("주문 성공");
+		List<Order> orders = orderService.createOrder(request, userId);
+
+		List<Long> orderIds = orders.stream()
+			.map(Order::getId)
+			.toList();
+
+		return ApiResponse.onSuccessCreated("orderId: " + orderIds);
 	}
 
 	@GetMapping
