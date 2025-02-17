@@ -11,7 +11,9 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
+import com.gotogether.domain.ticketqrcode.entity.TicketStatus;
 import com.gotogether.domain.ticketqrcode.repository.TicketQrCodeRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
@@ -27,14 +29,26 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 
 	@Override
 	@Transactional
-	public TicketQrCode createQrCode(Event event, Ticket ticket) {
+	public TicketQrCode createQrCode(Event event, Ticket ticket, TicketType ticketType) {
 
-		String qrCodeImageUrl = generateQrCodeImageUrl(event, ticket);
+		TicketQrCode ticketQrCode = null;;
 
-		TicketQrCode ticketQrCode = TicketQrCode.builder()
-			.qrCodeImageUrl(qrCodeImageUrl)
-			.isUsed(false)
-			.build();
+		if (ticket.getType() == TicketType.FIRST_COME) {
+
+			String qrCodeImageUrl = generateQrCodeImageUrl(event, ticket);
+
+			ticketQrCode = TicketQrCode.builder()
+				.qrCodeImageUrl(qrCodeImageUrl)
+				.status(TicketStatus.AVAILABLE)
+				.build();
+		}else{
+
+			ticketQrCode = TicketQrCode.builder()
+				.qrCodeImageUrl(null)
+				.status(TicketStatus.PENDING)
+				.build();
+		}
+
 
 		ticketQrCodeRepository.save(ticketQrCode);
 

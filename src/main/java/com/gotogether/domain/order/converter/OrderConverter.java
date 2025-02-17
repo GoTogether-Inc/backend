@@ -10,19 +10,17 @@ import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
-import com.gotogether.domain.order.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.user.entity.User;
 
 @Component
 public class OrderConverter {
 
-	public static Order of(User user, Ticket ticket, TicketStatus ticketStatus) {
+	public static Order of(User user, Ticket ticket) {
 		return Order.builder()
 			.user(user)
 			.ticket(ticket)
-			.ticketStatus(ticketStatus)
-			.orderStatus(OrderStatus.COMPLETED)
+			.status(OrderStatus.COMPLETED)
 			.build();
 	}
 
@@ -36,7 +34,7 @@ public class OrderConverter {
 			.startDate(order.getTicket().getEvent().getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
 			.location(order.getTicket().getEvent().getLocation())
 			.ticketName(order.getTicket().getName())
-			.ticketStatus(order.getTicketStatus().name())
+			.ticketStatus(order.getStatus().name())
 			.remainDays(getDdayStatus(
 				LocalDate.from(order.getTicket().getEvent().getStartDate()),
 				LocalDate.from(order.getTicket().getEvent().getEndDate())))
@@ -70,7 +68,7 @@ public class OrderConverter {
 			.location(event.getLocation())
 			.ticketName(order.getTicket().getName())
 			.ticketPrice(order.getTicket().getPrice())
-			.ticketStatus(order.getTicketStatus().name())
+			.ticketStatus(order.getTicketQrCode().getStatus().name())
 			.remainDays(getDdayStatus(
 				LocalDate.from(event.getStartDate()),
 				LocalDate.from(event.getEndDate())))

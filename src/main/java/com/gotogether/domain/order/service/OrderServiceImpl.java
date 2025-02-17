@@ -15,11 +15,10 @@ import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
-import com.gotogether.domain.order.entity.TicketStatus;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
+import com.gotogether.domain.ticketqrcode.entity.TicketStatus;
 import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -102,7 +101,6 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		order.cancelOrder();
-		order.pendingTicket();
 
 		ticket.increaseAvailableQuantity();
 
@@ -121,21 +119,17 @@ public class OrderServiceImpl implements OrderService {
 		TicketStatus ticketStatus;
 		TicketQrCode ticketQrCode = null;
 
-		if (ticket.getType() == TicketType.FIRST_COME) {
+		ticketQrCode = ticketQrCodeService.createQrCode(event, ticket, ticket.getType());
 
-			ticketQrCode = ticketQrCodeService.createQrCode(event, ticket);
-			ticketStatus = TicketStatus.AVAILABLE;
-		} else {
+		Order order = OrderConverter.of(user, ticket);
 
-			ticketStatus = TicketStatus.PENDING;
-		}
-
-		Order order = OrderConverter.of(user, ticket, ticketStatus);
 		if (ticketQrCode != null) {
 			order.updateTicketQrCode(ticketQrCode);
 		}
+
 		orderRepository.save(order);
 		ticket.decreaseAvailableQuantity();
+
 		return order;
 	}
 }

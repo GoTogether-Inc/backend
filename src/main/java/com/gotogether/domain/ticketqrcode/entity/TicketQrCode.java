@@ -5,6 +5,8 @@ import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,17 +35,18 @@ public class TicketQrCode extends BaseEntity {
 	private Order order;
 
 	@Lob
-	@Column(name = "qr_code_image_url", columnDefinition = "TEXT", nullable = false)
+	@Column(name = "qr_code_image_url", columnDefinition = "TEXT")
 	private String qrCodeImageUrl;
 
-	@Column(name = "is_used", nullable = false, columnDefinition = "bit(1) default 0")
-	private boolean isUsed;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status", nullable = false)
+	private TicketStatus status;
 
 	@Builder
-	public TicketQrCode(Order order, String qrCodeImageUrl, boolean isUsed) {
+	public TicketQrCode(Order order, String qrCodeImageUrl, TicketStatus status) {
 		this.order = order;
 		this.qrCodeImageUrl = qrCodeImageUrl;
-		this.isUsed = isUsed;
+		this.status = status;
 	}
 
 	public void updateOrder(Order order) {
