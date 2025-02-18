@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotogether.domain.ticket.dto.request.TicketRequestDTO;
 import com.gotogether.domain.ticket.dto.response.TicketListResponseDTO;
 import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticket.service.TicketService;
 
@@ -49,7 +48,6 @@ class TicketControllerTest {
 			.availableQuantity(50)
 			.startDate(LocalDateTime.now())
 			.endDate(LocalDateTime.now().plusDays(1))
-			.status(TicketStatus.AVAILABLE)
 			.type(TicketType.FIRST_COME)
 			.build();
 	}
@@ -65,7 +63,8 @@ class TicketControllerTest {
 			.startDate(LocalDate.now())
 			.endDate(LocalDate.now().plusDays(1))
 			.startTime(String.valueOf(LocalDateTime.now().getHour() + LocalDateTime.now().getMinute()))
-			.endTime(String.valueOf(LocalDateTime.now().plusDays(1).getHour() + LocalDateTime.now().plusDays(1).getMinute()))
+			.endTime(
+				String.valueOf(LocalDateTime.now().plusDays(1).getHour() + LocalDateTime.now().plusDays(1).getMinute()))
 			.build();
 
 		when(ticketService.createTicket(any(TicketRequestDTO.class))).thenReturn(ticket);

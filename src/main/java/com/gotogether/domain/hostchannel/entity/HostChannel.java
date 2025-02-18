@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "host_channel")
+@Table(name = "host_channels")
 public class HostChannel extends BaseEntity {
 
 	@Id

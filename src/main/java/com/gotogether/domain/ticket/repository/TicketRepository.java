@@ -10,4 +10,6 @@ import com.gotogether.domain.ticket.entity.Ticket;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 	List<Ticket> findByEventId(Long eventId);
+
+
 }

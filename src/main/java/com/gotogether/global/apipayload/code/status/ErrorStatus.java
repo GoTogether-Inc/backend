@@ -27,7 +27,14 @@ public enum ErrorStatus implements BaseErrorCode {
 	_HOST_CHANNEL_MEMBER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "HOST_CHANNEL4003", "호스트 채널에 이미 존재하는 멤버 입니다."),
 	_HOST_CHANNEL_EXISTS(HttpStatus.BAD_REQUEST, "HOST_CHANNEL4004", "호스트 채널이 이미 존재합니다."),
 
-	_TICKET_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET4001", "티켓이 없습니다.");
+	_TICKET_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET4001", "티켓이 없습니다."),
+	_TICKET_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "TICKET4002", "남은 티켓 수량이 부족합니다."),
+
+	_QR_CODE_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "QR_CODE5001", "QR 코드 생성에 실패하였습니다."),
+
+	_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER4001", "주문이 없습니다."),
+	_ORDER_NOT_MATCH_USER(HttpStatus.BAD_REQUEST, "ORDER4002", "주문과 사용자가 일치하지 않습니다."),
+	_ORDER_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "ORDER4003", "이미 취소된 주문입니다.");
 
 
 

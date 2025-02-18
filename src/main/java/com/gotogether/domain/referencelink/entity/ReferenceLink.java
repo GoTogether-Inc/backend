@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "reference_link")
+@Table(name = "reference_links")
 public class ReferenceLink extends BaseEntity {
 
 	@Id
