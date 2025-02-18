@@ -41,14 +41,7 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 				.qrCodeImageUrl(qrCodeImageUrl)
 				.status(TicketStatus.AVAILABLE)
 				.build();
-		}else{
-
-			ticketQrCode = TicketQrCode.builder()
-				.qrCodeImageUrl(null)
-				.status(TicketStatus.PENDING)
-				.build();
 		}
-
 
 		ticketQrCodeRepository.save(ticketQrCode);
 
