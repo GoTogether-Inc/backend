@@ -15,10 +15,10 @@ import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
+import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
-import com.gotogether.domain.ticketqrcode.entity.TicketStatus;
 import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -66,7 +66,6 @@ public class OrderServiceImpl implements OrderService {
 
 		return orders.map(OrderConverter::toOrderedTicketResponseDTO);
 	}
-
 	@Override
 	@Transactional(readOnly = true)
 	public OrderedDetailResponseDTO getDetailOrder(Long userId, Long orderId) {
@@ -83,8 +82,13 @@ public class OrderServiceImpl implements OrderService {
 			throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
 		}
 
+		if(order.getStatus() == OrderStatus.CANCELED) {
+			throw new GeneralException(ErrorStatus._ORDER_ALREADY_CANCELED);
+		}
+
 		return OrderConverter.toOrderedDetailResponseDTO(order, event, ticket);
 	}
+
 
 	@Override
 	@Transactional
@@ -116,10 +120,8 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	private Order createTicketOrder(User user, Ticket ticket, Event event) {
-		TicketStatus ticketStatus;
-		TicketQrCode ticketQrCode = null;
 
-		ticketQrCode = ticketQrCodeService.createQrCode(event, ticket, ticket.getType());
+		TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(event, ticket, ticket.getType());
 
 		Order order = OrderConverter.of(user, ticket);
 
