@@ -31,17 +31,12 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 	@Transactional
 	public TicketQrCode createQrCode(Event event, Ticket ticket, TicketType ticketType) {
 
-		TicketQrCode ticketQrCode = null;;
+		String qrCodeImageUrl = generateQrCodeImageUrl(event, ticket);
 
-		if (ticket.getType() == TicketType.FIRST_COME) {
-
-			String qrCodeImageUrl = generateQrCodeImageUrl(event, ticket);
-
-			ticketQrCode = TicketQrCode.builder()
-				.qrCodeImageUrl(qrCodeImageUrl)
-				.status(TicketStatus.AVAILABLE)
-				.build();
-		}
+		TicketQrCode ticketQrCode = TicketQrCode.builder()
+			.qrCodeImageUrl(qrCodeImageUrl)
+			.status(TicketStatus.AVAILABLE)
+			.build();
 
 		ticketQrCodeRepository.save(ticketQrCode);
 
