@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "hashtag")
+@Table(name = "hashtags")
 public class Hashtag extends BaseEntity {
 
 	@Id
