@@ -8,6 +8,8 @@ import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.domain.user.entity.User;
+import com.gotogether.domain.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,7 @@ public class EventFacade {
 
 	private final EventRepository eventRepository;
 	private final HostChannelRepository hostChannelRepository;
+	private final UserRepository userRepository;
 
 	public Event getEventById(Long eventId) {
 		return eventRepository.findById(eventId)
@@ -26,5 +29,10 @@ public class EventFacade {
 	public HostChannel getHostChannelById(Long hostChannelId) {
 		return hostChannelRepository.findById(hostChannelId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._HOST_CHANNEL_NOT_FOUND));
+	}
+
+	public User getUserById(Long userId) {
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 	}
 }

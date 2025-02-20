@@ -1,0 +1,23 @@
+package com.gotogether.domain.bookmark.controller;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.gotogether.domain.bookmark.entity.Bookmark;
+import com.gotogether.domain.bookmark.service.BookmarkService;
+import com.gotogether.global.apipayload.ApiResponse;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/events/{eventId}/bookmark")
+public class BookmarkController {
+
+    private final BookmarkService bookmarkService;
+
+    @PostMapping
+    public ApiResponse<?> createBookmark(@PathVariable Long eventId, @RequestParam Long userId) {
+        Bookmark bookmark = bookmarkService.createBookmark(eventId, userId);
+        return ApiResponse.onSuccessCreated("bookmarkId: " + bookmark.getId());
+    }
+}
