@@ -58,10 +58,12 @@ public class User extends BaseEntity {
 	private List<ChannelOrganizer> channelOrganizers;
 
 	@Builder
-	public User(String name, String phoneNumber, String email) {
+	public User(String name, String phoneNumber, String provider, String providerId, String email) {
 		this.name = name;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
+		this.provider = provider;
+		this.providerId = providerId;
 		this.status = UserStatus.ACTIVE;
 	}
 
