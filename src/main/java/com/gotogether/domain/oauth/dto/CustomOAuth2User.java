@@ -33,7 +33,6 @@ public class CustomOAuth2User implements OAuth2User {
 		return collection;
 	}
 
-	@Override
 	public String getName() {
 
 		return userDTO.getName();
@@ -41,5 +40,13 @@ public class CustomOAuth2User implements OAuth2User {
 
 	public String getProviderId() {
 		return userDTO.getProviderId();
+	}
+
+	public String getProvider() {
+		return userDTO.getProvider();
+	}
+
+	public String getEmail() {
+		return userDTO.getEmail();
 	}
 }

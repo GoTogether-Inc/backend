@@ -47,8 +47,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		GrantedAuthority auth = iterator.next();
 		String role = auth.getAuthority();
 
-		String accessToken = jwtUtil.createJwt(providerId, role, 60 * 60 * 24L);
-		String refreshToken = jwtUtil.createJwt(providerId, role, 60 * 60 * 24L * 7);
+		String accessToken = jwtUtil.createJwt(providerId, role, "access", 60 * 60 * 24L);
+		String refreshToken = jwtUtil.createJwt(providerId, role, "refresh",  60 * 60 * 24L * 7);
 
 		User user = userRepository.findByProviderId(providerId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));

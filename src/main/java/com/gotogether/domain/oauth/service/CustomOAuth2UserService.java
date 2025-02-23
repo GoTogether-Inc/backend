@@ -53,7 +53,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 			User userEntity = User.builder()
 				.name(oAuth2Response.getName())
-				.phoneNumber("-")
 				.email(oAuth2Response.getEmail())
 				.provider(oAuth2Response.getProvider())
 				.providerId(oAuth2Response.getProviderId())

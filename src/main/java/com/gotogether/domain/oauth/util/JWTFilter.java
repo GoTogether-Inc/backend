@@ -9,6 +9,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.gotogether.domain.oauth.dto.CustomOAuth2User;
 import com.gotogether.domain.user.dto.request.UserDTO;
+import com.gotogether.domain.user.entity.User;
+import com.gotogether.domain.user.repository.UserRepository;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,7 +35,6 @@ public class JWTFilter extends OncePerRequestFilter {
 		String authorizationHeader = request.getHeader("Authorization");
 
 		if (!jwtUtil.validateAuthorizationHeader(authorizationHeader)) {
-
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -39,18 +42,36 @@ public class JWTFilter extends OncePerRequestFilter {
 		String token = authorizationHeader.substring(7);
 
 		if (jwtUtil.isExpired(token)) {
-
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().write("Token expired");
 
 			return;
 		}
 
-		String username = jwtUtil.getUsername(token);
+		String tokenType = jwtUtil.getTokenType(token);
+		// TODO response json
+		if (request.getRequestURI().equals("/api/v1/oauth/reissue")) {
+			if (!"refresh".equals(tokenType)) {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.getWriter().write("Invalid token type. Expected refresh token.");
+				
+				return;
+			}
+		}
+
+		if (!"access".equals(tokenType)) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().write("Invalid token type. Expected access token.");
+
+			return;
+
+		}
+
+		String providerId = jwtUtil.getProviderId(token);
+
 
 		UserDTO userDTO = UserDTO.builder()
-			.name(username)
-			.email(username)
+			.providerId(providerId)
 			.build();
 
 		CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
