@@ -22,9 +22,11 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JWTFilter extends OncePerRequestFilter {
 
 	private final JWTUtil jwtUtil;
+	private final UserRepository userRepository;
 
-	public JWTFilter(JWTUtil jwtUtil) {
+	public JWTFilter(JWTUtil jwtUtil, UserRepository userRepository) {
 		this.jwtUtil = jwtUtil;
+		this.userRepository = userRepository;
 	}
 
 	@Override
@@ -42,35 +44,33 @@ public class JWTFilter extends OncePerRequestFilter {
 		String token = authorizationHeader.substring(7);
 
 		if (jwtUtil.isExpired(token)) {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getWriter().write("Token expired");
-
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._BAD_REQUEST);
 			return;
 		}
 
 		String tokenType = jwtUtil.getTokenType(token);
-		// TODO response json
+
 		if (request.getRequestURI().equals("/api/v1/oauth/reissue")) {
 			if (!"refresh".equals(tokenType)) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().write("Invalid token type. Expected refresh token.");
-				
+				ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_TYPE_ERROR);
 				return;
 			}
 		}
 
 		if (!"access".equals(tokenType)) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().write("Invalid token type. Expected access token.");
-
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_TYPE_ERROR);
 			return;
-
 		}
 
 		String providerId = jwtUtil.getProviderId(token);
 
+		User user = userRepository.findByProviderId(providerId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 
 		UserDTO userDTO = UserDTO.builder()
+			.name(user.getName())
+			.email(user.getEmail())
+			.provider(user.getProvider())
 			.providerId(providerId)
 			.build();
 

@@ -12,10 +12,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import com.gotogether.domain.oauth.handler.CustomFailureHandler;
 import com.gotogether.domain.oauth.handler.CustomSuccessHandler;
 import com.gotogether.domain.oauth.service.CustomOAuth2UserService;
 import com.gotogether.domain.oauth.util.JWTFilter;
 import com.gotogether.domain.oauth.util.JWTUtil;
+import com.gotogether.domain.user.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -25,14 +27,19 @@ public class SecurityConfig {
 
 	private final CustomOAuth2UserService customOAuth2UserService;
 	private final CustomSuccessHandler customSuccessHandler;
+	private final CustomFailureHandler customFailureHandler;
 	private final JWTUtil jwtUtil;
+	private final UserRepository userRepository;
 
 	public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler,
-		JWTUtil jwtUtil) {
+		CustomFailureHandler customFailureHandler,
+		JWTUtil jwtUtil, UserRepository userRepository) {
 
 		this.customOAuth2UserService = customOAuth2UserService;
 		this.customSuccessHandler = customSuccessHandler;
+		this.customFailureHandler = customFailureHandler;
 		this.jwtUtil = jwtUtil;
+		this.userRepository = userRepository;
 	}
 
 	@Bean
@@ -69,13 +76,14 @@ public class SecurityConfig {
 			.httpBasic((auth) -> auth.disable());
 
 		http
-			.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+			.addFilterBefore(new JWTFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
 
 		http
 			.oauth2Login((oauth2) -> oauth2
 				.userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
 					.userService(customOAuth2UserService))
 				.successHandler(customSuccessHandler)
+				.failureHandler(customFailureHandler)
 			);
 
 		http
