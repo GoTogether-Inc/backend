@@ -1,15 +1,14 @@
 package com.gotogether.domain.oauth.handler;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import com.gotogether.domain.oauth.dto.CustomOAuth2User;
+import com.gotogether.domain.oauth.dto.TokenDTO;
 import com.gotogether.domain.oauth.util.JWTUtil;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
@@ -26,10 +25,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	private final UserRepository userRepository;
 	private final JWTUtil jwtUtil;
+	private final String redirectUrl;
 
-	public CustomSuccessHandler(UserRepository userRepository, JWTUtil jwtUtil) {
+	public CustomSuccessHandler(UserRepository userRepository, JWTUtil jwtUtil,
+		@Value("${spring.jwt.redirect-url}") String redirectUrl) {
 		this.userRepository = userRepository;
 		this.jwtUtil = jwtUtil;
+		this.redirectUrl = redirectUrl;
 	}
 
 	@Override
@@ -42,22 +44,16 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 		String providerId = customUserDetails.getProviderId();
 
-		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-		GrantedAuthority auth = iterator.next();
-		String role = auth.getAuthority();
-
-		String accessToken = jwtUtil.createJwt(providerId, role, "access", 60 * 60 * 24L);
-		String refreshToken = jwtUtil.createJwt(providerId, role, "refresh",  60 * 60 * 24L * 7);
+		TokenDTO tokenDTO = jwtUtil.generateTokens(providerId);
 
 		User user = userRepository.findByProviderId(providerId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 
 		userRepository.save(user);
 
-		response.addCookie(createCookie("accessToken", accessToken));
-		response.addCookie(createCookie("refreshToken", refreshToken));
-		response.sendRedirect("http://localhost:3000");
+		response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken()));
+		response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken()));
+		response.sendRedirect(redirectUrl);
 	}
 
 	private Cookie createCookie(String key, String value) {

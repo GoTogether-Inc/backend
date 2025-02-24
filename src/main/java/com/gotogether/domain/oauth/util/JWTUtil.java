@@ -9,17 +9,26 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.gotogether.domain.oauth.dto.TokenDTO;
+
 import io.jsonwebtoken.Jwts;
 
 @Component
 public class JWTUtil {
 
-	private SecretKey secretKey;
+	private final SecretKey secretKey;
+	private final long accessExpiration;
+	private final long refreshExpiration;
 
-	public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
-
-		secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
+	public JWTUtil(
+		@Value("${spring.jwt.secret}") String secret,
+		@Value("${spring.jwt.access-token-expiration}") long accessExpiration,
+		@Value("${spring.jwt.refresh-token-expiration}") long refreshExpiration
+	) {
+		this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
 			Jwts.SIG.HS256.key().build().getAlgorithm());
+		this.accessExpiration = accessExpiration;
+		this.refreshExpiration = refreshExpiration;
 	}
 
 	public String getProviderId(String token) {
@@ -85,5 +94,12 @@ public class JWTUtil {
 
 	public String extractTokenFromAuthorizationHeader(String authorizationHeader) {
 		return authorizationHeader.replace("Bearer ", "").trim();
+	}
+
+	public TokenDTO generateTokens(String providerId) {
+		return TokenDTO.of(
+			createJwt(providerId, "ROLE_USER", "access", accessExpiration),
+			createJwt(providerId, "ROLE_USER", "refresh", refreshExpiration)
+		);
 	}
 }
