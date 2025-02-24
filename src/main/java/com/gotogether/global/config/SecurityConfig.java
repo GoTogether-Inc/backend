@@ -18,6 +18,7 @@ import com.gotogether.domain.oauth.service.CustomOAuth2UserService;
 import com.gotogether.domain.oauth.util.JWTFilter;
 import com.gotogether.domain.oauth.util.JWTUtil;
 import com.gotogether.domain.user.repository.UserRepository;
+import com.gotogether.global.constants.Constants;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -87,9 +88,11 @@ public class SecurityConfig {
 			);
 
 		http
-			.authorizeHttpRequests((auth) -> auth
-				.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-				.anyRequest().authenticated());
+			.authorizeHttpRequests(registry ->
+				registry
+					.requestMatchers(Constants.NO_NEED_FILTER_URLS.toArray(String[]::new)).permitAll()
+					.anyRequest().authenticated()
+			);
 
 		http
 			.sessionManagement((session) -> session
