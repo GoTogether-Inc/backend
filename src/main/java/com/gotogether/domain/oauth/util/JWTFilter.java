@@ -37,7 +37,7 @@ public class JWTFilter extends OncePerRequestFilter {
 		String authorizationHeader = request.getHeader("Authorization");
 
 		if (!jwtUtil.validateAuthorizationHeader(authorizationHeader)) {
-			filterChain.doFilter(request, response);
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._INVALID_HEADER_ERROR);
 			return;
 		}
 
@@ -55,9 +55,8 @@ public class JWTFilter extends OncePerRequestFilter {
 				ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_TYPE_ERROR);
 				return;
 			}
-		}
 
-		if (!"access".equals(tokenType)) {
+		}else if (!"access".equals(tokenType)) {
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_TYPE_ERROR);
 			return;
 		}
