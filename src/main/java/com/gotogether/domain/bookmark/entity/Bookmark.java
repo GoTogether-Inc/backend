@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,6 +35,7 @@ public class Bookmark extends BaseEntity {
 	@JoinColumn(name = "event_id", nullable = false)
 	private Event event;
 
+	@Builder
 	public Bookmark(User user, Event event) {
 		this.user = user;
 		this.event = event;

@@ -10,6 +10,7 @@ import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.domain.bookmark.converter.BookmarkConverter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +31,7 @@ public class BookmarkServiceImpl implements BookmarkService {
             throw new GeneralException(ErrorStatus._BOOKMARK_ALREADY_EXISTS);
         }
 
-        Bookmark bookmark = new Bookmark(user, event);
+        Bookmark bookmark = BookmarkConverter.of(user, event);
         bookmarkRepository.save(bookmark);
 
         return bookmark;
