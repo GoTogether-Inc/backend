@@ -20,4 +20,10 @@ public class BookmarkController {
         Bookmark bookmark = bookmarkService.createBookmark(eventId, userId);
         return ApiResponse.onSuccessCreated("bookmarkId: " + bookmark.getId());
     }
+
+    @DeleteMapping("{bookmarkId}")
+    public ApiResponse<?> deleteBookmark(@PathVariable Long bookmarkId) {
+        bookmarkService.deleteBookmark(bookmarkId);
+        return ApiResponse.onSuccess("북마크 삭제 성공");
+    }
 }

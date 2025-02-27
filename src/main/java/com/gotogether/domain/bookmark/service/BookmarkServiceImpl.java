@@ -36,4 +36,13 @@ public class BookmarkServiceImpl implements BookmarkService {
 
         return bookmark;
     }
+
+    @Override
+    @Transactional
+    public void deleteBookmark(Long bookmarkId) {
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._BOOKMARK_NOT_FOUND));
+
+        bookmarkRepository.delete(bookmark);
+    }
 }
