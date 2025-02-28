@@ -1,4 +1,4 @@
-package com.gotogether.domain.alert.entity;
+package com.gotogether.domain.reservationemail.entity;
 
 import java.time.LocalDateTime;
 
@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "alerts")
-public class Alert extends BaseEntity {
+@Table(name = "reservation_emails")
+public class ReservationEmail extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +43,7 @@ public class Alert extends BaseEntity {
 	private String content;
 
 	@Builder
-	public Alert(Event event, String title, LocalDateTime reservationDate, String content) {
+	public ReservationEmail(Event event, String title, LocalDateTime reservationDate, String content) {
 		this.event = event;
 		this.title = title;
 		this.reservationDate = reservationDate;
