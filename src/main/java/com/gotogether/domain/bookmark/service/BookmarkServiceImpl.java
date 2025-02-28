@@ -1,6 +1,7 @@
 package com.gotogether.domain.bookmark.service;
 
 import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDto;
+import com.gotogether.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
     private final EventFacade eventFacade;
+    private final UserRepository userRepository;
+
 
     @Override
     @Transactional
@@ -44,6 +47,8 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     @Transactional(readOnly = true)
     public List<BookmarkListResponseDto> getUserBookmarks(Long userId) {
+        User user = getUser(userId);
+
         List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
 
         return bookmarks.stream()
@@ -58,5 +63,10 @@ public class BookmarkServiceImpl implements BookmarkService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus._BOOKMARK_NOT_FOUND));
 
         bookmarkRepository.delete(bookmark);
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
     }
 }
