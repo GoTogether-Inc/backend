@@ -1,5 +1,6 @@
 package com.gotogether.domain.bookmark.service;
 
+import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,9 @@ import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.domain.bookmark.converter.BookmarkConverter;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +39,16 @@ public class BookmarkServiceImpl implements BookmarkService {
         bookmarkRepository.save(bookmark);
 
         return bookmark;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookmarkListResponseDto> getUserBookmarks(Long userId) {
+        List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
+
+        return bookmarks.stream()
+                .map(BookmarkConverter::toBookmarkListResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
