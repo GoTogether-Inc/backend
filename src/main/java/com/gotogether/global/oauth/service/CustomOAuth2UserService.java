@@ -1,4 +1,4 @@
-package com.gotogether.domain.oauth.service;
+package com.gotogether.global.oauth.service;
 
 import java.util.Optional;
 
@@ -7,25 +7,33 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.gotogether.domain.oauth.dto.CustomOAuth2User;
-import com.gotogether.domain.oauth.dto.GoogleResponseDTO;
-import com.gotogether.domain.oauth.dto.KakaoResponseDTO;
-import com.gotogether.domain.oauth.dto.OAuth2Response;
+import com.gotogether.global.oauth.dto.CustomOAuth2User;
+import com.gotogether.global.oauth.dto.GoogleResponseDTO;
+import com.gotogether.global.oauth.dto.KakaoResponseDTO;
+import com.gotogether.global.oauth.dto.OAuth2Response;
+import com.gotogether.global.oauth.dto.TokenDTO;
+import com.gotogether.global.oauth.util.JWTUtil;
 import com.gotogether.domain.user.dto.request.UserDTO;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
+	private final JWTUtil jwtUtil;
 
-	public CustomOAuth2UserService(UserRepository userRepository) {
+	public CustomOAuth2UserService(UserRepository userRepository, JWTUtil jwtUtil) {
 		this.userRepository = userRepository;
+		this.jwtUtil = jwtUtil;
 	}
 
 	@Override
+	@Transactional
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
 		OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -85,5 +93,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 			return new CustomOAuth2User(userDTO);
 		}
+	}
+
+	@Transactional
+	public TokenDTO reissue(Long userId) {
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
+
+		return jwtUtil.generateTokens(user.getProviderId());
 	}
 }

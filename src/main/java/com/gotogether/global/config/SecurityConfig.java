@@ -12,11 +12,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import com.gotogether.domain.oauth.handler.CustomFailureHandler;
-import com.gotogether.domain.oauth.handler.CustomSuccessHandler;
-import com.gotogether.domain.oauth.service.CustomOAuth2UserService;
-import com.gotogether.domain.oauth.util.JWTFilter;
-import com.gotogether.domain.oauth.util.JWTUtil;
+import com.gotogether.global.oauth.handler.CustomFailureHandler;
+import com.gotogether.global.oauth.handler.CustomSuccessHandler;
+import com.gotogether.global.oauth.service.CustomOAuth2UserService;
+import com.gotogether.global.oauth.util.JWTFilter;
+import com.gotogether.global.oauth.util.JWTUtil;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.constants.Constants;
 

@@ -1,4 +1,4 @@
-package com.gotogether.domain.oauth.handler;
+package com.gotogether.global.oauth.handler;
 
 import java.io.IOException;
 
@@ -7,9 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.gotogether.domain.oauth.dto.CustomOAuth2User;
-import com.gotogether.domain.oauth.dto.TokenDTO;
-import com.gotogether.domain.oauth.util.JWTUtil;
+import com.gotogether.global.oauth.dto.CustomOAuth2User;
+import com.gotogether.global.oauth.dto.TokenDTO;
+import com.gotogether.global.oauth.util.JWTUtil;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -28,7 +28,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private final String redirectUrl;
 
 	public CustomSuccessHandler(UserRepository userRepository, JWTUtil jwtUtil,
-		@Value("${spring.jwt.redirect-url}") String redirectUrl) {
+		@Value("${app.redirect-url}") String redirectUrl) {
 		this.userRepository = userRepository;
 		this.jwtUtil = jwtUtil;
 		this.redirectUrl = redirectUrl;

@@ -1,4 +1,4 @@
-package com.gotogether.domain.oauth.handler;
+package com.gotogether.global.oauth.handler;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-import com.gotogether.domain.oauth.util.ErrorResponseUtil;
+import com.gotogether.global.oauth.util.ErrorResponseUtil;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 
 import jakarta.servlet.ServletException;

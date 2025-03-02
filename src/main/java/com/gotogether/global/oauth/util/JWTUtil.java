@@ -1,4 +1,4 @@
-package com.gotogether.domain.oauth.util;
+package com.gotogether.global.oauth.util;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -9,7 +9,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.gotogether.domain.oauth.dto.TokenDTO;
+import com.gotogether.global.oauth.dto.TokenDTO;
 
 import io.jsonwebtoken.Jwts;
 

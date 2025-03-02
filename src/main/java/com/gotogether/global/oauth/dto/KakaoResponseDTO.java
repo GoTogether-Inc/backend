@@ -1,4 +1,4 @@
-package com.gotogether.domain.oauth.dto;
+package com.gotogether.global.oauth.dto;
 
 import java.util.Map;
 

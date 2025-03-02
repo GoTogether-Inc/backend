@@ -1,4 +1,4 @@
-package com.gotogether.domain.oauth.util;
+package com.gotogether.global.oauth.util;
 
 import java.io.IOException;
 
@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.gotogether.domain.oauth.dto.CustomOAuth2User;
+import com.gotogether.global.oauth.dto.CustomOAuth2User;
 import com.gotogether.domain.user.dto.request.UserDTO;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;

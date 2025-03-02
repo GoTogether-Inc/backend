@@ -1,4 +1,4 @@
-package com.gotogether.domain.oauth.util;
+package com.gotogether.global.oauth.util;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
