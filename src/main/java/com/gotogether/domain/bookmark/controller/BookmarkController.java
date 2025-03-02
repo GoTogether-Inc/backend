@@ -29,7 +29,7 @@ public class BookmarkController {
         return ApiResponse.onSuccess(bookmarkList);
     }
 
-    @DeleteMapping("{bookmarkId}")
+    @DeleteMapping("{/bookmarkId}")
     public ApiResponse<?> deleteBookmark(@PathVariable Long bookmarkId) {
         bookmarkService.deleteBookmark(bookmarkId);
         return ApiResponse.onSuccess("북마크 삭제 성공");
