@@ -1,6 +1,6 @@
 package com.gotogether.domain.bookmark.converter;
 
-import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDto;
+import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDTO;
 import com.gotogether.domain.bookmark.entity.Bookmark;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
@@ -17,10 +17,10 @@ public class BookmarkConverter {
                 .build();
     }
 
-    public static BookmarkListResponseDto toBookmarkListResponseDTO(Bookmark bookmark) {
+    public static BookmarkListResponseDTO toBookmarkListResponseDTO(Bookmark bookmark) {
         Event event = bookmark.getEvent();
 
-        return BookmarkListResponseDto.builder()
+        return BookmarkListResponseDTO.builder()
                 .eventId(event.getId())
                 .eventTitle(event.getTitle())
                 .eventBanner(event.getBannerImageUrl())

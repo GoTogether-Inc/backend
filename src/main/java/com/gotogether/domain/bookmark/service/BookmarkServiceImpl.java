@@ -1,6 +1,6 @@
 package com.gotogether.domain.bookmark.service;
 
-import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDto;
+import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDTO;
 import com.gotogether.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +46,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookmarkListResponseDto> getUserBookmarks(Long userId) {
+    public List<BookmarkListResponseDTO> getUserBookmarks(Long userId) {
         User user = getUser(userId);
 
         List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);

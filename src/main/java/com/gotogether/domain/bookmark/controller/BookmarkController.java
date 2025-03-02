@@ -1,6 +1,6 @@
 package com.gotogether.domain.bookmark.controller;
 
-import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDto;
+import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDTO;
 import org.springframework.web.bind.annotation.*;
 
 import com.gotogether.domain.bookmark.entity.Bookmark;
@@ -25,7 +25,7 @@ public class BookmarkController {
 
     @GetMapping
     public ApiResponse<?> getUserBookmarks(@RequestParam Long userId) {
-        List<BookmarkListResponseDto> bookmarkList = bookmarkService.getUserBookmarks(userId);
+        List<BookmarkListResponseDTO> bookmarkList = bookmarkService.getUserBookmarks(userId);
         return ApiResponse.onSuccess(bookmarkList);
     }
 
