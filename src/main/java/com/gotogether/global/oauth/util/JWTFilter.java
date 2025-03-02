@@ -37,7 +37,7 @@ public class JWTFilter extends OncePerRequestFilter {
 		String authorizationHeader = request.getHeader("Authorization");
 
 		if (!jwtUtil.validateAuthorizationHeader(authorizationHeader)) {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._INVALID_HEADER_ERROR);
+			filterChain.doFilter(request, response);
 			return;
 		}
 
