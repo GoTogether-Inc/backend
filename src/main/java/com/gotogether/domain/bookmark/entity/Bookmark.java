@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "bookmark")
+@Table(name = "bookmarks")
 public class Bookmark extends BaseEntity {
 
 	@Id
