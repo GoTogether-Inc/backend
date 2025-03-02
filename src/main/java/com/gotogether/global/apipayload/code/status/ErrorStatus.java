@@ -36,8 +36,8 @@ public enum ErrorStatus implements BaseErrorCode {
 	_ORDER_NOT_MATCH_USER(HttpStatus.BAD_REQUEST, "ORDER4002", "주문과 사용자가 일치하지 않습니다."),
 	_ORDER_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "ORDER4003", "이미 취소된 주문입니다.");
 
-
-
+	_BOOKMARK_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "이미 북마크된 이벤트입니다."),
+	_BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK4002", "북마크를 찾을 수 없습니다.");
 
 	private HttpStatus httpStatus;
 	private String code;
