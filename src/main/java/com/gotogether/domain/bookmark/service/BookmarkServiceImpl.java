@@ -27,7 +27,6 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final EventFacade eventFacade;
     private final UserRepository userRepository;
 
-
     @Override
     @Transactional
     public Bookmark createBookmark(Long eventId, Long userId) {
