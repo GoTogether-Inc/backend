@@ -18,6 +18,7 @@ import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.service.OrderService;
+import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@PostMapping
-	public ApiResponse<?> createOrder(@RequestParam(value = "userId") Long userId,
+	public ApiResponse<?> createOrder(@AuthUser Long userId,
 		@RequestBody OrderRequestDTO request) {
 		List<Order> orders = orderService.createOrder(request, userId);
 
@@ -43,7 +44,7 @@ public class OrderController {
 
 	@GetMapping
 	public ApiResponse<List<OrderedTicketResponseDTO>> getPurchasedTickets(
-		@RequestParam(value = "userId") Long userId,
+		@AuthUser Long userId,
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
@@ -52,13 +53,13 @@ public class OrderController {
 	}
 
 	@GetMapping("/{orderId}")
-	public ApiResponse<OrderedDetailResponseDTO> getDetailOrder(@RequestParam(value = "userId") Long userId,
+	public ApiResponse<OrderedDetailResponseDTO> getDetailOrder(@AuthUser Long userId,
 		@PathVariable Long orderId) {
 		return ApiResponse.onSuccess(orderService.getDetailOrder(userId, orderId));
 	}
 
 	@PostMapping("/cancel")
-	public ApiResponse<?> cancelOrder(@RequestParam(value = "userId") Long userId,
+	public ApiResponse<?> cancelOrder(@AuthUser Long userId,
 		@RequestParam(value = "orderId") Long orderId) {
 		orderService.cancelOrder(userId, orderId);
 		return ApiResponse.onSuccess("주문 취소 성공");

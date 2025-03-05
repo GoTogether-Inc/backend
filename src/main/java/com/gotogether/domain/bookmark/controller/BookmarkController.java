@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.gotogether.domain.bookmark.entity.Bookmark;
 import com.gotogether.domain.bookmark.service.BookmarkService;
+import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,13 @@ public class BookmarkController {
     private final BookmarkService bookmarkService;
 
     @PostMapping
-    public ApiResponse<?> createBookmark(@PathVariable Long eventId, @RequestParam Long userId) {
+    public ApiResponse<?> createBookmark(@PathVariable Long eventId, @AuthUser Long userId) {
         Bookmark bookmark = bookmarkService.createBookmark(eventId, userId);
         return ApiResponse.onSuccessCreated("bookmarkId: " + bookmark.getId());
     }
 
     @GetMapping
-    public ApiResponse<?> getUserBookmarks(@RequestParam Long userId) {
+    public ApiResponse<?> getUserBookmarks(@AuthUser Long userId) {
         List<BookmarkListResponseDTO> bookmarkList = bookmarkService.getUserBookmarks(userId);
         return ApiResponse.onSuccess(bookmarkList);
     }
