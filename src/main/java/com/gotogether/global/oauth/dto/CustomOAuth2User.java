@@ -33,8 +33,11 @@ public class CustomOAuth2User implements OAuth2User {
 		return collection;
 	}
 
-	public String getName() {
+	public Long getId() {
+		return userDTO.getId();
+	}
 
+	public String getName() {
 		return userDTO.getName();
 	}
 

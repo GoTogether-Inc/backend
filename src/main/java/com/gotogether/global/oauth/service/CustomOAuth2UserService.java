@@ -9,17 +9,17 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gotogether.domain.user.dto.request.UserDTO;
+import com.gotogether.domain.user.entity.User;
+import com.gotogether.domain.user.repository.UserRepository;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.oauth.dto.CustomOAuth2User;
 import com.gotogether.global.oauth.dto.GoogleResponseDTO;
 import com.gotogether.global.oauth.dto.KakaoResponseDTO;
 import com.gotogether.global.oauth.dto.OAuth2Response;
 import com.gotogether.global.oauth.dto.TokenDTO;
 import com.gotogether.global.oauth.util.JWTUtil;
-import com.gotogether.domain.user.dto.request.UserDTO;
-import com.gotogether.domain.user.entity.User;
-import com.gotogether.domain.user.repository.UserRepository;
-import com.gotogether.global.apipayload.code.status.ErrorStatus;
-import com.gotogether.global.apipayload.exception.GeneralException;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -69,6 +69,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			userRepository.save(userEntity);
 
 			UserDTO userDTO = UserDTO.builder()
+				.id(userEntity.getId())
 				.name(oAuth2Response.getName())
 				.email(oAuth2Response.getEmail())
 				.provider(oAuth2Response.getProvider())
@@ -85,6 +86,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			userRepository.save(user);
 
 			UserDTO userDTO = UserDTO.builder()
+				.id(user.getId())
 				.name(oAuth2Response.getName())
 				.email(oAuth2Response.getEmail())
 				.provider(oAuth2Response.getProvider())

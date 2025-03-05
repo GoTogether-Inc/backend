@@ -17,7 +17,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		return parameter.getParameterType().equals(String.class)
+		return parameter.getParameterType().equals(Long.class)
 			&& parameter.hasParameterAnnotation(AuthUser.class);
 	}
 
@@ -27,12 +27,12 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 		NativeWebRequest webRequest,
 		WebDataBinderFactory binderFactory) {
 
-		final Object userIdObj = webRequest.getAttribute("USER_ID", WebRequest.SCOPE_REQUEST);
+		final Object userId = webRequest.getAttribute("USER_ID", WebRequest.SCOPE_REQUEST);
 
-		if (userIdObj == null) {
+		if (userId == null) {
 			throw new GeneralException(ErrorStatus._INVALID_HEADER_ERROR);
 		}
 
-		return String.valueOf(userIdObj.toString());
+		return userId;
 	}
 }

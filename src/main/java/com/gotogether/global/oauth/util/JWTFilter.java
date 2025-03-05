@@ -7,12 +7,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.gotogether.global.oauth.dto.CustomOAuth2User;
 import com.gotogether.domain.user.dto.request.UserDTO;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.oauth.dto.CustomOAuth2User;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -56,7 +56,7 @@ public class JWTFilter extends OncePerRequestFilter {
 				return;
 			}
 
-		}else if (!"access".equals(tokenType)) {
+		} else if (!"access".equals(tokenType)) {
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_TYPE_ERROR);
 			return;
 		}
@@ -67,6 +67,7 @@ public class JWTFilter extends OncePerRequestFilter {
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 
 		UserDTO userDTO = UserDTO.builder()
+			.id(user.getId())
 			.name(user.getName())
 			.email(user.getEmail())
 			.provider(user.getProvider())

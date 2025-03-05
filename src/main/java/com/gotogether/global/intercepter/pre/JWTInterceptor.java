@@ -16,9 +16,9 @@ public class JWTInterceptor implements HandlerInterceptor {
 		Exception {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		CustomOAuth2User userDetails = (CustomOAuth2User) authentication.getPrincipal();
+		CustomOAuth2User customOAuth2User = (CustomOAuth2User)authentication.getPrincipal();
 
-		request.setAttribute("USER_ID", userDetails.getProviderId());
+		request.setAttribute("USER_ID", customOAuth2User.getId());
 
 		return HandlerInterceptor.super.preHandle(request, response, handler);
 	}

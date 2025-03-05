@@ -1,6 +1,7 @@
 package com.gotogether.global.config;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,13 +13,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import com.gotogether.domain.user.repository.UserRepository;
+import com.gotogether.global.constants.Constants;
 import com.gotogether.global.oauth.handler.CustomFailureHandler;
 import com.gotogether.global.oauth.handler.CustomSuccessHandler;
 import com.gotogether.global.oauth.service.CustomOAuth2UserService;
 import com.gotogether.global.oauth.util.JWTFilter;
 import com.gotogether.global.oauth.util.JWTUtil;
-import com.gotogether.domain.user.repository.UserRepository;
-import com.gotogether.global.constants.Constants;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -60,8 +61,7 @@ public class SecurityConfig {
 					configuration.setAllowedHeaders(Collections.singletonList("*"));
 					configuration.setMaxAge(3600L);
 
-					configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-					configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+					configuration.setExposedHeaders(List.of("Set-Cookie", "Authorization"));
 
 					return configuration;
 				}

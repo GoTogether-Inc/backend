@@ -7,13 +7,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.gotogether.global.oauth.dto.CustomOAuth2User;
-import com.gotogether.global.oauth.dto.TokenDTO;
-import com.gotogether.global.oauth.util.JWTUtil;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.oauth.dto.CustomOAuth2User;
+import com.gotogether.global.oauth.dto.TokenDTO;
+import com.gotogether.global.oauth.util.JWTUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -44,12 +44,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 		String providerId = customUserDetails.getProviderId();
 
-		TokenDTO tokenDTO = jwtUtil.generateTokens(providerId);
-
 		User user = userRepository.findByProviderId(providerId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 
-		userRepository.save(user);
+		TokenDTO tokenDTO = jwtUtil.generateTokens(providerId);
 
 		response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken()));
 		response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken()));
