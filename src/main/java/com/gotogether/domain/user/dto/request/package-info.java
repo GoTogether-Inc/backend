@@ -1,1 +1,0 @@
-package com.gotogether.domain.user.dto.request;
