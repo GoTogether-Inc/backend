@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public User createUser(UserRequestDTO request) {
+	public User updateUser(UserRequestDTO request) {
 
 		User user = eventFacade.getUserById(request.getId());
 
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 	public UserDetailResponseDTO getDetailUser(Long userId) {
 
 		User user = eventFacade.getUserById(userId);
-		
+
 		return UserConverter.toUserDetailResponseDTO(user);
 	}
 }
