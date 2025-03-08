@@ -3,6 +3,7 @@ package com.gotogether.domain.event.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.gotogether.domain.event.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -122,6 +123,13 @@ public class EventServiceImpl implements EventService {
 	@Transactional(readOnly = true)
 	public Page<EventListResponseDTO> searchEvents(String keyword, Pageable pageable) {
 		Page<Event> events = eventRepository.findEventsByFilter(keyword, pageable);
+		return events.map(EventConverter::toEventListResponseDTO);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<EventListResponseDTO> getEventsByCategory(Category category, Pageable pageable) {
+		Page<Event> events = eventRepository.findByCategory(category, pageable);
 		return events.map(EventConverter::toEventListResponseDTO);
 	}
 

@@ -1,5 +1,6 @@
 package com.gotogether.domain.event.service;
 
+import com.gotogether.domain.event.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,4 +21,6 @@ public interface EventService {
 	Page<EventListResponseDTO> getEventsByTag(String tags, Pageable pageable);
 
 	Page<EventListResponseDTO> searchEvents(String keyword, Pageable pageable);
+
+    Page<EventListResponseDTO> getEventsByCategory(Category category, Pageable pageable);
 }
