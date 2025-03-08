@@ -7,8 +7,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gotogether.domain.user.dto.response.UserDetailResponseDTO;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
+import com.gotogether.global.apipayload.ApiResponse;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.oauth.dto.CustomOAuth2User;
@@ -47,11 +50,33 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		User user = userRepository.findByProviderId(providerId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 
-		TokenDTO tokenDTO = jwtUtil.generateTokens(providerId);
+		if (user.getPhoneNumber() == null) {
 
-		response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken()));
-		response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken()));
-		response.sendRedirect(redirectUrl);
+			UserDetailResponseDTO dto = UserDetailResponseDTO.builder()
+				.id(user.getId())
+				.name(user.getName())
+				.email(user.getEmail())
+				.build();
+
+			ApiResponse<UserDetailResponseDTO> apiResponse = ApiResponse.onSuccess(dto);
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			String jsonResponse = objectMapper.writeValueAsString(apiResponse);
+
+			response.setContentType("application/json");
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.getWriter().write(jsonResponse);
+
+			response.sendRedirect(redirectUrl + "/join/agreement");
+		} else {
+
+			TokenDTO tokenDTO = jwtUtil.generateTokens(providerId);
+
+			response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken()));
+			response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken()));
+
+			response.sendRedirect(redirectUrl);
+		}
 	}
 
 	private Cookie createCookie(String key, String value) {
