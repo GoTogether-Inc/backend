@@ -33,7 +33,7 @@ public class User extends BaseEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "phone_number")
+	@Column(name = "phone_number", nullable = true, unique = true)
 	private String phoneNumber;
 
 	@Column(name = "email", nullable = false)
@@ -77,5 +77,9 @@ public class User extends BaseEntity {
 
 	public void updateEmail(String email) {
 		this.email = email;
+	}
+
+	public void updatePhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 }
