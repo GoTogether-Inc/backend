@@ -7,4 +7,6 @@ public interface ReservationEmailService {
     ReservationEmail createReservationEmail(ReservationEmailRequestDTO request);
 
     ReservationEmail updateReservationEmail(Long reservationEmailId, ReservationEmailRequestDTO request);
+
+    void deleteReservationEmail(Long reservationEmailId);
 }

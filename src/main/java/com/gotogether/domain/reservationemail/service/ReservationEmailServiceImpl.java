@@ -40,4 +40,11 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 
         return reservationEmail;
     }
+
+    @Override
+    @Transactional
+    public void deleteReservationEmail(Long reservationEmailId) {
+        ReservationEmail reservationEmail = reservationEmailFacade.getReservationEmailById(reservationEmailId);
+        reservationEmailRepository.delete(reservationEmail);
+    }
 }

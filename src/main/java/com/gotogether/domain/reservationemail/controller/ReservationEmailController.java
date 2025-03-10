@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +31,11 @@ public class ReservationEmailController {
     public ApiResponse<?> updateReservationEmail(@PathVariable Long reservationEmailId, @RequestBody ReservationEmailRequestDTO request) {
         ReservationEmail reservationEmail = reservationEmailService.updateReservationEmail(reservationEmailId, request);
         return ApiResponse.onSuccess("reservationEmailId: " + reservationEmail.getId());
+    }
+
+    @DeleteMapping("/{reservationEmailId}")
+    public ApiResponse<?> deleteReservationEmail(@PathVariable Long reservationEmailId) {
+        reservationEmailService.deleteReservationEmail(reservationEmailId);
+        return ApiResponse.onSuccess("이벤트에 대한 예약 알림 삭제 성공");
     }
 }
