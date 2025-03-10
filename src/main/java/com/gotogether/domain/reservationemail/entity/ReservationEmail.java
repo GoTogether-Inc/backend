@@ -36,17 +36,17 @@ public class ReservationEmail extends BaseEntity {
 	@Column(name = "title", nullable = false)
 	private String title;
 
-	@Column(name = "reservation_date", nullable = false)
-	private LocalDateTime reservationDate;
-
 	@Column(name = "content", nullable = false)
 	private String content;
+
+	@Column(name = "reservation_date", nullable = false)
+	private LocalDateTime reservationDate;
 
 	@Builder
 	public ReservationEmail(Event event, String title, LocalDateTime reservationDate, String content) {
 		this.event = event;
 		this.title = title;
-		this.reservationDate = reservationDate;
 		this.content = content;
+		this.reservationDate = reservationDate;
 	}
 }
