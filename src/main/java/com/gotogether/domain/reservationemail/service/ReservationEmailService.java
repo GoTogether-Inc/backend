@@ -5,4 +5,6 @@ import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 
 public interface ReservationEmailService {
     ReservationEmail createReservationEmail(ReservationEmailRequestDTO request);
+
+    ReservationEmail updateReservationEmail(Long reservationEmailId, ReservationEmailRequestDTO request);
 }

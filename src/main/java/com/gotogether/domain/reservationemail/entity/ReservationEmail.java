@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.reservationemail.dto.request.ReservationEmailRequestDTO;
 import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -59,5 +60,13 @@ public class ReservationEmail extends BaseEntity {
 		this.title = title;
 		this.content = content;
 		this.reservationDate = reservationDate;
+	}
+
+	public void update(Event event, ReservationEmailRequestDTO request) {
+		this.event = event;
+		this.recipients = request.getRecipients();
+		this.title = request.getTitle();
+		this.content = request.getContent();
+		this.reservationDate = request.getReservationDate().atTime(LocalTime.parse(request.getReservationTime()));
 	}
 }

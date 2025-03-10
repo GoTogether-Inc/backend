@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +24,11 @@ public class ReservationEmailController {
     public ApiResponse<?> createReservationEmail(@RequestBody ReservationEmailRequestDTO request) {
         ReservationEmail reservationEmail = reservationEmailService.createReservationEmail(request);
         return ApiResponse.onSuccessCreated("reservationEmailId: " + reservationEmail.getId());
+    }
+
+    @PutMapping("/{reservationEmailId}")
+    public ApiResponse<?> updateReservationEmail(@PathVariable Long reservationEmailId, @RequestBody ReservationEmailRequestDTO request) {
+        ReservationEmail reservationEmail = reservationEmailService.updateReservationEmail(reservationEmailId, request);
+        return ApiResponse.onSuccess("reservationEmailId: " + reservationEmail.getId());
     }
 }
