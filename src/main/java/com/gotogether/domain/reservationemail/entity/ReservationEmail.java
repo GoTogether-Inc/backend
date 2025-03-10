@@ -53,6 +53,9 @@ public class ReservationEmail extends BaseEntity {
 	@Column(name = "reservation_date", nullable = false)
 	private LocalDateTime reservationDate;
 
+	@Column(name = "status", nullable = false)
+	private ReservationEmailStatus status;
+
 	@Builder
 	public ReservationEmail(Event event, List<String> recipients, String title, String content, LocalDateTime reservationDate) {
 		this.event = event;
@@ -60,6 +63,7 @@ public class ReservationEmail extends BaseEntity {
 		this.title = title;
 		this.content = content;
 		this.reservationDate = reservationDate;
+		this.status = ReservationEmailStatus.PENDING;
 	}
 
 	public void update(Event event, ReservationEmailRequestDTO request) {
@@ -68,5 +72,9 @@ public class ReservationEmail extends BaseEntity {
 		this.title = request.getTitle();
 		this.content = request.getContent();
 		this.reservationDate = request.getReservationDate().atTime(LocalTime.parse(request.getReservationTime()));
+	}
+
+	public void updateStatus(ReservationEmailStatus status) {
+		this.status = status;
 	}
 }
