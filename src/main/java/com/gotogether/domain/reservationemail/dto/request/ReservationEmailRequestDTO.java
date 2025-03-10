@@ -1,5 +1,6 @@
 package com.gotogether.domain.reservationemail.dto.request;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -23,6 +24,9 @@ public class ReservationEmailRequestDTO {
     private String content;
 
     @JsonProperty("reservationDate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
-    private LocalDateTime reservationDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate reservationDate;
+
+    @JsonProperty("reservationTime")
+    private String reservationTime;
 }
