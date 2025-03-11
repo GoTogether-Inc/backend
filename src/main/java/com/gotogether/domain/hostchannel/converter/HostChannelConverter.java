@@ -1,5 +1,6 @@
 package com.gotogether.domain.hostchannel.converter;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
@@ -9,9 +10,13 @@ import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
+import com.gotogether.domain.order.entity.Order;
 
 public class HostChannelConverter {
+
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	public static HostChannel toEntity(HostChannelRequestDTO request) {
 		return HostChannel.builder()
@@ -64,6 +69,20 @@ public class HostChannelConverter {
 		return HostChannelMemberResponseDTO.builder()
 			.id(channelOrganizer.getUser().getId())
 			.memberName(channelOrganizer.getUser().getName())
+			.build();
+	}
+
+	public static ParticipantManagementResponseDTO toParticipantManagementResponseDTO(Order order) {
+		return ParticipantManagementResponseDTO.builder()
+			.id(order.getId())
+			.ticketNumber(order.getTicketQrCode().getId())
+			.participant(order.getUser().getName())
+			.email(order.getUser().getEmail())
+			.phoneNumber(order.getUser().getPhoneNumber())
+			.purchaseDate(order.getCreatedAt().format(DATE_FORMATTER))
+			.ticketName(order.getTicket().getName())
+			.isCheckedIn(String.valueOf(order.getTicketQrCode().getStatus()))
+			.isApproved(String.valueOf(order.getStatus()))
 			.build();
 	}
 }

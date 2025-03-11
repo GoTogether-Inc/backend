@@ -16,9 +16,12 @@ import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.entity.HostChannelStatus;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
+import com.gotogether.domain.order.repository.OrderRepository;
+import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -33,6 +36,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final HostChannelRepository hostChannelRepository;
 	private final ChannelOrganizerRepository channelOrganizerRepository;
 	private final UserRepository userRepository;
+	private final OrderRepository orderRepository;
+	private final TicketRepository ticketRepository;
 	private final EventFacade eventFacade;
 
 	@Override
@@ -120,6 +125,14 @@ public class HostChannelServiceImpl implements HostChannelService {
 		return organizers.stream()
 			.map(HostChannelConverter::toHostChannelMemberResponseDTO)
 			.toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long hostChannelId, Long eventId,
+		Pageable pageable) {
+		
+		return null;
 	}
 
 	private User getUser(Long userId) {

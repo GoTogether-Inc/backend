@@ -19,6 +19,7 @@ import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.service.HostChannelService;
 import com.gotogether.global.annotation.AuthUser;
@@ -79,5 +80,15 @@ public class HostChannelController {
 	public ApiResponse<List<HostChannelMemberResponseDTO>> getMembers(
 		@PathVariable Long hostChannelId) {
 		return ApiResponse.onSuccess(hostChannelService.getMembers(hostChannelId));
+	}
+
+	@GetMapping("/{hostChannelId}/dashboard/participant-management")
+	public ApiResponse<List<ParticipantManagementResponseDTO>> getParticipantManagement(
+		@PathVariable Long hostChannelId,
+		@RequestParam Long eventId,
+		@RequestParam(value = "page", defaultValue = "0") int page,
+		@RequestParam(value = "size", defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return ApiResponse.onSuccess(hostChannelService.getParticipantManagement(hostChannelId, eventId, pageable));
 	}
 }
