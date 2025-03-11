@@ -9,6 +9,7 @@ import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 
@@ -28,4 +29,6 @@ public interface HostChannelService {
 	List<HostChannelMemberResponseDTO> getMembers(Long hostChannelId);
 
 	List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, Pageable pageable);
+
+	HostDashboardResponseDTO getHostDashboard(Long eventId);
 }

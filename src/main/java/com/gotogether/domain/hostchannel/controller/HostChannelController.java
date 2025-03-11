@@ -19,6 +19,7 @@ import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.service.HostChannelService;
@@ -80,6 +81,16 @@ public class HostChannelController {
 	public ApiResponse<List<HostChannelMemberResponseDTO>> getMembers(
 		@PathVariable Long hostChannelId) {
 		return ApiResponse.onSuccess(hostChannelService.getMembers(hostChannelId));
+	}
+
+	/*
+	 * 컨트롤러 분리하기
+	 */
+
+	@GetMapping("/{hostChannelId}/dashboard")
+	public ApiResponse<HostDashboardResponseDTO> getHostDashboard(@PathVariable Long hostChannelId,
+		@RequestParam Long eventId) {
+		return ApiResponse.onSuccess(hostChannelService.getHostDashboard(eventId));
 	}
 
 	@GetMapping("/dashboard/participant-management")

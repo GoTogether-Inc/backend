@@ -5,11 +5,13 @@ import java.util.List;
 
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
+import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.order.entity.Order;
@@ -17,6 +19,7 @@ import com.gotogether.domain.order.entity.Order;
 public class HostChannelConverter {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
 	public static HostChannel toEntity(HostChannelRequestDTO request) {
 		return HostChannel.builder()
@@ -83,6 +86,21 @@ public class HostChannelConverter {
 			.ticketName(order.getTicket().getName())
 			.isCheckedIn(String.valueOf(order.getTicketQrCode().getStatus()))
 			.isApproved(String.valueOf(order.getStatus()))
+			.build();
+	}
+
+	public static HostDashboardResponseDTO toHostDashboardResponseDTO(Event event, Long totalTicketCnt,
+		Long totalPrice) {
+		return HostDashboardResponseDTO.builder()
+			.eventName(event.getTitle())
+			.isTicket(!event.getTickets().isEmpty())
+			.isTicketOption(false) //TODO 옵션 데이터 추가
+			.eventStartDate(event.getStartDate().format(DATE_FORMATTER))
+			.eventStartTime(event.getStartDate().format(TIME_FORMATTER))
+			.eventEndDate(event.getEndDate().format(DATE_FORMATTER))
+			.eventEndTime(event.getEndDate().format(TIME_FORMATTER))
+			.totalTicketCnt(totalTicketCnt)
+			.totalPrice(totalPrice)
 			.build();
 	}
 }

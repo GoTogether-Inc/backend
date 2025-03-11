@@ -11,17 +11,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.channelorganizer.repository.ChannelOrganizerRepository;
+import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.hostchannel.converter.HostChannelConverter;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.entity.HostChannelStatus;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
 import com.gotogether.domain.order.entity.Order;
+import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
@@ -145,6 +148,26 @@ public class HostChannelServiceImpl implements HostChannelService {
 		return orders.stream()
 			.map(HostChannelConverter::toParticipantManagementResponseDTO)
 			.toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public HostDashboardResponseDTO getHostDashboard(Long eventId) {
+		Event event = eventFacade.getEventById(eventId);
+
+		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
+
+		Long totalTicketCnt = 0L;
+		Long totalPrice = 0L;
+
+		for (Ticket ticket : tickets) {
+			List<Order> orders = orderRepository.findByTicketAndStatus(ticket, OrderStatus.COMPLETED);
+
+			totalTicketCnt += orders.size();
+			totalPrice += orders.size() * ticket.getPrice();
+		}
+
+		return HostChannelConverter.toHostDashboardResponseDTO(event, totalTicketCnt, totalPrice);
 	}
 
 	private User getUser(Long userId) {

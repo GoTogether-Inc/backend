@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.gotogether.domain.order.entity.Order;
+import com.gotogether.domain.order.entity.OrderStatus;
+import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.user.entity.User;
 
 @Repository
@@ -21,4 +23,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	Page<Order> findByUserIdSortedByClosestEvent(@Param("user") User user, Pageable pageable);
 
 	Page<Order> findByTicketIdIn(List<Long> ticketId, Pageable pageable);
+
+	@Query("SELECT o FROM Order o WHERE o.ticket = :ticket AND o.status = :status")
+	List<Order> findByTicketAndStatus(@Param("ticket") Ticket ticket, @Param("status") OrderStatus status);
 }
