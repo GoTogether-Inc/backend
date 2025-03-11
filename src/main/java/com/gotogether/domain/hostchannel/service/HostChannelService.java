@@ -27,6 +27,5 @@ public interface HostChannelService {
 
 	List<HostChannelMemberResponseDTO> getMembers(Long hostChannelId);
 
-	List<ParticipantManagementResponseDTO> getParticipantManagement(Long hostChannelId, Long eventId,
-		Pageable pageable);
+	List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, Pageable pageable);
 }

@@ -82,13 +82,12 @@ public class HostChannelController {
 		return ApiResponse.onSuccess(hostChannelService.getMembers(hostChannelId));
 	}
 
-	@GetMapping("/{hostChannelId}/dashboard/participant-management")
+	@GetMapping("/dashboard/participant-management")
 	public ApiResponse<List<ParticipantManagementResponseDTO>> getParticipantManagement(
-		@PathVariable Long hostChannelId,
 		@RequestParam Long eventId,
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		return ApiResponse.onSuccess(hostChannelService.getParticipantManagement(hostChannelId, eventId, pageable));
+		return ApiResponse.onSuccess(hostChannelService.getParticipantManagement(eventId, pageable));
 	}
 }

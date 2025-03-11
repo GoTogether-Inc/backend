@@ -2,6 +2,7 @@ package com.gotogether.domain.hostchannel.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,9 @@ import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementRespo
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.entity.HostChannelStatus;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
+import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.repository.OrderRepository;
+import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
@@ -129,10 +132,19 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long hostChannelId, Long eventId,
+	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId,
 		Pageable pageable) {
-		
-		return null;
+		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
+
+		List<Long> ticketIds = tickets.stream()
+			.map(Ticket::getId)
+			.collect(Collectors.toList());
+
+		Page<Order> orders = orderRepository.findByTicketIdIn(ticketIds, pageable);
+
+		return orders.stream()
+			.map(HostChannelConverter::toParticipantManagementResponseDTO)
+			.toList();
 	}
 
 	private User getUser(Long userId) {
