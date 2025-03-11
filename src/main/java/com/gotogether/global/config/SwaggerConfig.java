@@ -1,17 +1,36 @@
 package com.gotogether.global.config;
 
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.swagger.v3.oas.models.Components;
+import com.gotogether.global.annotation.AuthUser;
+
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 
 @Configuration
 public class SwaggerConfig {
+
+	static {
+		SpringDocUtils.getConfig().addAnnotationsToIgnore(AuthUser.class);
+	}
+
 	@Bean
 	public OpenAPI openAPI() {
-		Info info = new Info().title("같이가요 API").description("같이가요 API 명세서");
-		return new OpenAPI().info(info).components(new Components());
+		SecurityScheme securityScheme = new SecurityScheme()
+			.type(SecurityScheme.Type.HTTP)
+			.scheme("bearer")
+			.bearerFormat("JWT");
+
+		SecurityRequirement securityRequirement = new SecurityRequirement()
+			.addList("bearerAuth");
+
+		return new OpenAPI()
+			.info(new Info().title("같이가요 API").version("1.0"))
+			.addSecurityItem(securityRequirement)
+			.schemaRequirement("bearerAuth", securityScheme);
 	}
 }

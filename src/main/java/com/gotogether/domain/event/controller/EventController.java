@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
 import com.gotogether.domain.event.dto.response.EventDetailResponseDTO;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
+import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.service.EventService;
 import com.gotogether.global.apipayload.ApiResponse;
@@ -37,19 +38,19 @@ public class EventController {
 		return ApiResponse.onSuccessCreated("eventId: " + event.getId());
 	}
 
-	@GetMapping("{eventId}")
+	@GetMapping("/{eventId}")
 	public ApiResponse<EventDetailResponseDTO> getDetailEvent(@PathVariable Long eventId) {
 		return ApiResponse.onSuccess(eventService.getDetailEvent(eventId));
 	}
 
-	@PutMapping("{eventId}")
+	@PutMapping("/{eventId}")
 	public ApiResponse<?> updateEvent(@PathVariable Long eventId,
 		@RequestBody EventRequestDTO request) {
 		Event event = eventService.updateEvent(eventId, request);
 		return ApiResponse.onSuccess("eventId: " + event.getId());
 	}
 
-	@DeleteMapping("{eventId}")
+	@DeleteMapping("/{eventId}")
 	public ApiResponse<?> deleteEvent(@PathVariable Long eventId) {
 		eventService.deleteEvent(eventId);
 		return ApiResponse.onSuccess("이벤트 삭제 성공");
@@ -72,6 +73,16 @@ public class EventController {
 		@RequestParam(value = "size", defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		Page<EventListResponseDTO> events = eventService.searchEvents(keyword, pageable);
+		return ApiResponse.onSuccess(events.getContent());
+	}
+
+	@GetMapping("/categories")
+	public ApiResponse<List<EventListResponseDTO>> getEventsByCategory(
+		@RequestParam(name = "category") Category category,
+		@RequestParam(value = "page", defaultValue = "0") int page,
+		@RequestParam(value = "size", defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<EventListResponseDTO> events = eventService.getEventsByCategory(category, pageable);
 		return ApiResponse.onSuccess(events.getContent());
 	}
 }

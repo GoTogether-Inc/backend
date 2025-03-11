@@ -1,5 +1,6 @@
 package com.gotogether.domain.event.repository;
 
+import com.gotogether.domain.event.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +29,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 		"AND e.endDate >= CURRENT_TIMESTAMP " +
 		"ORDER BY e.createdAt DESC")
 	Page<Event> findEventsByFilter(@Param("keyword") String keyword, Pageable pageable);
+
+	Page<Event> findByCategory(Category category, Pageable pageable);
 }

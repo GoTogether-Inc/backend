@@ -14,6 +14,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
 	_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON5000", "서버 에러. 관리자에게 문의하세요."),
 	_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON4000", "잘못된 요청"),
+	_INVALID_HEADER_ERROR(HttpStatus.BAD_REQUEST, "COMMON4001", "헤더 정보가 잘못되었습니다."),
 
 	_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER4001", "사용자가 없습니다."),
 
@@ -36,7 +37,13 @@ public enum ErrorStatus implements BaseErrorCode {
 	_ORDER_NOT_MATCH_USER(HttpStatus.BAD_REQUEST, "ORDER4002", "주문과 사용자가 일치하지 않습니다."),
 	_ORDER_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "ORDER4003", "이미 취소된 주문입니다."),
 
-	_RESERVATION_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_EMAIL4001", "예약 메일이 없습니다.");
+	_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "TOKEN4001", "토큰이 만료되었습니다."),
+	_TOKEN_TYPE_ERROR(HttpStatus.BAD_REQUEST, "TOKEN4002", "토큰 타입이 잘못되었습니다."),
+
+	_BOOKMARK_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "이미 북마크된 이벤트입니다."),
+	_BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK4002", "북마크를 찾을 수 없습니다."),
+
+    _RESERVATION_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_EMAIL4001", "예약 메일이 없습니다.");
 
 	private HttpStatus httpStatus;
 	private String code;

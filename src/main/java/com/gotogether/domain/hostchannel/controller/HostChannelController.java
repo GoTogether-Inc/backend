@@ -21,6 +21,7 @@ import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.service.HostChannelService;
+import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class HostChannelController {
 	private final HostChannelService hostChannelService;
 
 	@PostMapping
-	public ApiResponse<?> createEvent(@RequestParam(value = "userId") Long userId,
+	public ApiResponse<?> createEvent(@AuthUser Long userId,
 		@RequestBody HostChannelRequestDTO request) {
 		HostChannel hostChannel = hostChannelService.createHostChannel(userId, request);
 		return ApiResponse.onSuccessCreated("hostChannelId: " + hostChannel.getId());
@@ -41,7 +42,7 @@ public class HostChannelController {
 
 	@GetMapping
 	public ApiResponse<List<HostChannelListResponseDTO>> getHostChannels(
-		@RequestParam(value = "userId") Long userId,
+		@AuthUser Long userId,
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
