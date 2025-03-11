@@ -1,12 +1,17 @@
 package com.gotogether.domain.reservationemail.service;
 
+import java.util.List;
+
 import com.gotogether.domain.reservationemail.dto.request.ReservationEmailRequestDTO;
+import com.gotogether.domain.reservationemail.dto.response.ReservationEmailDetailResponseDTO;
 import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 
 public interface ReservationEmailService {
-    ReservationEmail createReservationEmail(ReservationEmailRequestDTO request);
+	ReservationEmail createReservationEmail(ReservationEmailRequestDTO request);
 
-    ReservationEmail updateReservationEmail(Long reservationEmailId, ReservationEmailRequestDTO request);
+	List<ReservationEmailDetailResponseDTO> getReservationEmails(Long eventId, String status);
 
-    void deleteReservationEmail(Long reservationEmailId);
+	ReservationEmail updateReservationEmail(Long reservationEmailId, ReservationEmailRequestDTO request);
+
+	void deleteReservationEmail(Long reservationEmailId);
 }

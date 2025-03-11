@@ -13,10 +13,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReservationEmailFacade {
 
-    private final ReservationEmailRepository reservationEmailRepository;
+	private final ReservationEmailRepository reservationEmailRepository;
 
-    public ReservationEmail getReservationEmailById(Long reservationEmailId) {
-        return reservationEmailRepository.findById(reservationEmailId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._RESERVATION_EMAIL_NOT_FOUND));
-    }
+	public ReservationEmail getReservationEmailById(Long reservationEmailId) {
+		return reservationEmailRepository.findById(reservationEmailId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._RESERVATION_EMAIL_NOT_FOUND));
+	}
+
 }
