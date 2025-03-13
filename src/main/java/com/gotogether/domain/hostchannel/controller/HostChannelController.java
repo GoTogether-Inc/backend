@@ -87,8 +87,8 @@ public class HostChannelController {
 	 * 컨트롤러 분리하기
 	 */
 
-	@GetMapping("/{hostChannelId}/dashboard")
-	public ApiResponse<HostDashboardResponseDTO> getHostDashboard(@PathVariable Long hostChannelId,
+	@GetMapping("/dashboard")
+	public ApiResponse<HostDashboardResponseDTO> getHostDashboard(
 		@RequestParam Long eventId) {
 		return ApiResponse.onSuccess(hostChannelService.getHostDashboard(eventId));
 	}
@@ -103,8 +103,8 @@ public class HostChannelController {
 		return ApiResponse.onSuccess(hostChannelService.getParticipantManagement(eventId, tags, pageable));
 	}
 
-	@PostMapping("/dashboard/approve")
-	public ApiResponse<?> getParticipantManagement(@RequestBody Long orderId) {
+	@PostMapping("/dashboard/participant-management/approve")
+	public ApiResponse<?> approveOrderStatus(@RequestParam Long orderId) {
 		hostChannelService.approveOrderStatus(orderId);
 		return ApiResponse.onSuccess("주문 승인 완료");
 	}
