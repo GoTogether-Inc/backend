@@ -136,14 +136,23 @@ public class HostChannelServiceImpl implements HostChannelService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId,
-		Pageable pageable) {
+		String tags, Pageable pageable) {
+
 		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
 
 		List<Long> ticketIds = tickets.stream()
 			.map(Ticket::getId)
 			.collect(Collectors.toList());
 
-		Page<Order> orders = orderRepository.findByTicketIdIn(ticketIds, pageable);
+		Page<Order> orders;
+
+		if (tags.equals("approved")) {
+			orders = orderRepository.findByTicketIdInAndStatus(ticketIds, OrderStatus.COMPLETED, pageable);
+		} else if (tags.equals("pending")) {
+			orders = orderRepository.findByTicketIdInAndStatus(ticketIds, OrderStatus.PENDING, pageable);
+		} else {
+			orders = orderRepository.findByTicketIdInAndStatusNot(ticketIds, OrderStatus.CANCELED, pageable);
+		}
 
 		return orders.stream()
 			.map(HostChannelConverter::toParticipantManagementResponseDTO)

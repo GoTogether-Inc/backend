@@ -22,7 +22,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 		"ORDER BY ABS(DATEDIFF(o.ticket.event.startDate, CURRENT_DATE)) ASC")
 	Page<Order> findByUserIdSortedByClosestEvent(@Param("user") User user, Pageable pageable);
 
-	Page<Order> findByTicketIdIn(List<Long> ticketId, Pageable pageable);
+	Page<Order> findByTicketIdInAndStatus(List<Long> ticketIds, OrderStatus status, Pageable pageable);
+
+	Page<Order> findByTicketIdInAndStatusNot(List<Long> ticketIds, OrderStatus status, Pageable pageable);
 
 	@Query("SELECT o FROM Order o WHERE o.ticket = :ticket AND o.status = :status")
 	List<Order> findByTicketAndStatus(@Param("ticket") Ticket ticket, @Param("status") OrderStatus status);

@@ -7,12 +7,12 @@ import lombok.Getter;
 @Builder
 public class ParticipantManagementResponseDTO {
 	private Long id;
-	private Long ticketNumber;
+	private Long orderNumber;
 	private String participant;
 	private String email;
 	private String phoneNumber;
 	private String purchaseDate;
 	private String ticketName;
-	private String isCheckedIn;
-	private String isApproved;
+	private boolean isCheckedIn;
+	private boolean isApproved;
 }

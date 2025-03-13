@@ -15,6 +15,8 @@ import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.order.entity.Order;
+import com.gotogether.domain.order.entity.OrderStatus;
+import com.gotogether.domain.ticketqrcode.entity.TicketStatus;
 
 public class HostChannelConverter {
 
@@ -78,14 +80,15 @@ public class HostChannelConverter {
 	public static ParticipantManagementResponseDTO toParticipantManagementResponseDTO(Order order) {
 		return ParticipantManagementResponseDTO.builder()
 			.id(order.getId())
-			.ticketNumber(order.getTicketQrCode().getId())
+			.orderNumber(order.getId()) //TODO 주문 고유 번호로 수정
 			.participant(order.getUser().getName())
 			.email(order.getUser().getEmail())
 			.phoneNumber(order.getUser().getPhoneNumber())
 			.purchaseDate(order.getCreatedAt().format(DATE_FORMATTER))
 			.ticketName(order.getTicket().getName())
-			.isCheckedIn(String.valueOf(order.getTicketQrCode().getStatus()))
-			.isApproved(String.valueOf(order.getStatus()))
+			.isCheckedIn(
+				order.getTicketQrCode() != null && TicketStatus.USED.equals(order.getTicketQrCode().getStatus()))
+			.isApproved(order.getStatus() != null && order.getStatus().equals(OrderStatus.COMPLETED))
 			.build();
 	}
 
