@@ -32,4 +32,6 @@ public interface HostChannelService {
 		Pageable pageable);
 
 	HostDashboardResponseDTO getHostDashboard(Long eventId);
+
+	void approveOrderStatus(Long orderId);
 }

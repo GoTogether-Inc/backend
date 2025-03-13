@@ -179,6 +179,18 @@ public class HostChannelServiceImpl implements HostChannelService {
 		return HostChannelConverter.toHostDashboardResponseDTO(event, totalTicketCnt, totalPrice);
 	}
 
+	@Override
+	@Transactional
+	public void approveOrderStatus(Long orderId) {
+
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
+
+		validateOrderStatus(order.getStatus());
+
+		order.approveOrder();
+	}
+
 	private User getUser(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
@@ -210,4 +222,13 @@ public class HostChannelServiceImpl implements HostChannelService {
 		}
 	}
 
+	private void validateOrderStatus(OrderStatus status) {
+
+		if (status == OrderStatus.COMPLETED) {
+			throw new GeneralException(ErrorStatus._ORDER_ALREADY_COMPLETED);
+		}
+		if (status == OrderStatus.CANCELED) {
+			throw new GeneralException(ErrorStatus._ORDER_ALREADY_CANCELED);
+		}
+	}
 }

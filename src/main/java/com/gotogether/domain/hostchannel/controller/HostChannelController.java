@@ -102,4 +102,10 @@ public class HostChannelController {
 		Pageable pageable = PageRequest.of(page, size);
 		return ApiResponse.onSuccess(hostChannelService.getParticipantManagement(eventId, tags, pageable));
 	}
+
+	@PostMapping("/dashboard/approve")
+	public ApiResponse<?> getParticipantManagement(@RequestBody Long orderId) {
+		hostChannelService.approveOrderStatus(orderId);
+		return ApiResponse.onSuccess("주문 승인 완료");
+	}
 }
