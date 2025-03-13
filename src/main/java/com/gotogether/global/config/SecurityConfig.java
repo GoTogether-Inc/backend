@@ -3,6 +3,7 @@ package com.gotogether.global.config;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +34,9 @@ public class SecurityConfig {
 	private final JWTUtil jwtUtil;
 	private final UserRepository userRepository;
 
+	@Value("${app.cors.allowed-origins}")
+	private String allowedOrigins;
+
 	public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler,
 		CustomFailureHandler customFailureHandler,
 		JWTUtil jwtUtil, UserRepository userRepository) {
@@ -55,7 +59,7 @@ public class SecurityConfig {
 
 					CorsConfiguration configuration = new CorsConfiguration();
 
-					configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+					configuration.setAllowedOrigins(Collections.singletonList(allowedOrigins));
 					configuration.setAllowedMethods(Collections.singletonList("*"));
 					configuration.setAllowCredentials(true);
 					configuration.setAllowedHeaders(Collections.singletonList("*"));
