@@ -55,8 +55,14 @@ public class Event extends BaseEntity {
 	@Column(name = "banner_image_url", nullable = false)
 	private String bannerImageUrl;
 
-	@Column(name = "location", nullable = false)
-	private String location;
+	@Column(name = "address", nullable = false)
+	private String address;
+
+	@Column(name = "location_lat", nullable = false)
+	private Double locationLat;
+
+	@Column(name = "location_lng", nullable = false)
+	private Double locationLng;
 
 	@Column(name = "online_type", nullable = false)
 	private OnlineType onlineType;
@@ -91,14 +97,17 @@ public class Event extends BaseEntity {
 
 	@Builder
 	public Event(String title, String description, LocalDateTime startDate,
-		LocalDateTime endDate, String bannerImageUrl, String location, OnlineType onlineType, Category category,
+		LocalDateTime endDate, String bannerImageUrl, String address, Double locationLat, Double locationLng,
+		OnlineType onlineType, Category category,
 		String organizerEmail, String organizerPhoneNumber, HostChannel hostChannel) {
 		this.title = title;
 		this.description = description;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.bannerImageUrl = bannerImageUrl;
-		this.location = location;
+		this.address = address;
+		this.locationLat = locationLat;
+		this.locationLng = locationLng;
 		this.onlineType = onlineType;
 		this.category = category;
 		this.organizerEmail = organizerEmail;
@@ -113,7 +122,9 @@ public class Event extends BaseEntity {
 		this.startDate = request.getStartDate().atTime(LocalTime.parse(request.getStartTime()));
 		this.endDate = request.getEndDate().atTime(LocalTime.parse(request.getEndTime()));
 		this.bannerImageUrl = request.getBannerImageUrl();
-		this.location = request.getLocation();
+		this.address = request.getAddress();
+		this.locationLat = request.getLocation().get("lat");
+		this.locationLng = request.getLocation().get("lng");
 		this.onlineType = request.getOnlineType();
 		this.category = request.getCategory();
 		this.organizerEmail = request.getOrganizerEmail();
