@@ -103,7 +103,7 @@ public class HostChannelController {
 		return ApiResponse.onSuccess(hostChannelService.getParticipantManagement(eventId, tags, pageable));
 	}
 
-	@PostMapping("/dashboard/participant-management/approve")
+	@PutMapping("/dashboard/participant-management/approve")
 	public ApiResponse<?> approveOrderStatus(@RequestParam Long orderId) {
 		hostChannelService.approveOrderStatus(orderId);
 		return ApiResponse.onSuccess("주문 승인 완료");
