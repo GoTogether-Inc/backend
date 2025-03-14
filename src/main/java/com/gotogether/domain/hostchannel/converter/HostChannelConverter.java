@@ -41,7 +41,7 @@ public class HostChannelConverter {
 				.title(event.getTitle())
 				.hostChannelName(hostChannel.getName())
 				.startDate(event.getStartDate().toString())
-				.location(event.getLocation())
+				.address(event.getAddress())
 				.hashtags(
 					event.getHashtags().stream()
 						.map(Hashtag::getName)
