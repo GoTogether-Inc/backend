@@ -2,6 +2,7 @@ package com.gotogether.domain.hostchannel.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.channelorganizer.repository.ChannelOrganizerRepository;
+import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.hostchannel.converter.HostChannelConverter;
@@ -17,9 +19,16 @@ import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.entity.HostChannelStatus;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
+import com.gotogether.domain.order.entity.Order;
+import com.gotogether.domain.order.entity.OrderStatus;
+import com.gotogether.domain.order.repository.OrderRepository;
+import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -34,6 +43,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final HostChannelRepository hostChannelRepository;
 	private final ChannelOrganizerRepository channelOrganizerRepository;
 	private final UserRepository userRepository;
+	private final OrderRepository orderRepository;
+	private final TicketRepository ticketRepository;
 	private final EventRepository eventRepository;
 	private final EventFacade eventFacade;
 
@@ -124,6 +135,64 @@ public class HostChannelServiceImpl implements HostChannelService {
 			.toList();
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId,
+		String tags, Pageable pageable) {
+
+		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
+
+		List<Long> ticketIds = tickets.stream()
+			.map(Ticket::getId)
+			.collect(Collectors.toList());
+
+		Page<Order> orders;
+
+		if (tags.equals("approved")) {
+			orders = orderRepository.findByTicketIdInAndStatus(ticketIds, OrderStatus.COMPLETED, pageable);
+		} else if (tags.equals("pending")) {
+			orders = orderRepository.findByTicketIdInAndStatus(ticketIds, OrderStatus.PENDING, pageable);
+		} else {
+			orders = orderRepository.findByTicketIdInAndStatusNot(ticketIds, OrderStatus.CANCELED, pageable);
+		}
+
+		return orders.stream()
+			.map(HostChannelConverter::toParticipantManagementResponseDTO)
+			.toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public HostDashboardResponseDTO getHostDashboard(Long eventId) {
+		Event event = eventFacade.getEventById(eventId);
+
+		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
+
+		Long totalTicketCnt = 0L;
+		Long totalPrice = 0L;
+
+		for (Ticket ticket : tickets) {
+			List<Order> orders = orderRepository.findByTicketAndStatus(ticket, OrderStatus.COMPLETED);
+
+			totalTicketCnt += orders.size();
+			totalPrice += orders.size() * ticket.getPrice();
+		}
+
+		return HostChannelConverter.toHostDashboardResponseDTO(event, totalTicketCnt, totalPrice);
+	}
+
+	@Override
+	@Transactional
+	public void approveOrderStatus(Long orderId) {
+
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
+
+		validateOrderStatus(order.getStatus());
+
+		order.approveOrder();
+	}
+
 	private User getUser(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
@@ -151,7 +220,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 		long organizerCount = channelOrganizerRepository.countByHostChannel(hostChannel);
 
 		if (organizerCount > 1) {
-			throw new GeneralException(ErrorStatus._HOST_CHANNEL_DELETE_FAILED_EVENTS_EXIST);
+			throw new GeneralException(ErrorStatus._HOST_CHANNEL_DELETE_FAILED_MEMBERS_EXIST);
 		}
 	}
 
@@ -161,4 +230,13 @@ public class HostChannelServiceImpl implements HostChannelService {
 		}
 	}
 
+	private void validateOrderStatus(OrderStatus status) {
+
+		if (status == OrderStatus.COMPLETED) {
+			throw new GeneralException(ErrorStatus._ORDER_ALREADY_COMPLETED);
+		}
+		if (status == OrderStatus.CANCELED) {
+			throw new GeneralException(ErrorStatus._ORDER_ALREADY_CANCELED);
+		}
+	}
 }
