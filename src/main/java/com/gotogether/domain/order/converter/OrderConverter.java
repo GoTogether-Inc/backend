@@ -32,7 +32,7 @@ public class OrderConverter {
 			.title(order.getTicket().getEvent().getTitle())
 			.hostChannelName(order.getTicket().getEvent().getHostChannel().getName())
 			.startDate(order.getTicket().getEvent().getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-			.location(order.getTicket().getEvent().getLocation())
+			.eventAddress(order.getTicket().getEvent().getAddress())
 			.ticketName(order.getTicket().getName())
 			.ticketStatus(order.getStatus().name())
 			.remainDays(getDdayStatus(
@@ -65,7 +65,7 @@ public class OrderConverter {
 			.title(event.getTitle())
 			.hostChannelName(event.getHostChannel().getName())
 			.startDate(event.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-			.location(event.getLocation())
+			.eventAddress(event.getAddress())
 			.ticketName(order.getTicket().getName())
 			.ticketPrice(order.getTicket().getPrice())
 			.ticketStatus(order.getTicketQrCode().getStatus().name())
