@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
+import com.gotogether.domain.hostchannel.dto.request.OrderStatusRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
@@ -103,9 +105,9 @@ public class HostChannelController {
 		return ApiResponse.onSuccess(hostChannelService.getParticipantManagement(eventId, tags, pageable));
 	}
 
-	@PutMapping("/dashboard/participant-management/approve")
-	public ApiResponse<?> approveOrderStatus(@RequestParam Long orderId) {
-		hostChannelService.approveOrderStatus(orderId);
+	@PatchMapping("/dashboard/participant-management/approve")
+	public ApiResponse<?> approveOrderStatus(@RequestBody OrderStatusRequestDTO request) {
+		hostChannelService.approveOrderStatus(request.getOrderId());
 		return ApiResponse.onSuccess("주문 승인 완료");
 	}
 }
