@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.channelorganizer.repository.ChannelOrganizerRepository;
 import com.gotogether.domain.event.facade.EventFacade;
+import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.hostchannel.converter.HostChannelConverter;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
@@ -33,6 +34,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final HostChannelRepository hostChannelRepository;
 	private final ChannelOrganizerRepository channelOrganizerRepository;
 	private final UserRepository userRepository;
+	private final EventRepository eventRepository;
 	private final EventFacade eventFacade;
 
 	@Override
@@ -140,10 +142,16 @@ public class HostChannelServiceImpl implements HostChannelService {
 	}
 
 	private void validateHostChannelDelete(HostChannel hostChannel) {
+		long eventCount = eventRepository.countByHostChannel(hostChannel);
+
+		if (eventCount != 0) {
+			throw new GeneralException(ErrorStatus._HOST_CHANNEL_DELETE_FAILED_EVENTS_EXIST);
+		}
+
 		long organizerCount = channelOrganizerRepository.countByHostChannel(hostChannel);
 
 		if (organizerCount > 1) {
-			throw new GeneralException(ErrorStatus._HOST_CHANNEL_DELETE_FAILED_MEMBERS_EXIST);
+			throw new GeneralException(ErrorStatus._HOST_CHANNEL_DELETE_FAILED_EVENTS_EXIST);
 		}
 	}
 
