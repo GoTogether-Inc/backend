@@ -13,6 +13,7 @@ import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.channelorganizer.repository.ChannelOrganizerRepository;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.facade.EventFacade;
+import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.hostchannel.converter.HostChannelConverter;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
@@ -44,6 +45,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final UserRepository userRepository;
 	private final OrderRepository orderRepository;
 	private final TicketRepository ticketRepository;
+	private final EventRepository eventRepository;
 	private final EventFacade eventFacade;
 
 	@Override
@@ -209,6 +211,12 @@ public class HostChannelServiceImpl implements HostChannelService {
 	}
 
 	private void validateHostChannelDelete(HostChannel hostChannel) {
+		long eventCount = eventRepository.countByHostChannel(hostChannel);
+
+		if (eventCount != 0) {
+			throw new GeneralException(ErrorStatus._HOST_CHANNEL_DELETE_FAILED_EVENTS_EXIST);
+		}
+
 		long organizerCount = channelOrganizerRepository.countByHostChannel(hostChannel);
 
 		if (organizerCount > 1) {

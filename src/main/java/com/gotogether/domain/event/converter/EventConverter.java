@@ -3,6 +3,7 @@ package com.gotogether.domain.event.converter;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
@@ -25,7 +26,9 @@ public class EventConverter {
 			.startDate(request.getStartDate().atTime(LocalTime.parse(request.getStartTime())))
 			.endDate(request.getEndDate().atTime(LocalTime.parse(request.getEndTime())))
 			.bannerImageUrl(request.getBannerImageUrl())
-			.location(request.getLocation())
+			.address(request.getAddress())
+			.locationLat(request.getLocation().get("lat"))
+			.locationLng(request.getLocation().get("lng"))
 			.onlineType(request.getOnlineType())
 			.category(request.getCategory())
 			.organizerEmail(request.getOrganizerEmail())
@@ -51,7 +54,8 @@ public class EventConverter {
 			.endDate(event.getEndDate().format(DATE_FORMATTER))
 			.startTime(event.getStartDate().format(TIME_FORMATTER))
 			.endTime(event.getEndDate().format(TIME_FORMATTER))
-			.location(event.getLocation())
+			.address(event.getAddress())
+			.location(Map.of("lat", event.getLocationLat(), "lng", event.getLocationLng()))
 			.description(event.getDescription())
 			.hostChannelName(hostChannel.getName())
 			.hostChannelDescription(hostChannel.getDescription())
@@ -68,7 +72,7 @@ public class EventConverter {
 			.title(event.getTitle())
 			.hostChannelName(event.getHostChannel().getName())
 			.startDate(event.getStartDate().toLocalDate().format(DATE_FORMATTER))
-			.location(event.getLocation())
+			.address(event.getAddress())
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.collect(Collectors.toList()))

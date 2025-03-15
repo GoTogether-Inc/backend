@@ -1,6 +1,7 @@
 package com.gotogether.domain.event.dto.response;
 
 import java.util.List;
+import java.util.Map;
 
 import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 
@@ -18,7 +19,8 @@ public class EventDetailResponseDTO {
 	private String endDate;
 	private String startTime;
 	private String endTime;
-	private String location;
+	private String address;
+	private Map<String, Double> location;
 	private String description;
 	private String hostChannelName;
 	private String hostChannelDescription;

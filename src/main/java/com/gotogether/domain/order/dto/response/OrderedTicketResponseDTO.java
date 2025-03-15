@@ -12,7 +12,7 @@ public class OrderedTicketResponseDTO {
 	private String title;
 	private String hostChannelName;
 	private String startDate;
-	private String location;
+	private String eventAddress;
 	private String ticketName;
 	private String ticketStatus;
 	private String remainDays;
