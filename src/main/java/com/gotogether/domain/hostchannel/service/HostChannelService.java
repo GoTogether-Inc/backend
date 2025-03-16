@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostChannelInfoResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
@@ -19,6 +20,8 @@ public interface HostChannelService {
 	Page<HostChannelListResponseDTO> getHostChannels(Long userId, Pageable pageable);
 
 	HostChannelDetailResponseDTO getDetailHostChannel(Long hostChannelId);
+
+	HostChannelInfoResponseDTO getHostChannelInfo(Long hostChannelId);
 
 	Page<HostChannelListResponseDTO> searchHostChannels(String keyword, Pageable pageable);
 

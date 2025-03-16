@@ -17,6 +17,7 @@ import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.hostchannel.converter.HostChannelConverter;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostChannelInfoResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
@@ -91,6 +92,16 @@ public class HostChannelServiceImpl implements HostChannelService {
 		HostChannel hostChannel = eventFacade.getHostChannelById(hostChannelId);
 
 		return HostChannelConverter.toHostChannelDetailResponseDTO(hostChannel);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public HostChannelInfoResponseDTO getHostChannelInfo(Long hostChannelId) {
+		HostChannel hostChannel = eventFacade.getHostChannelById(hostChannelId);
+
+		List<HostChannelMemberResponseDTO> members = getMembers(hostChannelId);
+
+		return HostChannelConverter.toHostChannelInfoResponseDTO(hostChannel, members);
 	}
 
 	@Override
