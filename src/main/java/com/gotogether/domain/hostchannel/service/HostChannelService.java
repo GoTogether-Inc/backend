@@ -20,6 +20,8 @@ public interface HostChannelService {
 
 	HostChannelDetailResponseDTO getDetailHostChannel(Long hostChannelId);
 
+	Page<HostChannelListResponseDTO> searchHostChannels(String keyword, Pageable pageable);
+
 	void deleteHostChannel(Long hostChannelId);
 
 	HostChannel updateHostChannel(Long hostChannelId, HostChannelRequestDTO request);

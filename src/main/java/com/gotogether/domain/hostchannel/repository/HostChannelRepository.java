@@ -22,4 +22,9 @@ public interface HostChannelRepository extends JpaRepository<HostChannel, Long> 
 
 	@Query("SELECT h FROM HostChannel h " + "JOIN h.channelOrganizers co " + "WHERE h.name = :name AND co.user = :user")
 	Optional<HostChannel> findByNameAndUser(String name, User user);
+
+	@Query("SELECT h FROM HostChannel h " +
+		"WHERE (:keyword IS NOT NULL AND " +
+		"LOWER(TRIM(h.name)) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+	Page<HostChannel> findHostChannelByFilter(String keyword, Pageable pageable);
 }

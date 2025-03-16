@@ -94,6 +94,13 @@ public class HostChannelServiceImpl implements HostChannelService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public Page<HostChannelListResponseDTO> searchHostChannels(String keyword, Pageable pageable) {
+		Page<HostChannel> hostChannels = hostChannelRepository.findHostChannelByFilter(keyword, pageable);
+		return hostChannels.map(HostChannelConverter::toHostChannelListResponseDTO);
+	}
+
+	@Override
 	@Transactional
 	public void deleteHostChannel(Long hostChannelId) {
 		HostChannel hostChannel = eventFacade.getHostChannelById(hostChannelId);
