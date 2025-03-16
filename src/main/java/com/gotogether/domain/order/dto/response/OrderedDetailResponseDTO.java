@@ -11,7 +11,7 @@ public class OrderedDetailResponseDTO {
 	private String title;
 	private String hostChannelName;
 	private String startDate;
-	private String location;
+	private String eventAddress;
 	private String ticketName;
 	private int ticketPrice;
 	private String ticketStatus;

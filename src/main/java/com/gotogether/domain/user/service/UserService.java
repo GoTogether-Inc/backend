@@ -5,7 +5,7 @@ import com.gotogether.domain.user.dto.response.UserDetailResponseDTO;
 import com.gotogether.domain.user.entity.User;
 
 public interface UserService {
-	User createUser(UserRequestDTO request);
+	User updateUser(UserRequestDTO request);
 
 	UserDetailResponseDTO getDetailUser(Long userId);
 }

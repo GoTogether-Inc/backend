@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.constants.Constants;
+import com.gotogether.global.oauth.handler.CustomAuthenticationEntryPoint;
 import com.gotogether.global.oauth.handler.CustomFailureHandler;
 import com.gotogether.global.oauth.handler.CustomSuccessHandler;
 import com.gotogether.global.oauth.service.CustomOAuth2UserService;
@@ -89,7 +90,12 @@ public class SecurityConfig {
 					.userService(customOAuth2UserService))
 				.successHandler(customSuccessHandler)
 				.failureHandler(customFailureHandler)
+			)
+
+			.exceptionHandling(exception -> exception
+				.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 			);
+		;
 
 		http
 			.authorizeHttpRequests(registry ->

@@ -2,6 +2,7 @@ package com.gotogether.domain.event.dto.request;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,8 +48,11 @@ public class EventRequestDTO {
 	@JsonProperty("onlineType")
 	private OnlineType onlineType;
 
+	@JsonProperty("address")
+	private String address;
+
 	@JsonProperty("location")
-	private String location;
+	private Map<String, Double> location;
 
 	@JsonProperty("category")
 	private Category category;
