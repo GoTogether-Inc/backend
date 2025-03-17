@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.request.OrderStatusRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostChannelInfoResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
@@ -45,7 +46,7 @@ public class HostChannelController {
 	}
 
 	@GetMapping
-	public ApiResponse<List<HostChannelListResponseDTO>> getHostChannels(
+	public ApiResponse<List<HostChannelListResponseDTO>> getHostChannelsByUser(
 		@AuthUser Long userId,
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size) {
@@ -57,6 +58,21 @@ public class HostChannelController {
 	@GetMapping("/{hostChannelId}")
 	public ApiResponse<HostChannelDetailResponseDTO> getDetailHostChannel(@PathVariable Long hostChannelId) {
 		return ApiResponse.onSuccess(hostChannelService.getDetailHostChannel(hostChannelId));
+	}
+
+	@GetMapping("/{hostChannelId}/info")
+	public ApiResponse<HostChannelInfoResponseDTO> getHostChannelInfo(@PathVariable Long hostChannelId) {
+		return ApiResponse.onSuccess(hostChannelService.getHostChannelInfo(hostChannelId));
+	}
+
+	@GetMapping("/search")
+	public ApiResponse<List<HostChannelListResponseDTO>> getHostChannelsSearch(
+		@RequestParam(required = false) String keyword,
+		@RequestParam(value = "page", defaultValue = "0") int page,
+		@RequestParam(value = "size", defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<HostChannelListResponseDTO> hostChannels = hostChannelService.searchHostChannels(keyword, pageable);
+		return ApiResponse.onSuccess(hostChannels.getContent());
 	}
 
 	@PutMapping("/{hostChannelId}")

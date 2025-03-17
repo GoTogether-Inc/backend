@@ -9,6 +9,7 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
+import com.gotogether.domain.hostchannel.dto.response.HostChannelInfoResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelListResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
@@ -67,6 +68,19 @@ public class HostChannelConverter {
 			.hostChannelName(hostChannel.getName())
 			.channelDescription(hostChannel.getDescription())
 			.events(eventListResponseDTOList)
+			.build();
+	}
+
+	public static HostChannelInfoResponseDTO toHostChannelInfoResponseDTO(HostChannel hostChannel,
+		List<HostChannelMemberResponseDTO> members) {
+
+		return HostChannelInfoResponseDTO.builder()
+			.id(hostChannel.getId())
+			.profileImageUrl(hostChannel.getProfileImageUrl())
+			.hostChannelName(hostChannel.getName())
+			.channelDescription(hostChannel.getDescription())
+			.email(hostChannel.getEmail())
+			.hostChannelMembers(members)
 			.build();
 	}
 
