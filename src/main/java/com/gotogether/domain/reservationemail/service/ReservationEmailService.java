@@ -14,4 +14,6 @@ public interface ReservationEmailService {
 	ReservationEmail updateReservationEmail(Long reservationEmailId, ReservationEmailRequestDTO request);
 
 	void deleteReservationEmail(Long reservationEmailId);
+
+	void sendReservationEmail(Long reservationEmailId);
 }

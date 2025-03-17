@@ -1,5 +1,7 @@
 package com.gotogether.domain.reservationemail.service;
 
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,9 @@ import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.reservationemail.entity.ReservationEmailStatus;
 import com.gotogether.domain.reservationemail.facade.ReservationEmailFacade;
 import com.gotogether.domain.reservationemail.repository.ReservationEmailRepository;
+import com.gotogether.domain.reservationemail.scheduler.EmailScheduler;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +30,8 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 	private final ReservationEmailRepository reservationEmailRepository;
 	private final ReservationEmailFacade reservationEmailFacade;
 	private final EventFacade eventFacade;
+	private final EmailService mailService;
+	private final EmailScheduler emailScheduler;
 
 	@Override
 	@Transactional
@@ -32,6 +39,10 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 		Event event = eventFacade.getEventById(request.getEventId());
 		ReservationEmail reservationEmail = ReservationEmailConverter.of(request, event);
 		reservationEmailRepository.save(reservationEmail);
+
+		Date scheduleDate = Date.from(reservationEmail.getReservationDate().atZone(ZoneId.systemDefault()).toInstant());
+		emailScheduler.scheduleEmail(reservationEmail.getId(), scheduleDate);
+
 		return reservationEmail;
 	}
 
@@ -69,5 +80,21 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 	public void deleteReservationEmail(Long reservationEmailId) {
 		ReservationEmail reservationEmail = reservationEmailFacade.getReservationEmailById(reservationEmailId);
 		reservationEmailRepository.delete(reservationEmail);
+	}
+
+	@Override
+	@Transactional
+	public void sendReservationEmail(Long reservationEmailId) {
+		ReservationEmail reservationEmail = reservationEmailRepository.findById(reservationEmailId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._RESERVATION_EMAIL_NOT_FOUND));
+
+		mailService.sendEmail(
+			reservationEmail.getRecipients().toArray(new String[0]),
+			reservationEmail.getTitle(),
+			reservationEmail.getContent()
+		);
+
+		reservationEmail.markAsSent();
+		reservationEmailRepository.save(reservationEmail);
 	}
 }

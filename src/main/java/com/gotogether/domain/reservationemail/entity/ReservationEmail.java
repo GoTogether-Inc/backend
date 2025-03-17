@@ -1,6 +1,5 @@
 package com.gotogether.domain.reservationemail.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -9,7 +8,9 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.reservationemail.dto.request.ReservationEmailRequestDTO;
 import com.gotogether.global.common.entity.BaseEntity;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -18,8 +19,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.CollectionTable;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -57,7 +56,8 @@ public class ReservationEmail extends BaseEntity {
 	private ReservationEmailStatus status;
 
 	@Builder
-	public ReservationEmail(Event event, List<String> recipients, String title, String content, LocalDateTime reservationDate) {
+	public ReservationEmail(Event event, List<String> recipients, String title, String content,
+		LocalDateTime reservationDate) {
 		this.event = event;
 		this.recipients = recipients;
 		this.title = title;
@@ -74,7 +74,7 @@ public class ReservationEmail extends BaseEntity {
 		this.reservationDate = request.getReservationDate().atTime(LocalTime.parse(request.getReservationTime()));
 	}
 
-	public void updateStatus(ReservationEmailStatus status) {
-		this.status = status;
+	public void markAsSent() {
+		this.status = ReservationEmailStatus.SENT;
 	}
 }
