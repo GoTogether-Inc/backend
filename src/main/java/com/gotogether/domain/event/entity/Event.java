@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.gotogether.domain.alert.entity.Alert;
+import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
 import com.gotogether.domain.eventhashtag.entity.EventHashtag;
 import com.gotogether.domain.hashtag.entity.Hashtag;
@@ -90,7 +90,7 @@ public class Event extends BaseEntity {
 	private List<EventHashtag> eventHashtags;
 
 	@OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<Alert> alerts;
+	private List<ReservationEmail> reservationEmails;
 
 	@OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<ReferenceLink> referenceLinks;
