@@ -1,4 +1,4 @@
-package com.gotogether.domain.reservationemail.scheduler.job;
+package com.gotogether.global.scheduler.job;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -9,9 +9,7 @@ import com.gotogether.domain.reservationemail.service.ReservationEmailService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ReservationEmailJob extends QuartzJobBean {
