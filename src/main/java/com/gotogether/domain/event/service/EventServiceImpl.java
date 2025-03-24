@@ -3,7 +3,6 @@ package com.gotogether.domain.event.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.gotogether.domain.event.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,9 @@ import com.gotogether.domain.event.converter.EventConverter;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
 import com.gotogether.domain.event.dto.response.EventDetailResponseDTO;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
+import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.event.entity.EventStatus;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.eventhashtag.entity.EventHashtag;
@@ -24,6 +25,7 @@ import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 import com.gotogether.domain.referencelink.entity.ReferenceLink;
 import com.gotogether.domain.referencelink.repository.ReferenceLinkRepository;
+import com.gotogether.global.scheduler.EventScheduler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +38,7 @@ public class EventServiceImpl implements EventService {
 	private final HashtagRepository hashtagRepository;
 	private final EventHashtagRepository eventHashtagRepository;
 	private final EventFacade eventFacade;
+	private final EventScheduler eventScheduler;
 
 	@Override
 	@Transactional
@@ -53,6 +56,7 @@ public class EventServiceImpl implements EventService {
 			saveHashtags(event, request.getHashtags());
 		}
 
+		eventScheduler.scheduleUpdateEventStatus(event.getId(), event.getEndDate());
 		return event;
 	}
 
@@ -131,6 +135,13 @@ public class EventServiceImpl implements EventService {
 	public Page<EventListResponseDTO> getEventsByCategory(Category category, Pageable pageable) {
 		Page<Event> events = eventRepository.findByCategory(category, pageable);
 		return events.map(EventConverter::toEventListResponseDTO);
+	}
+
+	@Override
+	@Transactional
+	public void updateEventStatusToCompleted(Long eventId) {
+		Event event = eventFacade.getEventById(eventId);
+		event.updateStatus(EventStatus.COMPLETED);
 	}
 
 	private void saveHashtags(Event event, List<String> hashtags) {

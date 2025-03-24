@@ -1,12 +1,12 @@
 package com.gotogether.domain.event.service;
 
-import com.gotogether.domain.event.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
 import com.gotogether.domain.event.dto.response.EventDetailResponseDTO;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
+import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.Event;
 
 public interface EventService {
@@ -22,5 +22,7 @@ public interface EventService {
 
 	Page<EventListResponseDTO> searchEvents(String keyword, Pageable pageable);
 
-    Page<EventListResponseDTO> getEventsByCategory(Category category, Pageable pageable);
+	Page<EventListResponseDTO> getEventsByCategory(Category category, Pageable pageable);
+
+	void updateEventStatusToCompleted(Long eventId);
 }
