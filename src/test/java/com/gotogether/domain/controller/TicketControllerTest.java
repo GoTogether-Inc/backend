@@ -15,6 +15,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +26,8 @@ import com.gotogether.domain.ticket.dto.response.TicketListResponseDTO;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticket.service.TicketService;
+import com.gotogether.domain.user.dto.request.UserDTO;
+import com.gotogether.global.oauth.dto.CustomOAuth2User;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -41,6 +46,22 @@ class TicketControllerTest {
 
 	@BeforeEach
 	void setUp() {
+		UserDTO mockUserDTO = UserDTO.builder()
+			.id(1L)
+			.name("Test User")
+			.email("test@example.com")
+			.provider("google")
+			.providerId("123456789")
+			.build();
+
+		CustomOAuth2User customOAuth2User = new CustomOAuth2User(mockUserDTO);
+		UsernamePasswordAuthenticationToken authentication =
+			new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+
+		SecurityContext context = SecurityContextHolder.createEmptyContext();
+		context.setAuthentication(authentication);
+		SecurityContextHolder.setContext(context);
+		
 		ticket = Ticket.builder()
 			.name("Test Ticket")
 			.description("This is a test ticket.")
