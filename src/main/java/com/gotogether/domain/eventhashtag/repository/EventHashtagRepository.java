@@ -14,13 +14,25 @@ import com.gotogether.domain.hashtag.entity.Hashtag;
 
 @Repository
 public interface EventHashtagRepository extends JpaRepository<EventHashtag, Long> {
-	@Query("SELECT eh.hashtag FROM EventHashtag eh WHERE eh.event = :event")
+
+	@Query("""
+		SELECT eh.hashtag 
+		FROM EventHashtag eh
+		WHERE eh.event = :event
+		""")
 	List<Hashtag> findHashtagsByEvent(@Param("event") Event event);
 
-	@Query("SELECT COUNT(eh) FROM EventHashtag eh WHERE eh.hashtag = :hashtag")
+	@Query("""
+		SELECT COUNT(eh) 
+		FROM EventHashtag eh
+		WHERE eh.hashtag = :hashtag
+		""")
 	int countByHashtag(@Param("hashtag") Hashtag hashtag);
 
 	@Modifying
-	@Query("DELETE FROM EventHashtag eh WHERE eh.event = :event")
+	@Query("""
+		DELETE FROM EventHashtag eh
+		WHERE eh.event = :event
+		""")
 	void deleteByEvent(@Param("event") Event event);
 }

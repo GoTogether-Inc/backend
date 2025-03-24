@@ -14,21 +14,35 @@ import com.gotogether.domain.hostchannel.entity.HostChannel;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-	@Query("SELECT e FROM Event e WHERE e.endDate >= CURRENT_TIMESTAMP ORDER BY e.endDate ASC")
+	@Query("""
+		SELECT e FROM Event e
+		WHERE e.endDate >= CURRENT_TIMESTAMP
+		ORDER BY e.endDate ASC
+		""")
 	Page<Event> findDeadlineEvents(Pageable pageable);
 
-	@Query("SELECT e FROM Event e WHERE e.endDate >= CURRENT_TIMESTAMP ORDER BY e.createdAt DESC")
+	@Query("""
+		SELECT e FROM Event e
+		WHERE e.endDate >= CURRENT_TIMESTAMP
+		ORDER BY e.createdAt DESC
+		""")
 	Page<Event> findCurrentEvents(Pageable pageable);
 
-	@Query("SELECT e FROM Event e LEFT JOIN e.tickets t" +
-		" WHERE e.endDate >= CURRENT_TIMESTAMP GROUP BY e ORDER BY COUNT(t) DESC")
+	@Query("""
+		 SELECT e FROM Event e
+		 LEFT JOIN e.tickets t
+		 WHERE e.endDate >= CURRENT_TIMESTAMP
+		 GROUP BY e
+		 ORDER BY COUNT(t) DESC
+		""")
 	Page<Event> findPopularEvents(Pageable pageable);
 
-	@Query("SELECT e FROM Event e " +
-		"WHERE (:keyword IS NOT NULL AND " +
-		"LOWER(TRIM(e.title)) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-		"AND e.endDate >= CURRENT_TIMESTAMP " +
-		"ORDER BY e.createdAt DESC")
+	@Query("""
+		SELECT e FROM Event e
+		WHERE (:keyword IS NOT NULL AND LOWER(TRIM(e.title)) LIKE LOWER(CONCAT('%', :keyword, '%')))
+				AND e.endDate >= CURRENT_TIMESTAMP
+		ORDER BY e.createdAt DESC
+		""")
 	Page<Event> findEventsByFilter(@Param("keyword") String keyword, Pageable pageable);
 
 	Page<Event> findByCategory(Category category, Pageable pageable);

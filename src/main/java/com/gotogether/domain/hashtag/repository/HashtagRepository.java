@@ -10,5 +10,4 @@ import com.gotogether.domain.hashtag.entity.Hashtag;
 @Repository
 public interface HashtagRepository extends JpaRepository<Hashtag, Long> {
 	Optional<Hashtag> findByName(String name);
-
 }

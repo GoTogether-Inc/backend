@@ -1,5 +1,7 @@
 package com.gotogether.domain.bookmark.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,12 +11,16 @@ import com.gotogether.domain.bookmark.entity.Bookmark;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.user.entity.User;
 
-import java.util.List;
-
 @Repository
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
-    boolean existsByEventAndUser(Event event, User user);
+	boolean existsByEventAndUser(Event event, User user);
 
-    @Query("SELECT b FROM Bookmark b JOIN FETCH b.event e LEFT JOIN FETCH e.eventHashtags WHERE b.user.id = :userId")
-    List<Bookmark> findByUserId(@Param("userId") Long userId);
+	@Query("""
+		SELECT b
+		FROM Bookmark b
+		JOIN FETCH b.event e
+		LEFT JOIN FETCH e.eventHashtags
+		WHERE b.user.id = :userId
+		""")
+	List<Bookmark> findByUserId(@Param("userId") Long userId);
 }
