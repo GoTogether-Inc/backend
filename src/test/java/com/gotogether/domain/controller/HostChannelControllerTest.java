@@ -13,6 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +24,9 @@ import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseD
 import com.gotogether.domain.hostchannel.dto.response.HostChannelMemberResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.service.HostChannelService;
+import com.gotogether.domain.user.dto.request.UserDTO;
 import com.gotogether.domain.user.entity.User;
+import com.gotogether.global.oauth.dto.CustomOAuth2User;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,11 +45,21 @@ public class HostChannelControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		user = User.builder()
-			.name("test")
-			.phoneNumber("01012345678")
+		UserDTO mockUserDTO = UserDTO.builder()
+			.id(1L)
+			.name("Test User")
 			.email("test@example.com")
+			.provider("google")
+			.providerId("123456789")
 			.build();
+
+		CustomOAuth2User customOAuth2User = new CustomOAuth2User(mockUserDTO);
+		UsernamePasswordAuthenticationToken authentication =
+			new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+
+		SecurityContext context = SecurityContextHolder.createEmptyContext();
+		context.setAuthentication(authentication);
+		SecurityContextHolder.setContext(context);
 	}
 
 	@Test

@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,8 @@ class EventControllerTest {
 			.endTime(String.valueOf(LocalDateTime.now().plusHours(8).toLocalTime()))
 			.description("This is a test event")
 			.bannerImageUrl("http://example.com/banner.jpg")
-			.location("Test Location")
+			.address("Test Location")
+			.location(Map.of("Lat", 100.0, "Lng", 200.0))
 			.hashtags(List.of("test", "event"))
 			.organizerEmail("test@example.com")
 			.organizerPhoneNumber("010-1234-5678")
@@ -88,7 +90,9 @@ class EventControllerTest {
 			.startDate(LocalDateTime.now())
 			.endDate(LocalDateTime.now().plusDays(1))
 			.bannerImageUrl("http://example.com/banner.jpg")
-			.location("Test Location")
+			.address("Test Location")
+			.locationLat(100.0)
+			.locationLng(200.0)
 			.onlineType(OnlineType.ONLINE)
 			.category(Category.DEVELOPMENT_STUDY)
 			.organizerEmail("test@example.com")
@@ -109,7 +113,8 @@ class EventControllerTest {
 		verify(eventService, times(1)).createEvent(any(EventRequestDTO.class));
 	}
 
-	@Test // 호스트 채널 없을 때
+	@Test
+		// 호스트 채널 없을 때
 	void testCreateEvent_onFailure() throws Exception {
 		// GIVEN
 		EventRequestDTO request = EventRequestDTO.builder()
@@ -121,7 +126,8 @@ class EventControllerTest {
 			.endTime(String.valueOf(LocalDateTime.now().plusHours(8).toLocalTime()))
 			.description("This is a test event")
 			.bannerImageUrl("http://example.com/banner.jpg")
-			.location("Test Location")
+			.address("Test Location")
+			.location(Map.of("Lat", 100.0, "Lng", 200.0))
 			.hashtags(List.of("test", "event"))
 			.organizerEmail("test@example.com")
 			.organizerPhoneNumber("010-1234-5678")
@@ -157,7 +163,8 @@ class EventControllerTest {
 			.participantCount(100)
 			.startDate(String.valueOf(LocalDate.now()))
 			.endDate(String.valueOf(LocalDate.now().plusDays(1)))
-			.location("Test Location")
+			.address("Test Location")
+			.location(Map.of("Lat", 100.0, "Lng", 200.0))
 			.description("This is a test event")
 			.hostChannelName("Test Channel")
 			.hostChannelDescription("This is a test channel")
@@ -180,13 +187,14 @@ class EventControllerTest {
 			.andExpect(jsonPath("$.code").value("200"))
 			.andExpect(jsonPath("$.result.id").value(eventId))
 			.andExpect(jsonPath("$.result.title").value("Test Event"))
-			.andExpect(jsonPath("$.result.location").value("Test Location"))
+			.andExpect(jsonPath("$.result.address").value("Test Location"))
 			.andExpect(jsonPath("$.result.organizerEmail").value("test@example.com"))
 			.andExpect(jsonPath("$.result.referenceLinks[0].title").value("Test Site"))
 			.andExpect(jsonPath("$.result.referenceLinks[0].url").value("http://test.com"));
 	}
 
-	@Test // 이벤트 없을 때
+	@Test
+		// 이벤트 없을 때
 	void testGetDetailEvent_onFailure() throws Exception {
 		// GIVEN
 		Long eventId = 5L;
@@ -197,7 +205,8 @@ class EventControllerTest {
 			.participantCount(100)
 			.startDate(String.valueOf(LocalDate.now()))
 			.endDate(String.valueOf(LocalDate.now().plusDays(1)))
-			.location("Test Location")
+			.address("Test Location")
+			.location(Map.of("Lat", 100.0, "Lng", 200.0))
 			.description("This is a test event")
 			.hostChannelName("Test Channel")
 			.hostChannelDescription("This is a test channel")
@@ -241,7 +250,8 @@ class EventControllerTest {
 					.url("http://test.com")
 					.build()
 			))
-			.location("Updated Location")
+			.address("Test Location")
+			.location(Map.of("Lat", 100.0, "Lng", 200.0))
 			.onlineType(OnlineType.ONLINE)
 			.category(Category.CONFERENCE)
 			.hashtags(List.of("test", "event"))
@@ -255,7 +265,9 @@ class EventControllerTest {
 			.startDate(LocalDateTime.now())
 			.endDate(LocalDateTime.now().plusDays(1))
 			.bannerImageUrl("https://example.com/updated-banner.jpg")
-			.location("Updated Location")
+			.address("Updated Location")
+			.locationLat(100.0)
+			.locationLng(200.0)
 			.onlineType(OnlineType.ONLINE)
 			.category(Category.CONFERENCE)
 			.organizerEmail("test@example.com")
@@ -275,7 +287,8 @@ class EventControllerTest {
 		verify(eventService, times(1)).updateEvent(eq(eventId), any(EventRequestDTO.class));
 	}
 
-	@Test // 이벤트 없을 때
+	@Test
+		// 이벤트 없을 때
 	void testUpdateEvent_onFailure() throws Exception {
 		// GIVEN
 		Long eventId = 5L;
@@ -294,7 +307,8 @@ class EventControllerTest {
 					.url("http://test.com")
 					.build()
 			))
-			.location("Updated Location")
+			.address("Test Location")
+			.location(Map.of("Lat", 100.0, "Lng", 200.0))
 			.onlineType(OnlineType.ONLINE)
 			.category(Category.CONFERENCE)
 			.hashtags(List.of("test", "event"))
@@ -329,7 +343,8 @@ class EventControllerTest {
 			.andExpect(jsonPath("$.result").value("이벤트 삭제 성공"));
 	}
 
-	@Test // 이벤트 없을 때
+	@Test
+		// 이벤트 없을 때
 	void testDeleteEvent_onFailure() throws Exception {
 		// GIVEN
 		Long eventId = 5L;
@@ -354,14 +369,14 @@ class EventControllerTest {
 		EventListResponseDTO event1 = EventListResponseDTO.builder()
 			.id(1L)
 			.title("Event 1")
-			.location("Location 1")
+			.address("Location 1")
 			.startDate("2024-12-27")
 			.build();
 
 		EventListResponseDTO event2 = EventListResponseDTO.builder()
 			.id(2L)
 			.title("Event 2")
-			.location("Location 2")
+			.address("Location 2")
 			.startDate("2024-12-28")
 			.build();
 
@@ -395,14 +410,14 @@ class EventControllerTest {
 		EventListResponseDTO event1 = EventListResponseDTO.builder()
 			.id(1L)
 			.title("Test Event 1")
-			.location("Location 1")
+			.address("Location 1")
 			.startDate("2024-12-27")
 			.build();
 
 		EventListResponseDTO event2 = EventListResponseDTO.builder()
 			.id(2L)
 			.title("Test Event 2")
-			.location("Location 2")
+			.address("Location 2")
 			.startDate("2024-12-28")
 			.build();
 
