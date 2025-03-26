@@ -100,7 +100,6 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests(registry ->
 				registry
-					.requestMatchers("/**").permitAll()
 					.requestMatchers(Constants.NO_NEED_FILTER_URLS.toArray(String[]::new)).permitAll()
 					.anyRequest().authenticated()
 			);

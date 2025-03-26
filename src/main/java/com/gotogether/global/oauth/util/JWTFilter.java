@@ -35,8 +35,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
 		String authorizationHeader = request.getHeader("Authorization");
 
-		if (authorizationHeader == null || authorizationHeader.isBlank()) {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._AUTHORIZATION_HEADER_MISSING);
+		if (!jwtUtil.validateAuthorizationHeader(authorizationHeader)) {
+			filterChain.doFilter(request, response);
 			return;
 		}
 
