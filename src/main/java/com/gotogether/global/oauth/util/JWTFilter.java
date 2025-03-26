@@ -31,20 +31,19 @@ public class JWTFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws
-		ServletException, IOException {
+		FilterChain filterChain) throws ServletException, IOException {
 
 		String authorizationHeader = request.getHeader("Authorization");
 
-		if (!jwtUtil.validateAuthorizationHeader(authorizationHeader)) {
-			filterChain.doFilter(request, response);
+		if (authorizationHeader == null || authorizationHeader.isBlank()) {
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._AUTHORIZATION_HEADER_MISSING);
 			return;
 		}
 
 		String token = authorizationHeader.substring(7);
 
 		if (jwtUtil.isExpired(token)) {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._BAD_REQUEST);
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_EXPIRED);
 			return;
 		}
 

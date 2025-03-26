@@ -11,7 +11,11 @@ import org.springframework.stereotype.Component;
 
 import com.gotogether.global.oauth.dto.TokenDTO;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 
 @Component
 public class JWTUtil {
@@ -62,13 +66,29 @@ public class JWTUtil {
 	}
 
 	public Boolean isExpired(String token) {
-		return Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload()
-			.getExpiration()
-			.before(new Date());
+		try {
+			return Jwts.parser()
+				.verifyWith(secretKey)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload()
+				.getExpiration()
+				.before(new Date());
+		} catch (ExpiredJwtException e) {
+			return true;
+		} catch (MalformedJwtException e) {
+			System.out.println("Malformed JWT: " + e.getMessage());
+			return true;
+		} catch (SignatureException e) {
+			System.out.println("Invalid signature: " + e.getMessage());
+			return true;
+		} catch (JwtException e) {
+			System.out.println("JWT error: " + e.getMessage());
+			return true;
+		} catch (Exception e) {
+			System.out.println("Unexpected error: " + e.getMessage());
+			return true;
+		}
 	}
 
 	public String createJwt(String providerId, String role, String tokenType, Long expiredMs) {

@@ -16,6 +16,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON4000", "잘못된 요청"),
 	_INVALID_HEADER_ERROR(HttpStatus.BAD_REQUEST, "COMMON4001", "헤더 정보가 잘못되었습니다."),
 	_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON4002", "로그인이 필요합니다."),
+	_AUTHORIZATION_HEADER_MISSING(HttpStatus.BAD_REQUEST, "COMMON4004", "Authorization 헤더가 없습니다."),
 
 	_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER4001", "사용자가 없습니다."),
 
