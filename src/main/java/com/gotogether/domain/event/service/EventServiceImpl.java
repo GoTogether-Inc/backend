@@ -1,8 +1,5 @@
 package com.gotogether.domain.event.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,14 +14,9 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.entity.EventStatus;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.event.repository.EventRepository;
-import com.gotogether.domain.eventhashtag.entity.EventHashtag;
-import com.gotogether.domain.eventhashtag.repository.EventHashtagRepository;
-import com.gotogether.domain.hashtag.entity.Hashtag;
-import com.gotogether.domain.hashtag.repository.HashtagRepository;
+import com.gotogether.domain.hashtag.service.HashtagService;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
-import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
-import com.gotogether.domain.referencelink.entity.ReferenceLink;
-import com.gotogether.domain.referencelink.repository.ReferenceLinkRepository;
+import com.gotogether.domain.referencelink.service.ReferenceLinkService;
 import com.gotogether.global.scheduler.EventScheduler;
 
 import lombok.RequiredArgsConstructor;
@@ -34,9 +26,8 @@ import lombok.RequiredArgsConstructor;
 public class EventServiceImpl implements EventService {
 
 	private final EventRepository eventRepository;
-	private final ReferenceLinkRepository referenceLinkRepository;
-	private final HashtagRepository hashtagRepository;
-	private final EventHashtagRepository eventHashtagRepository;
+	private final HashtagService hashtagService;
+	private final ReferenceLinkService referenceLinkService;
 	private final EventFacade eventFacade;
 	private final EventScheduler eventScheduler;
 
@@ -48,12 +39,12 @@ public class EventServiceImpl implements EventService {
 
 		eventRepository.save(event);
 
-		if (request.getReferenceLinks() != null) {
-			saveReferenceLinks(event, request.getReferenceLinks());
+		if (!request.getReferenceLinks().isEmpty()) {
+			referenceLinkService.createReferenceLinks(event, request.getReferenceLinks());
 		}
 
-		if (request.getHashtags() != null) {
-			saveHashtags(event, request.getHashtags());
+		if (!request.getHashtags().isEmpty()) {
+			hashtagService.createHashtags(event, request.getHashtags());
 		}
 
 		eventScheduler.scheduleUpdateEventStatus(event.getId(), event.getEndDate());
@@ -77,14 +68,14 @@ public class EventServiceImpl implements EventService {
 
 		eventRepository.save(event);
 
-		if (request.getReferenceLinks() != null) {
-			referenceLinkRepository.deleteAll(event.getReferenceLinks());
-			saveReferenceLinks(event, request.getReferenceLinks());
+		if (!request.getReferenceLinks().isEmpty()) {
+			referenceLinkService.deleteAll(event.getReferenceLinks());
+			referenceLinkService.createReferenceLinks(event, request.getReferenceLinks());
 		}
 
-		if (request.getHashtags() != null) {
-			deleteUnusedHashtags(event, request.getHashtags());
-			saveHashtags(event, request.getHashtags());
+		if (!request.getHashtags().isEmpty()) {
+			hashtagService.deleteHashtagsByRequest(event, request.getHashtags());
+			hashtagService.createHashtags(event, request.getHashtags());
 		}
 
 		return event;
@@ -94,16 +85,7 @@ public class EventServiceImpl implements EventService {
 	@Transactional
 	public void deleteEvent(Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
-
-		List<Hashtag> existingHashtags = eventHashtagRepository.findHashtagsByEvent(event);
-
-		eventHashtagRepository.deleteByEvent(event);
-
-		for (Hashtag hashtag : existingHashtags) {
-			if (eventHashtagRepository.countByHashtag(hashtag) == 0) {
-				hashtagRepository.delete(hashtag);
-			}
-		}
+		hashtagService.deleteHashtagsByEvent(event);
 
 		eventRepository.delete(event);
 	}
@@ -142,63 +124,5 @@ public class EventServiceImpl implements EventService {
 	public void updateEventStatusToCompleted(Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
 		event.updateStatus(EventStatus.COMPLETED);
-	}
-
-	private void saveHashtags(Event event, List<String> hashtags) {
-		List<EventHashtag> eventHashtags = hashtags.stream().map(hashtag -> {
-
-			String normalizeHashtag = normalizeHashtag(hashtag);
-
-			Hashtag existingHashtag = hashtagRepository.findByName(normalizeHashtag)
-				.orElseGet(() ->
-					hashtagRepository.save(Hashtag.builder()
-						.name(normalizeHashtag)
-						.build()));
-
-			return EventHashtag.builder()
-				.event(event)
-				.hashtag(existingHashtag)
-				.build();
-
-		}).collect(Collectors.toList());
-
-		eventHashtagRepository.saveAll(eventHashtags);
-	}
-
-	private void saveReferenceLinks(Event event, List<ReferenceLinkDTO> referenceLinks) {
-		List<ReferenceLink> referenceLinkList = referenceLinks.stream()
-			.map(link -> ReferenceLink.builder()
-				.event(event)
-				.name(link.getTitle())
-				.toGoUrl(link.getUrl())
-				.build())
-			.collect(Collectors.toList());
-
-		referenceLinkRepository.saveAll(referenceLinkList);
-	}
-
-	private void deleteUnusedHashtags(Event event, List<String> hashtags) {
-		List<Hashtag> existingHashtags = eventHashtagRepository.findHashtagsByEvent(event);
-
-		List<Hashtag> unUsedHashtags = existingHashtags.stream()
-			.filter(existingHashtag -> hashtags.stream()
-				.noneMatch(hashtag -> normalizeHashtag(hashtag).equals(existingHashtag.getName())))
-			.toList();
-
-		for (Hashtag hashtag : unUsedHashtags) {
-			if (eventHashtagRepository.countByHashtag(hashtag) == 1) {
-				hashtagRepository.delete(hashtag);
-			}
-		}
-
-		eventHashtagRepository.deleteByEvent(event);
-	}
-
-	private String normalizeHashtag(String hashtag) {
-		if (hashtag == null) {
-			return null;
-		}
-
-		return hashtag.replaceAll("\\s+", "").toLowerCase();
 	}
 }
