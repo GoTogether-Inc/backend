@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
+import com.gotogether.global.common.dto.S3UrlResponseDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,13 +21,18 @@ public class FileUploadService {
 
 	private final AmazonS3 amazonS3;
 
-	public String generatePreSignUrl(String filePath,
+	public S3UrlResponseDTO generatePreSignUrl(String filePath,
 		HttpMethod httpMethod) {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		calendar.add(Calendar.MINUTE, 10);
-		return amazonS3.generatePresignedUrl(bucketName, filePath, calendar.getTime(), httpMethod).toString();
+
+		String url = amazonS3.generatePresignedUrl(bucketName, filePath, calendar.getTime(), httpMethod).toString();
+
+		return S3UrlResponseDTO.builder()
+			.presignedUrl(url)
+			.build();
 
 	}
 }
