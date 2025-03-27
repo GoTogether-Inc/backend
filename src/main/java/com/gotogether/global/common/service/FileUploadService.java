@@ -31,7 +31,7 @@ public class FileUploadService {
 		String url = amazonS3.generatePresignedUrl(bucketName, filePath, calendar.getTime(), httpMethod).toString();
 
 		return S3UrlResponseDTO.builder()
-			.presignedUrl(url)
+			.preSignedUrl(url)
 			.build();
 
 	}

@@ -6,5 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class S3UrlResponseDTO {
-	private String presignedUrl;
+	private String preSignedUrl;
 }
+
+
