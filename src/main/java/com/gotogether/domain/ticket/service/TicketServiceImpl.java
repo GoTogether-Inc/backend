@@ -11,9 +11,11 @@ import com.gotogether.domain.ticket.converter.TicketConverter;
 import com.gotogether.domain.ticket.dto.request.TicketRequestDTO;
 import com.gotogether.domain.ticket.dto.response.TicketListResponseDTO;
 import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.scheduler.EventScheduler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,7 @@ public class TicketServiceImpl implements TicketService {
 
 	private final TicketRepository ticketRepository;
 	private final EventFacade eventFacade;
+	private final EventScheduler eventScheduler;
 
 	@Override
 	@Transactional
@@ -31,6 +34,9 @@ public class TicketServiceImpl implements TicketService {
 		Ticket ticket = TicketConverter.of(request, event);
 
 		ticketRepository.save(ticket);
+
+		eventScheduler.scheduleUpdateTicketStatus(ticket.getId(), ticket.getEndDate());
+
 		return ticket;
 	}
 
@@ -49,6 +55,13 @@ public class TicketServiceImpl implements TicketService {
 	public void deleteTicket(Long ticketId) {
 		Ticket ticket = getTicketById(ticketId);
 		ticketRepository.delete(ticket);
+	}
+
+	@Override
+	@Transactional
+	public void updateTicketStatusToCompleted(Long ticketId) {
+		Ticket ticket = getTicketById(ticketId);
+		ticket.updateStatus(TicketStatus.CLOSE);
 	}
 
 	private Ticket getTicketById(Long ticketId) {

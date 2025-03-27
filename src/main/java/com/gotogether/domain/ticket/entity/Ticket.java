@@ -57,9 +57,13 @@ public class Ticket extends BaseEntity {
 	@Column(name = "type", nullable = false)
 	private TicketType type;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status", nullable = false)
+	private TicketStatus status;
+
 	@Builder
 	public Ticket(Event event, String name, int price, String description, int availableQuantity,
-		LocalDateTime startDate, LocalDateTime endDate, TicketType type) {
+		LocalDateTime startDate, LocalDateTime endDate, TicketType type, TicketStatus status) {
 		this.event = event;
 		this.name = name;
 		this.price = price;
@@ -68,6 +72,7 @@ public class Ticket extends BaseEntity {
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.type = type;
+		this.status = status;
 	}
 
 	public void decreaseAvailableQuantity() {
@@ -76,5 +81,9 @@ public class Ticket extends BaseEntity {
 
 	public void increaseAvailableQuantity() {
 		this.availableQuantity++;
+	}
+
+	public void updateStatus(TicketStatus status) {
+		this.status = status;
 	}
 }

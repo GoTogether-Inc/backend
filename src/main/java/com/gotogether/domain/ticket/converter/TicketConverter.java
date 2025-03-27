@@ -6,6 +6,7 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.ticket.dto.request.TicketRequestDTO;
 import com.gotogether.domain.ticket.dto.response.TicketListResponseDTO;
 import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.ticket.entity.TicketStatus;
 
 public class TicketConverter {
 
@@ -19,6 +20,7 @@ public class TicketConverter {
 			.availableQuantity(request.getAvailableQuantity())
 			.startDate(request.getStartDate().atTime(LocalTime.parse(request.getStartTime())))
 			.endDate(request.getEndDate().atTime(LocalTime.parse(request.getEndTime())))
+			.status(TicketStatus.OPEN)
 			.build();
 	}
 

@@ -1,7 +1,5 @@
 package com.gotogether.domain.reservationemail.service;
 
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,9 +15,9 @@ import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.reservationemail.entity.ReservationEmailStatus;
 import com.gotogether.domain.reservationemail.facade.ReservationEmailFacade;
 import com.gotogether.domain.reservationemail.repository.ReservationEmailRepository;
-import com.gotogether.domain.reservationemail.scheduler.EmailScheduler;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.scheduler.EventScheduler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +29,7 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 	private final ReservationEmailFacade reservationEmailFacade;
 	private final EventFacade eventFacade;
 	private final EmailService mailService;
-	private final EmailScheduler emailScheduler;
+	private final EventScheduler eventScheduler;
 
 	@Override
 	@Transactional
@@ -40,8 +38,7 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 		ReservationEmail reservationEmail = ReservationEmailConverter.of(request, event);
 		reservationEmailRepository.save(reservationEmail);
 
-		Date scheduleDate = Date.from(reservationEmail.getReservationDate().atZone(ZoneId.systemDefault()).toInstant());
-		emailScheduler.scheduleEmail(reservationEmail.getId(), scheduleDate);
+		eventScheduler.scheduleEmail(reservationEmail.getId(), reservationEmail.getReservationDate());
 
 		return reservationEmail;
 	}

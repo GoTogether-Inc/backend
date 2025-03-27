@@ -31,8 +31,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws
-		ServletException, IOException {
+		FilterChain filterChain) throws ServletException, IOException {
 
 		String authorizationHeader = request.getHeader("Authorization");
 
@@ -44,7 +43,7 @@ public class JWTFilter extends OncePerRequestFilter {
 		String token = authorizationHeader.substring(7);
 
 		if (jwtUtil.isExpired(token)) {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._BAD_REQUEST);
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_EXPIRED);
 			return;
 		}
 

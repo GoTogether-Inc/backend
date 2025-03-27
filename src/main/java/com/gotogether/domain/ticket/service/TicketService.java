@@ -13,4 +13,6 @@ public interface TicketService {
 	List<TicketListResponseDTO> getTickets(Long userId);
 
 	void deleteTicket(Long ticketId);
+
+	void updateTicketStatusToCompleted(Long ticketId);
 }

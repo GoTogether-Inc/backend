@@ -1,7 +1,8 @@
 package com.gotogether.domain.order.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
@@ -44,17 +46,11 @@ public class OrderServiceImpl implements OrderService {
 
 		int ticketCnt = request.getTicketCnt();
 		checkTicketAvailableQuantity(ticket, ticketCnt);
+		checkTicketStatus(ticket);
 
-		List<Order> orders = new ArrayList<>();
-
-		for (int i = 0; i < ticketCnt; i++) {
-
-			Order order = createTicketOrder(user, ticket, event);
-
-			orders.add(order);
-		}
-
-		return orders;
+		return IntStream.range(0, ticketCnt)
+			.mapToObj(i -> createTicketOrder(user, ticket, event))
+			.collect(Collectors.toList());
 	}
 
 	//TODO 정렬 리펙토링
@@ -117,6 +113,12 @@ public class OrderServiceImpl implements OrderService {
 	private void checkTicketAvailableQuantity(Ticket ticket, int ticketCnt) {
 		if (ticket.getAvailableQuantity() < ticketCnt) {
 			throw new GeneralException(ErrorStatus._TICKET_NOT_ENOUGH);
+		}
+	}
+
+	private void checkTicketStatus(Ticket ticket) {
+		if (ticket.getStatus() == TicketStatus.CLOSE) {
+			throw new GeneralException(ErrorStatus._TICKET_ALREADY_CLOSED);
 		}
 	}
 
