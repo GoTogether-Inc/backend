@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amazonaws.HttpMethod;
 import com.gotogether.global.apipayload.ApiResponse;
+import com.gotogether.global.common.dto.S3UrlResponseDTO;
 import com.gotogether.global.common.service.FileUploadService;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class FileUploadController {
 	private final FileUploadService fileUploadService;
 
 	@GetMapping("/generate-presigned-url")
-	public ApiResponse<?> generatePresignedUrl(@RequestParam String fileName) {
+	public ApiResponse<S3UrlResponseDTO> generatePresignedUrl(@RequestParam String fileName) {
 		return ApiResponse.onSuccess(
 			fileUploadService.generatePreSignUrl(UUID.randomUUID() + fileName, HttpMethod.PUT));
 	}
