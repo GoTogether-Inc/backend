@@ -29,7 +29,7 @@ public class QuartzJobScheduler implements EventScheduler {
 		String jobDataKey, Long id, Date startTime) {
 		try {
 			JobDetail jobDetail = createJobDetail(jobClass, jobIdentity, jobDataKey, id);
-			Trigger trigger = createTrigger(triggerIdentity, startTime);
+			Trigger trigger = createTrigger(triggerIdentity, id, startTime);
 
 			scheduler.scheduleJob(jobDetail, trigger);
 		} catch (SchedulerException e) {
@@ -46,9 +46,9 @@ public class QuartzJobScheduler implements EventScheduler {
 			.build();
 	}
 
-	private Trigger createTrigger(String triggerIdentity, Date startTime) {
+	private Trigger createTrigger(String triggerIdentity, Long id, Date startTime) {
 		return TriggerBuilder.newTrigger()
-			.withIdentity(triggerIdentity)
+			.withIdentity(triggerIdentity + "-" + id)
 			.startAt(startTime)
 			.withSchedule(SimpleScheduleBuilder.simpleSchedule()
 				.withMisfireHandlingInstructionFireNow())
