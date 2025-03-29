@@ -54,6 +54,7 @@ public class TicketServiceImpl implements TicketService {
 	@Transactional
 	public void deleteTicket(Long ticketId) {
 		Ticket ticket = getTicketById(ticketId);
+		eventScheduler.deleteScheduledTicketJob(ticketId);
 		ticketRepository.delete(ticket);
 	}
 

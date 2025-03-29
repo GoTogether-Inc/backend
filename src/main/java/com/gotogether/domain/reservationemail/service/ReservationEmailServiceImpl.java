@@ -76,6 +76,7 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 	@Transactional
 	public void deleteReservationEmail(Long reservationEmailId) {
 		ReservationEmail reservationEmail = reservationEmailFacade.getReservationEmailById(reservationEmailId);
+		eventScheduler.deleteScheduledEmailJob(reservationEmailId);
 		reservationEmailRepository.delete(reservationEmail);
 	}
 

@@ -87,6 +87,7 @@ public class EventServiceImpl implements EventService {
 		Event event = eventFacade.getEventById(eventId);
 		hashtagService.deleteHashtagsByEvent(event);
 
+		eventScheduler.deleteScheduledEventJob(eventId);
 		eventRepository.delete(event);
 	}
 
