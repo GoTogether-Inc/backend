@@ -193,7 +193,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 			List<Order> orders = orderRepository.findByTicketAndStatus(ticket, OrderStatus.COMPLETED);
 
 			totalTicketCnt += orders.size();
-			totalPrice += orders.size() * ticket.getPrice();
+			totalPrice += (long)orders.size() * ticket.getPrice();
 		}
 
 		return HostChannelConverter.toHostDashboardResponseDTO(event, totalTicketCnt, totalPrice);
