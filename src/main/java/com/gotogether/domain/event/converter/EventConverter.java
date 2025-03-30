@@ -62,6 +62,14 @@ public class EventConverter {
 			.organizerEmail(event.getOrganizerEmail())
 			.organizerPhoneNumber(event.getOrganizerPhoneNumber())
 			.referenceLinks(links)
+			.category(String.valueOf(event.getCategory()))
+			.onlineType(String.valueOf(event.getOnlineType()))
+			.status(String.valueOf(event.getStatus()))
+
+			.hashtags(event.getHashtags().stream()
+				.map(Hashtag::getName)
+				.collect(Collectors.toList()))
+
 			.build();
 	}
 
