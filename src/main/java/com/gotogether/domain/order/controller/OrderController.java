@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
-import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
+import com.gotogether.domain.order.dto.response.OrderDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.service.OrderService;
@@ -53,7 +53,7 @@ public class OrderController {
 	}
 
 	@GetMapping("/{orderId}")
-	public ApiResponse<OrderedDetailResponseDTO> getDetailOrder(@AuthUser Long userId,
+	public ApiResponse<OrderDetailResponseDTO> getDetailOrder(@AuthUser Long userId,
 		@PathVariable Long orderId) {
 		return ApiResponse.onSuccess(orderService.getDetailOrder(userId, orderId));
 	}

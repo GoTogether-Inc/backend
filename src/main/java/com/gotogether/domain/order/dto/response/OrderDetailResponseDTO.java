@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class OrderedDetailResponseDTO {
+public class OrderDetailResponseDTO {
 	private Long id;
 	private String ticketQrCode;
 	private String title;
@@ -14,6 +14,6 @@ public class OrderedDetailResponseDTO {
 	private String eventAddress;
 	private String ticketName;
 	private int ticketPrice;
-	private String ticketStatus;
+	private String orderStatus;
 	private String remainDays;
 }
