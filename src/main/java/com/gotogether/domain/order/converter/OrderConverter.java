@@ -2,11 +2,13 @@ package com.gotogether.domain.order.converter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import com.gotogether.domain.event.entity.Event;
-import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
+import com.gotogether.domain.hashtag.entity.Hashtag;
+import com.gotogether.domain.order.dto.response.OrderDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
@@ -32,9 +34,17 @@ public class OrderConverter {
 			.title(order.getTicket().getEvent().getTitle())
 			.hostChannelName(order.getTicket().getEvent().getHostChannel().getName())
 			.startDate(order.getTicket().getEvent().getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-			.eventAddress(order.getTicket().getEvent().getAddress())
+			.address(order.getTicket().getEvent().getAddress())
+
+			.hashtags(order.getTicket().getEvent().getHashtags().stream()
+				.map(Hashtag::getName)
+				.collect(Collectors.toList()))
+
+			.ticketQrCode(order.getTicketQrCode().getQrCodeImageUrl())
 			.ticketName(order.getTicket().getName())
-			.ticketStatus(order.getStatus().name())
+			.orderStatus(order.getStatus().name())
+			.isCheckIn(order.getTicketQrCode().getStatus().isCheckIn())
+
 			.remainDays(getDdayStatus(
 				LocalDate.from(order.getTicket().getEvent().getStartDate()),
 				LocalDate.from(order.getTicket().getEvent().getEndDate())))
@@ -57,9 +67,9 @@ public class OrderConverter {
 		}
 	}
 
-	public static OrderedDetailResponseDTO toOrderedDetailResponseDTO(
+	public static OrderDetailResponseDTO toOrderedDetailResponseDTO(
 		Order order, Event event, Ticket ticket) {
-		return OrderedDetailResponseDTO.builder()
+		return OrderDetailResponseDTO.builder()
 			.id(order.getId())
 			.ticketQrCode(order.getTicketQrCode().getQrCodeImageUrl())
 			.title(event.getTitle())
@@ -68,7 +78,7 @@ public class OrderConverter {
 			.eventAddress(event.getAddress())
 			.ticketName(order.getTicket().getName())
 			.ticketPrice(order.getTicket().getPrice())
-			.ticketStatus(order.getTicketQrCode().getStatus().name())
+			.orderStatus(order.getTicketQrCode().getStatus().name())
 			.remainDays(getDdayStatus(
 				LocalDate.from(event.getStartDate()),
 				LocalDate.from(event.getEndDate())))

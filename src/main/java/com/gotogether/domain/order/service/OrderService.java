@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
-import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
+import com.gotogether.domain.order.dto.response.OrderDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 
@@ -15,7 +15,7 @@ public interface OrderService {
 
 	Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable);
 
-	OrderedDetailResponseDTO getDetailOrder(Long userId, Long orderId);
+	OrderDetailResponseDTO getDetailOrder(Long userId, Long orderId);
 
 	void cancelOrder(Long userId, Long orderId);
 }

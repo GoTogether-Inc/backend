@@ -1,5 +1,7 @@
 package com.gotogether.domain.order.dto.response;
 
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,8 +14,12 @@ public class OrderedTicketResponseDTO {
 	private String title;
 	private String hostChannelName;
 	private String startDate;
-	private String eventAddress;
+	private String address;
+	private List<String> hashtags;
+	private String ticketQrCode;
 	private String ticketName;
-	private String ticketStatus;
+	private int ticketPrice;
+	private String orderStatus;
+	private boolean isCheckIn;
 	private String remainDays;
 }
