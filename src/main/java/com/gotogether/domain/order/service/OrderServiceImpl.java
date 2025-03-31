@@ -13,7 +13,7 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.converter.OrderConverter;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
-import com.gotogether.domain.order.dto.response.OrderedDetailResponseDTO;
+import com.gotogether.domain.order.dto.response.OrderDetailResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public OrderedDetailResponseDTO getDetailOrder(Long userId, Long orderId) {
+	public OrderDetailResponseDTO getDetailOrder(Long userId, Long orderId) {
 		User user = eventFacade.getUserById(userId);
 
 		Order order = orderRepository.findById(orderId)

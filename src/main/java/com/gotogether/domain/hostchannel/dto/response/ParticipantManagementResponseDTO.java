@@ -14,5 +14,5 @@ public class ParticipantManagementResponseDTO {
 	private String purchaseDate;
 	private String ticketName;
 	private boolean isCheckedIn;
-	private boolean isApproved;
+	private String orderStatus;
 }

@@ -16,8 +16,6 @@ import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.order.entity.Order;
-import com.gotogether.domain.order.entity.OrderStatus;
-import com.gotogether.domain.ticketqrcode.entity.TicketStatus;
 
 public class HostChannelConverter {
 
@@ -100,9 +98,8 @@ public class HostChannelConverter {
 			.phoneNumber(order.getUser().getPhoneNumber())
 			.purchaseDate(order.getCreatedAt().format(DATE_FORMATTER))
 			.ticketName(order.getTicket().getName())
-			.isCheckedIn(
-				order.getTicketQrCode() != null && TicketStatus.USED.equals(order.getTicketQrCode().getStatus()))
-			.isApproved(order.getStatus() != null && order.getStatus().equals(OrderStatus.COMPLETED))
+			.isCheckedIn(order.getTicketQrCode().getStatus().isCheckIn())
+			.orderStatus(order.getStatus().name())
 			.build();
 	}
 
