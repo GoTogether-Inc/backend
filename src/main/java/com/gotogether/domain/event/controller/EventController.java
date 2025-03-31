@@ -1,5 +1,6 @@
 package com.gotogether.domain.event.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import com.gotogether.domain.event.dto.response.EventDetailResponseDTO;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.event.service.EventSearchService;
 import com.gotogether.domain.event.service.EventService;
 import com.gotogether.global.apipayload.ApiResponse;
 
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class EventController {
 
 	private final EventService eventService;
+	private final EventSearchService eventSearchService;
 
 	@PostMapping
 	public ApiResponse<?> createEvent(@RequestBody EventRequestDTO request) {
@@ -74,6 +77,11 @@ public class EventController {
 		Pageable pageable = PageRequest.of(page, size);
 		Page<EventListResponseDTO> events = eventService.searchEvents(keyword, pageable);
 		return ApiResponse.onSuccess(events.getContent());
+	}
+
+	@GetMapping("/search/popular-keywords")
+	public ApiResponse<List<String>> getPopularKeywords() throws IOException {
+		return ApiResponse.onSuccess(eventSearchService.getPopularKeywords());
 	}
 
 	@GetMapping("/categories")

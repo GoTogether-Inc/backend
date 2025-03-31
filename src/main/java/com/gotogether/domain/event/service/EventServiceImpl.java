@@ -28,6 +28,7 @@ public class EventServiceImpl implements EventService {
 	private final EventRepository eventRepository;
 	private final HashtagService hashtagService;
 	private final ReferenceLinkService referenceLinkService;
+	private final EventSearchService eventSearchService;
 	private final EventFacade eventFacade;
 	private final EventScheduler eventScheduler;
 
@@ -110,6 +111,11 @@ public class EventServiceImpl implements EventService {
 	@Transactional(readOnly = true)
 	public Page<EventListResponseDTO> searchEvents(String keyword, Pageable pageable) {
 		Page<Event> events = eventRepository.findEventsByFilter(keyword, pageable);
+
+		if (!events.isEmpty()) {
+			eventSearchService.saveSearchKeyword(keyword);
+		}
+
 		return events.map(EventConverter::toEventListResponseDTO);
 	}
 
