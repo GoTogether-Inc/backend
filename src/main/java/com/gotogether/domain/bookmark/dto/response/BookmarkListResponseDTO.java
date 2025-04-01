@@ -8,6 +8,9 @@ import lombok.Getter;
 @Getter
 @Builder
 public class BookmarkListResponseDTO {
+	/**
+	 * 미사용
+	 */
 	private Long eventId;
 	private String eventTitle;
 	private String eventBanner;
