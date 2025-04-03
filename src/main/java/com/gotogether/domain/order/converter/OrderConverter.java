@@ -1,13 +1,14 @@
 package com.gotogether.domain.order.converter;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
-import com.gotogether.domain.order.dto.response.OrderDetailResponseDTO;
+import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
@@ -60,22 +61,22 @@ public class OrderConverter {
 			.build();
 	}
 
-	public static OrderDetailResponseDTO toOrderedDetailResponseDTO(
-		Order order, Event event, Ticket ticket) {
-		return OrderDetailResponseDTO.builder()
+	public static OrderInfoResponseDTO toOrderInfoResponseDTO(
+		Order order, Event event, int ticketCnt) {
+		return OrderInfoResponseDTO.builder()
 			.id(order.getId())
-			.ticketQrCode(order.getTicketQrCode().getQrCodeImageUrl())
 			.title(event.getTitle())
-			.hostChannelName(event.getHostChannel().getName())
 			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
-			.eventAddress(event.getAddress())
+			.startTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
 			.ticketName(order.getTicket().getName())
-			.ticketPrice(order.getTicket().getPrice())
-			.orderStatus(order.getTicketQrCode().getStatus().name())
-
-			.remainDays(DateUtil.getDdayStatus(
-				LocalDate.from(event.getStartDate()),
-				LocalDate.from(event.getEndDate())))
+			.ticketCnt(ticketCnt)
+			.hostChannelName(event.getHostChannel().getName())
+			.hostChannelDescription(event.getHostChannel().getDescription())
+			.organizerEmail(event.getOrganizerEmail())
+			.organizerPhoneNumber(event.getOrganizerPhoneNumber())
+			.eventAddress(event.getAddress())
+			.location(Map.of("lat", event.getLocationLat(), "lng", event.getLocationLng()))
+			.orderStatus(order.getStatus().name())
 			.build();
 	}
 }
