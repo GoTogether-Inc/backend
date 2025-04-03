@@ -1,12 +1,14 @@
 package com.gotogether.domain.bookmark.converter;
 
-import java.util.stream.Collectors;
+import java.time.LocalDate;
 
-import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDTO;
 import com.gotogether.domain.bookmark.entity.Bookmark;
+import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.user.entity.User;
+import com.gotogether.global.util.DateFormatterUtil;
+import com.gotogether.global.util.DateUtil;
 
 public class BookmarkConverter {
 
@@ -17,19 +19,26 @@ public class BookmarkConverter {
 			.build();
 	}
 
-	public static BookmarkListResponseDTO toBookmarkListResponseDTO(Bookmark bookmark) {
+	public static EventListResponseDTO toEventListResponseDTO(Bookmark bookmark) {
 		Event event = bookmark.getEvent();
 
-		return BookmarkListResponseDTO.builder()
-			.eventId(event.getId())
-			.eventTitle(event.getTitle())
-			.eventBanner(event.getBannerImageUrl())
+		return EventListResponseDTO.builder()
+			.id(event.getId())
+			.bannerImageUrl(event.getBannerImageUrl())
+			.title(event.getTitle())
 			.hostChannelName(event.getHostChannel().getName())
-			.eventStartDate(event.getStartDate().toString())
-			.eventAddress(event.getAddress())
-			.eventHashtags(event.getHashtags().stream()
+			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
+			.address(event.getAddress())
+			.onlineType(String.valueOf(event.getOnlineType()))
+
+			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
-				.collect(Collectors.toList()))
+				.toList()
+			)
+
+			.remainDays(DateUtil.getDdayStatus(
+				LocalDate.from(event.getStartDate()),
+				LocalDate.from(event.getEndDate())))
 			.build();
 	}
 }

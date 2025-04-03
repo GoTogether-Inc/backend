@@ -14,5 +14,7 @@ public class EventListResponseDTO {
 	private String hostChannelName;
 	private String startDate;
 	private String address;
+	private String onlineType;
 	private List<String> hashtags;
+	private String remainDays;
 }

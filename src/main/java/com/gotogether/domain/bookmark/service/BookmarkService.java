@@ -1,14 +1,14 @@
 package com.gotogether.domain.bookmark.service;
 
-import com.gotogether.domain.bookmark.dto.response.BookmarkListResponseDTO;
-import com.gotogether.domain.bookmark.entity.Bookmark;
-
 import java.util.List;
 
+import com.gotogether.domain.bookmark.entity.Bookmark;
+import com.gotogether.domain.event.dto.response.EventListResponseDTO;
+
 public interface BookmarkService {
-    Bookmark createBookmark(Long eventId, Long userId);
+	Bookmark createBookmark(Long eventId, Long userId);
 
-    List<BookmarkListResponseDTO> getUserBookmarks(Long userId);
+	List<EventListResponseDTO> getUserBookmarks(Long userId);
 
-    void deleteBookmark(Long bookmarkId);
+	void deleteBookmark(Long bookmarkId);
 }

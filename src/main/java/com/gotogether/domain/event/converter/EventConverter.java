@@ -1,7 +1,7 @@
 package com.gotogether.domain.event.converter;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,11 +13,10 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
+import com.gotogether.global.util.DateFormatterUtil;
+import com.gotogether.global.util.DateUtil;
 
 public class EventConverter {
-
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
 	public static Event of(EventRequestDTO request, HostChannel hostChannel) {
 		return Event.builder()
@@ -50,10 +49,10 @@ public class EventConverter {
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
 			.participantCount(event.getTickets().size())
-			.startDate(event.getStartDate().format(DATE_FORMATTER))
-			.endDate(event.getEndDate().format(DATE_FORMATTER))
-			.startTime(event.getStartDate().format(TIME_FORMATTER))
-			.endTime(event.getEndDate().format(TIME_FORMATTER))
+			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
+			.endDate(DateFormatterUtil.formatDate(event.getEndDate()))
+			.startTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
+			.endTime(DateFormatterUtil.formatTime(event.getEndDate().toLocalTime()))
 			.address(event.getAddress())
 			.location(Map.of("lat", event.getLocationLat(), "lng", event.getLocationLng()))
 			.description(event.getDescription())
@@ -79,11 +78,17 @@ public class EventConverter {
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
 			.hostChannelName(event.getHostChannel().getName())
-			.startDate(event.getStartDate().toLocalDate().format(DATE_FORMATTER))
+			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
 			.address(event.getAddress())
+			.onlineType(String.valueOf(event.getOnlineType()))
+
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.collect(Collectors.toList()))
+
+			.remainDays(DateUtil.getDdayStatus(
+				LocalDate.from(event.getStartDate()),
+				LocalDate.from(event.getEndDate())))
 			.build();
 	}
 }

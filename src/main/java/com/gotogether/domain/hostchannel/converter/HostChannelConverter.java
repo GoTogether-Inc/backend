@@ -1,6 +1,6 @@
 package com.gotogether.domain.hostchannel.converter;
 
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
@@ -16,11 +16,10 @@ import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.order.entity.Order;
+import com.gotogether.global.util.DateFormatterUtil;
+import com.gotogether.global.util.DateUtil;
 
 public class HostChannelConverter {
-
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
 	public static HostChannel toEntity(HostChannelRequestDTO request) {
 		return HostChannel.builder()
@@ -49,13 +48,18 @@ public class HostChannelConverter {
 				.bannerImageUrl(event.getBannerImageUrl())
 				.title(event.getTitle())
 				.hostChannelName(hostChannel.getName())
-				.startDate(event.getStartDate().toString())
+				.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
 				.address(event.getAddress())
+				.onlineType(String.valueOf(event.getOnlineType()))
 				.hashtags(
 					event.getHashtags().stream()
 						.map(Hashtag::getName)
 						.toList()
 				)
+
+				.remainDays(DateUtil.getDdayStatus(
+					LocalDate.from(event.getStartDate()),
+					LocalDate.from(event.getEndDate())))
 				.build()
 			)
 			.toList();
@@ -96,7 +100,7 @@ public class HostChannelConverter {
 			.participant(order.getUser().getName())
 			.email(order.getUser().getEmail())
 			.phoneNumber(order.getUser().getPhoneNumber())
-			.purchaseDate(order.getCreatedAt().format(DATE_FORMATTER))
+			.purchaseDate(DateFormatterUtil.formatDate(order.getCreatedAt()))
 			.ticketName(order.getTicket().getName())
 			.isCheckedIn(order.getTicketQrCode().getStatus().isCheckIn())
 			.orderStatus(order.getStatus().name())
@@ -109,10 +113,10 @@ public class HostChannelConverter {
 			.eventName(event.getTitle())
 			.isTicket(!event.getTickets().isEmpty())
 			.isTicketOption(false) //TODO 옵션 데이터 추가
-			.eventStartDate(event.getStartDate().format(DATE_FORMATTER))
-			.eventStartTime(event.getStartDate().format(TIME_FORMATTER))
-			.eventEndDate(event.getEndDate().format(DATE_FORMATTER))
-			.eventEndTime(event.getEndDate().format(TIME_FORMATTER))
+			.eventStartDate(DateFormatterUtil.formatDate(event.getStartDate()))
+			.eventStartTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
+			.eventEndDate(DateFormatterUtil.formatDate(event.getEndDate()))
+			.eventEndTime(DateFormatterUtil.formatTime(event.getEndDate().toLocalTime()))
 			.totalTicketCnt(totalTicketCnt)
 			.totalPrice(totalPrice)
 			.build();
