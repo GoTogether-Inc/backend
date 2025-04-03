@@ -13,7 +13,7 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.converter.OrderConverter;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
-import com.gotogether.domain.order.dto.response.OrderDetailResponseDTO;
+import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
@@ -65,26 +65,14 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public OrderDetailResponseDTO getDetailOrder(Long userId, Long orderId) {
+	public OrderInfoResponseDTO getPurchaseConfirmation(Long userId, Long ticketId, Long eventId) {
 		User user = eventFacade.getUserById(userId);
+		Event event = eventFacade.getEventById(eventId);
+		Ticket ticket = eventFacade.getTicketById(ticketId);
 
-		Order order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
+		List<Order> orders = orderRepository.findOrderByUserAndTicket(user, ticket);
 
-		Event event = eventFacade.getEventById(order.getTicket().getEvent().getId());
-
-		Ticket ticket = eventFacade.getTicketById(order.getTicket().getId());
-
-		if (!order.getUser().equals(user)) {
-			throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
-		}
-
-		if (order.getStatus() == OrderStatus.CANCELED) {
-			throw new GeneralException(ErrorStatus._ORDER_ALREADY_CANCELED);
-		}
-
-		return OrderConverter.toOrderedDetailResponseDTO(order, event, ticket);
+		return OrderConverter.toOrderInfoResponseDTO(orders.get(0), event, orders.size());
 	}
 
 	@Override

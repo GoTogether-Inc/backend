@@ -37,4 +37,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 		AND o.status = :status
 		""")
 	List<Order> findByTicketAndStatus(@Param("ticket") Ticket ticket, @Param("status") OrderStatus status);
+
+	List<Order> findOrderByUserAndTicket(User user, Ticket ticket);
 }
