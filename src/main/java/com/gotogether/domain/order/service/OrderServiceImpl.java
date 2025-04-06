@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
 
 		List<Order> orders = orderRepository.findOrderByUserAndTicket(user, ticket);
 
-		return OrderConverter.toOrderInfoResponseDTO(orders.get(0), event, orders.size());
+		return OrderConverter.toOrderInfoResponseDTO(orders.get(0), event);
 	}
 
 	@Override
