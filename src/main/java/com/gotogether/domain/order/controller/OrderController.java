@@ -39,7 +39,7 @@ public class OrderController {
 			.map(Order::getId)
 			.toList();
 
-		return ApiResponse.onSuccessCreated("orderId: " + orderIds);
+		return ApiResponse.onSuccessCreated(orderIds);
 	}
 
 	@GetMapping
