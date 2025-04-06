@@ -59,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
 	public Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable) {
 		User user = eventFacade.getUserById(userId);
 
-		Page<Order> orders = orderRepository.findByUserIdSortedByClosestEvent(user, pageable);
+		Page<Order> orders = orderRepository.findOrdersByUser(user, pageable);
 
 		return orders.map(OrderConverter::toOrderedTicketResponseDTO);
 	}
