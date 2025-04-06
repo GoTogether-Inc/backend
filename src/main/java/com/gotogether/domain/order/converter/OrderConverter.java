@@ -62,14 +62,13 @@ public class OrderConverter {
 	}
 
 	public static OrderInfoResponseDTO toOrderInfoResponseDTO(
-		Order order, Event event, int ticketCnt) {
+		Order order, Event event) {
 		return OrderInfoResponseDTO.builder()
 			.id(order.getId())
 			.title(event.getTitle())
 			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
 			.startTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
 			.ticketName(order.getTicket().getName())
-			.ticketCnt(ticketCnt)
 			.hostChannelName(event.getHostChannel().getName())
 			.hostChannelDescription(event.getHostChannel().getDescription())
 			.organizerEmail(event.getOrganizerEmail())

@@ -22,9 +22,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 		FROM Order o
 		WHERE o.user = :user
 		AND o.ticket.event.startDate >= CURRENT_DATE
+		AND o.status != 'CANCELED'
 		ORDER BY ABS(DATEDIFF(o.ticket.event.startDate, CURRENT_DATE)) ASC
 		""")
-	Page<Order> findByUserIdSortedByClosestEvent(@Param("user") User user, Pageable pageable);
+	Page<Order> findOrdersByUser(@Param("user") User user, Pageable pageable);
 
 	Page<Order> findByTicketIdInAndStatus(List<Long> ticketIds, OrderStatus status, Pageable pageable);
 

@@ -13,7 +13,6 @@ public class OrderInfoResponseDTO {
 	private String startDate;
 	private String startTime;
 	private String ticketName;
-	private int ticketCnt;
 	private String hostChannelName;
 	private String hostChannelDescription;
 	private String organizerEmail;
