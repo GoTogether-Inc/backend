@@ -1,7 +1,7 @@
 package com.gotogether.global.apipayload.exception;
 
 import com.gotogether.global.apipayload.code.BaseErrorCode;
-import com.gotogether.global.apipayload.code.ErrorReasonDto;
+import com.gotogether.global.apipayload.code.ErrorReasonDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +12,7 @@ public class GeneralException extends RuntimeException {
 
 	private BaseErrorCode code;
 
-	public ErrorReasonDto getErrorReason() {
-		return this.code.getReason();
-	}
-
-	public ErrorReasonDto getErrorReasonHttpStatus() {
+	public ErrorReasonDTO getErrorReasonHttpStatus() {
 		return this.code.getReasonHttpStatus();
 	}
 }

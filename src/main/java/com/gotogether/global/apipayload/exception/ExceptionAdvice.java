@@ -17,7 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.gotogether.global.apipayload.ApiResponse;
-import com.gotogether.global.apipayload.code.ErrorReasonDto;
+import com.gotogether.global.apipayload.code.ErrorReasonDTO;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,11 +64,11 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(value = GeneralException.class)
 	public ResponseEntity onThrowException(GeneralException generalException, HttpServletRequest request) {
-		ErrorReasonDto errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
+		ErrorReasonDTO errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
 		return handleExceptionInternal(generalException, errorReasonHttpStatus, null, request);
 	}
 
-	private ResponseEntity<Object> handleExceptionInternal(Exception e, ErrorReasonDto reason,
+	private ResponseEntity<Object> handleExceptionInternal(Exception e, ErrorReasonDTO reason,
 		HttpHeaders headers, HttpServletRequest request) {
 
 		ApiResponse<Object> body = ApiResponse.onFailure(reason.getCode(), reason.getMessage(), null);

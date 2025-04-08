@@ -3,7 +3,7 @@ package com.gotogether.global.apipayload.code.status;
 import org.springframework.http.HttpStatus;
 
 import com.gotogether.global.apipayload.code.BaseErrorCode;
-import com.gotogether.global.apipayload.code.ErrorReasonDto;
+import com.gotogether.global.apipayload.code.ErrorReasonDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -57,17 +57,8 @@ public enum ErrorStatus implements BaseErrorCode {
 	private String message;
 
 	@Override
-	public ErrorReasonDto getReason() {
-		return ErrorReasonDto.builder()
-			.message(message)
-			.code(code)
-			.isSuccess(false)
-			.build();
-	}
-
-	@Override
-	public ErrorReasonDto getReasonHttpStatus() {
-		return ErrorReasonDto.builder()
+	public ErrorReasonDTO getReasonHttpStatus() {
+		return ErrorReasonDTO.builder()
 			.message(message)
 			.code(code)
 			.isSuccess(false)
