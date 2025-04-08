@@ -52,9 +52,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
 	_RESERVATION_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_EMAIL4001", "예약 메일이 없습니다.");
 
-	private HttpStatus httpStatus;
-	private String code;
-	private String message;
+	private final HttpStatus httpStatus;
+	private final String code;
+	private final String message;
 
 	@Override
 	public ErrorReasonDTO getReasonHttpStatus() {
