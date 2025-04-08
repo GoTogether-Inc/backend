@@ -26,7 +26,7 @@ public class ApiResponse<T> {
 	}
 
 	public static <T> ApiResponse<T> onSuccessCreated(T result) {
-		return new ApiResponse<>(true, SuccessStatus._CRATED.getCode(), SuccessStatus._CRATED.getMessage(), result);
+		return new ApiResponse<>(true, SuccessStatus._CREATED.getCode(), SuccessStatus._CREATED.getMessage(), result);
 	}
 
 	public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
