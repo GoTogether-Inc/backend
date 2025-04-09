@@ -56,14 +56,18 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler
 	public ResponseEntity<Object> exception(Exception e, WebRequest request) {
-		e.printStackTrace();
+		log.error("Unhandled 예외 발생", e);
 
 		return handleExceptionInternalFalse(e, ErrorStatus._INTERNAL_SERVER_ERROR, HttpHeaders.EMPTY,
-			ErrorStatus._INTERNAL_SERVER_ERROR.getHttpStatus(), request, e.getMessage());
+			ErrorStatus._INTERNAL_SERVER_ERROR.getHttpStatus(), request, null);
 	}
 
 	@ExceptionHandler(value = GeneralException.class)
 	public ResponseEntity onThrowException(GeneralException generalException, HttpServletRequest request) {
+		log.error("GeneralException 발생 - ErrorStatu:{} Code : {} Message: {}", generalException.getCode(),
+			generalException.getCode().getReasonHttpStatus().getCode(),
+			generalException.getCode().getReasonHttpStatus().getMessage());
+
 		ErrorReasonDTO errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
 		return handleExceptionInternal(generalException, errorReasonHttpStatus, null, request);
 	}
@@ -72,7 +76,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 		HttpHeaders headers, HttpServletRequest request) {
 
 		ApiResponse<Object> body = ApiResponse.onFailure(reason.getCode(), reason.getMessage(), null);
-		//        e.printStackTrace();
+		log.error("실패 응답 전달 ", e);
 
 		WebRequest webRequest = new ServletWebRequest(request);
 		return super.handleExceptionInternal(
