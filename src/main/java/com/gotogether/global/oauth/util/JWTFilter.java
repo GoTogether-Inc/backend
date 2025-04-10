@@ -13,6 +13,7 @@ import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.oauth.dto.CustomOAuth2User;
+import com.gotogether.global.oauth.service.TokenBlacklistService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,9 +25,12 @@ public class JWTFilter extends OncePerRequestFilter {
 	private final JWTUtil jwtUtil;
 	private final UserRepository userRepository;
 
-	public JWTFilter(JWTUtil jwtUtil, UserRepository userRepository) {
+	private final TokenBlacklistService tokenBlacklistService;
+
+	public JWTFilter(JWTUtil jwtUtil, UserRepository userRepository, TokenBlacklistService tokenBlacklistService) {
 		this.jwtUtil = jwtUtil;
 		this.userRepository = userRepository;
+		this.tokenBlacklistService = tokenBlacklistService;
 	}
 
 	@Override
@@ -41,6 +45,11 @@ public class JWTFilter extends OncePerRequestFilter {
 		}
 
 		String token = authorizationHeader.substring(7);
+
+		if (tokenBlacklistService.isTokenBlacklisted(token)) {
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_BLACKLISTED);
+			return;
+		}
 
 		if (jwtUtil.isExpired(token)) {
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_EXPIRED);
