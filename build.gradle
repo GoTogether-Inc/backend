@@ -54,6 +54,9 @@ dependencies {
 
     // JavaMailSender
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
