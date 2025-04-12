@@ -17,6 +17,7 @@ import com.gotogether.global.oauth.service.TokenBlacklistService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -37,26 +38,32 @@ public class JWTFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		String authorizationHeader = request.getHeader("Authorization");
+		String authorization = null;
 
-		if (!jwtUtil.validateAuthorizationHeader(authorizationHeader)) {
+		Cookie[] cookies = request.getCookies();
+
+		for (Cookie cookie : cookies) {
+			if (cookie.getName().equals("accessToken")) {
+				authorization = cookie.getValue();
+			}
+		}
+
+		if (authorization == null) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		String token = authorizationHeader.substring(7);
-
-		if (tokenBlacklistService.isTokenBlacklisted(token)) {
+		if (tokenBlacklistService.isTokenBlacklisted(authorization)) {
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_BLACKLISTED);
 			return;
 		}
 
-		if (jwtUtil.isExpired(token)) {
+		if (jwtUtil.isExpired(authorization)) {
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_EXPIRED);
 			return;
 		}
 
-		String tokenType = jwtUtil.getTokenType(token);
+		String tokenType = jwtUtil.getTokenType(authorization);
 
 		if (request.getRequestURI().equals("/api/v1/oauth/reissue")) {
 			if (!"refresh".equals(tokenType)) {
@@ -69,7 +76,7 @@ public class JWTFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		String providerId = jwtUtil.getProviderId(token);
+		String providerId = jwtUtil.getProviderId(authorization);
 
 		User user = userRepository.findByProviderId(providerId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
