@@ -77,6 +77,15 @@ public class JWTUtil {
 		return (expiration.getTime() - now) / 1000;
 	}
 
+	public Date getExpiration(String token) {
+		return Jwts.parser()
+			.setSigningKey(secretKey)
+			.build()
+			.parseClaimsJws(token)
+			.getBody()
+			.getExpiration();
+	}
+
 	public Boolean isExpired(String token) {
 		try {
 			return Jwts.parser()

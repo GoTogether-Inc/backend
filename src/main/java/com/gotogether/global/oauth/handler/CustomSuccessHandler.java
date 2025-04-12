@@ -72,20 +72,28 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 			TokenDTO tokenDTO = jwtUtil.generateTokens(providerId);
 
-			response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken()));
-			response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken()));
+			long accessTokenMaxAge = calculateRemainingSeconds(tokenDTO.getAccessToken());
+			long refreshTokenMaxAge = calculateRemainingSeconds(tokenDTO.getRefreshToken());
+
+			response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken(), accessTokenMaxAge));
+			response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken(), refreshTokenMaxAge));
 
 			response.sendRedirect(redirectUrl);
 		}
 	}
 
-	private Cookie createCookie(String key, String value) {
+	private Cookie createCookie(String key, String value, long maxAgeInSeconds) {
 		Cookie cookie = new Cookie(key, value);
-		cookie.setMaxAge(60 * 60 * 60);
-		//cookie.setSecure(true);
+		cookie.setMaxAge((int)maxAgeInSeconds);
+		// cookie.setSecure(true);
+		// cookie.setDomain("");
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
 
 		return cookie;
+	}
+
+	private long calculateRemainingSeconds(String token) {
+		return (jwtUtil.getExpiration(token).getTime() - System.currentTimeMillis()) / 1000;
 	}
 }
