@@ -12,10 +12,8 @@ import com.gotogether.global.oauth.service.OAuthLogoutService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/oauth")
 public class OAuthController {
@@ -26,7 +24,6 @@ public class OAuthController {
 	@PostMapping("/reissue")
 	public ApiResponse<?> reissue(HttpServletRequest request,
 		@AuthUser Long userId) {
-		//TODO 파라미터 변경
 		TokenDTO dto = customOAuth2UserService.reissue(userId);
 		return ApiResponse.onSuccess(dto);
 	}
