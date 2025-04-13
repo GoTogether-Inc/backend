@@ -1,7 +1,8 @@
 package com.gotogether.global.oauth.util;
 
+import static com.gotogether.global.util.CookieUtil.*;
+
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +22,6 @@ import com.gotogether.global.oauth.service.TokenBlacklistService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		Map<String, String> tokens = extractAccessToken(request);
+		Map<String, String> tokens = extractTokensFromCookie(request);
 
 		if (tokens.isEmpty() || tokens.get("refreshToken") == null) {
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._UNAUTHORIZED);
@@ -76,23 +76,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
 		authenticateUser(tokens.get("accessToken"));
 		filterChain.doFilter(request, response);
-	}
-
-	public Map<String, String> extractAccessToken(HttpServletRequest request) {
-		Map<String, String> tokens = new HashMap<>();
-
-		Cookie[] cookies = request.getCookies();
-		if (cookies == null)
-			return null;
-
-		for (Cookie cookie : cookies) {
-			if ("accessToken".equals(cookie.getName())) {
-				tokens.put("accessToken", cookie.getValue());
-			} else if ("refreshToken".equals(cookie.getName())) {
-				tokens.put("refreshToken", cookie.getValue());
-			}
-		}
-		return tokens;
 	}
 
 	private void authenticateUser(String token) {
