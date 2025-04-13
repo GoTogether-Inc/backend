@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class ErrorReasonDto {
+public class ErrorReasonDTO {
 	String message;
 	String code;
 	Boolean isSuccess;
