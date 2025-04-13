@@ -1,6 +1,8 @@
 package com.gotogether.global.oauth.util;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,63 +22,65 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
 	private final JWTUtil jwtUtil;
 	private final UserRepository userRepository;
-
 	private final TokenBlacklistService tokenBlacklistService;
-
-	public JWTFilter(JWTUtil jwtUtil, UserRepository userRepository, TokenBlacklistService tokenBlacklistService) {
-		this.jwtUtil = jwtUtil;
-		this.userRepository = userRepository;
-		this.tokenBlacklistService = tokenBlacklistService;
-	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		String authorization = null;
+		Map<String, String> tokens = extractAccessToken(request);
 
-		Cookie[] cookies = request.getCookies();
-
-		for (Cookie cookie : cookies) {
-			if (cookie.getName().equals("accessToken")) {
-				authorization = cookie.getValue();
-			}
-		}
-
-		if (authorization == null) {
-			filterChain.doFilter(request, response);
+		if (tokens.isEmpty()) {
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._UNAUTHORIZED);
 			return;
 		}
 
-		if (tokenBlacklistService.isTokenBlacklisted(authorization)) {
+		if (tokenBlacklistService.isTokenBlacklisted(tokens.get("accessToken"))) {
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_BLACKLISTED);
 			return;
 		}
 
-		if (jwtUtil.isExpired(authorization)) {
+		if (jwtUtil.isExpired(tokens.get("accessToken"))) {
+			if (request.getRequestURI().equals("/api/v1/oauth/reissue")) {
+				authenticateUser(tokens.get("refreshToken"));
+				filterChain.doFilter(request, response);
+				return;
+			}
+
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_EXPIRED);
 			return;
 		}
 
-		String tokenType = jwtUtil.getTokenType(authorization);
+		authenticateUser(tokens.get("accessToken"));
+		filterChain.doFilter(request, response);
+	}
 
-		if (request.getRequestURI().equals("/api/v1/oauth/reissue")) {
-			if (!"refresh".equals(tokenType)) {
-				ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_TYPE_ERROR);
-				return;
+	public Map<String, String> extractAccessToken(HttpServletRequest request) {
+		Map<String, String> tokens = new HashMap<>();
+
+		Cookie[] cookies = request.getCookies();
+		if (cookies == null)
+			return null;
+
+		for (Cookie cookie : cookies) {
+			if ("accessToken".equals(cookie.getName())) {
+				tokens.put("accessToken", cookie.getValue());
+			} else if ("refreshToken".equals(cookie.getName())) {
+				tokens.put("refreshToken", cookie.getValue());
 			}
-
-		} else if (!"access".equals(tokenType)) {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_TYPE_ERROR);
-			return;
 		}
+		return tokens;
+	}
 
-		String providerId = jwtUtil.getProviderId(authorization);
+	private void authenticateUser(String token) {
+		String providerId = jwtUtil.getProviderId(token);
 
 		User user = userRepository.findByProviderId(providerId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
@@ -90,12 +94,9 @@ public class JWTFilter extends OncePerRequestFilter {
 			.build();
 
 		CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
-
 		Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null,
 			customOAuth2User.getAuthorities());
 
 		SecurityContextHolder.getContext().setAuthentication(authToken);
-
-		filterChain.doFilter(request, response);
 	}
 }
