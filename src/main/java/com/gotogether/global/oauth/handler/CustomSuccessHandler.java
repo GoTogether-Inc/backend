@@ -17,9 +17,9 @@ import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.oauth.dto.CustomOAuth2User;
 import com.gotogether.global.oauth.dto.TokenDTO;
 import com.gotogether.global.oauth.util.JWTUtil;
+import com.gotogether.global.util.CookieUtil;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -81,25 +81,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private void handleSuccessLogin(HttpServletResponse response, User user) throws IOException {
 		TokenDTO tokenDTO = jwtUtil.generateTokens(user.getProviderId());
 
-		long refreshTokenMaxAge = getTokenMaxAgeInSeconds(tokenDTO.getRefreshToken());
+		long expiration = jwtUtil.getExpiration(tokenDTO.getRefreshToken()).getTime();
 
-		response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken(), refreshTokenMaxAge));
-		response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken(), refreshTokenMaxAge));
+		response.addCookie(CookieUtil.createCookie("accessToken", tokenDTO.getAccessToken(), expiration));
+		response.addCookie(CookieUtil.createCookie("refreshToken", tokenDTO.getRefreshToken(), expiration));
 
 		response.sendRedirect(redirectUrl);
 	}
 
-	private Cookie createCookie(String name, String value, long maxAgeInSeconds) {
-		Cookie cookie = new Cookie(name, value);
-		cookie.setHttpOnly(true);
-		cookie.setPath("/");
-		cookie.setMaxAge((int)maxAgeInSeconds);
-		return cookie;
-	}
-
-	private long getTokenMaxAgeInSeconds(String token) {
-		long expiration = jwtUtil.getExpiration(token).getTime();
-		long now = System.currentTimeMillis();
-		return (expiration - now) / 1000;
-	}
 }
