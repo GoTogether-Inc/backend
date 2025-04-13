@@ -41,24 +41,6 @@ public class JWTUtil {
 			.get("providerId", String.class);
 	}
 
-	public String getRole(String token) {
-		return Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload()
-			.get("role", String.class);
-	}
-
-	public String getTokenType(String token) {
-		return Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload()
-			.get("tokenType", String.class);
-	}
-
 	public long getRemainingTime(String token) {
 		Date expiration = Jwts.parser()
 			.verifyWith(secretKey)
