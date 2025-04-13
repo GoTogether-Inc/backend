@@ -1,5 +1,9 @@
 package com.gotogether.global.oauth.controller;
 
+import static com.gotogether.global.util.CookieUtil.*;
+
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,12 +34,12 @@ public class OAuthController {
 
 	@PostMapping("/logout")
 	public ApiResponse<?> logout(
-		HttpServletRequest request
+		HttpServletRequest request,
+		HttpServletResponse response
 	) {
-		String authorizationHeader = request.getHeader("Authorization");
-		String token = authorizationHeader.substring(7);
-
-		oAuthLogoutService.logout(token);
+		Map<String, String> tokens = extractTokensFromCookie(request);
+		String token = tokens.get("accessToken");
+		oAuthLogoutService.logout(token, response);
 		return ApiResponse.onSuccess("로그아웃 완료");
 	}
 }
