@@ -63,6 +63,10 @@ public class JWTUtil {
 	}
 
 	public Boolean isExpired(String token) {
+		if (token == null || token.trim().isEmpty()) {
+			return true;
+		}
+
 		try {
 			return Jwts.parser()
 				.verifyWith(secretKey)

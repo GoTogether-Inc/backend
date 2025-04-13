@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.gotogether.domain.user.dto.request.UserDTO;
@@ -14,6 +15,7 @@ import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.constants.Constants;
 import com.gotogether.global.oauth.dto.CustomOAuth2User;
 import com.gotogether.global.oauth.service.TokenBlacklistService;
 
@@ -31,14 +33,28 @@ public class JWTFilter extends OncePerRequestFilter {
 	private final UserRepository userRepository;
 	private final TokenBlacklistService tokenBlacklistService;
 
+	private static final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		return Constants.NO_NEED_FILTER_URLS.stream()
+			.anyMatch(pattern -> pathMatcher.match(pattern, uri));
+	}
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
 		Map<String, String> tokens = extractAccessToken(request);
 
-		if (tokens.isEmpty()) {
+		if (tokens.isEmpty() || tokens.get("refreshToken") == null) {
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._UNAUTHORIZED);
+			return;
+		}
+
+		if (tokens.get("accessToken") == null) {
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_EXPIRED);
 			return;
 		}
 
