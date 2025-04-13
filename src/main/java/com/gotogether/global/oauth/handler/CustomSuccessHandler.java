@@ -29,6 +29,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private final UserRepository userRepository;
 	private final JWTUtil jwtUtil;
 	private final String redirectUrl;
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public CustomSuccessHandler(UserRepository userRepository, JWTUtil jwtUtil,
 		@Value("${app.redirect-url}") String redirectUrl) {
@@ -39,61 +40,66 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-		Authentication authentication) throws
-		IOException,
-		ServletException {
+		Authentication authentication) throws IOException, ServletException {
 
-		CustomOAuth2User customUserDetails = (CustomOAuth2User)authentication.getPrincipal();
+		CustomOAuth2User customUser = (CustomOAuth2User)authentication.getPrincipal();
+		User user = findUserByProviderId(customUser.getProviderId());
 
-		String providerId = customUserDetails.getProviderId();
-
-		User user = userRepository.findByProviderId(providerId)
-			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
-
-		if (user.getPhoneNumber() == null) {
-
-			UserDetailResponseDTO dto = UserDetailResponseDTO.builder()
-				.id(user.getId())
-				.name(user.getName())
-				.email(user.getEmail())
-				.build();
-
-			ApiResponse<UserDetailResponseDTO> apiResponse = ApiResponse.onSuccess(dto);
-
-			ObjectMapper objectMapper = new ObjectMapper();
-			String jsonResponse = objectMapper.writeValueAsString(apiResponse);
-
-			response.setContentType("application/json");
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.getWriter().write(jsonResponse);
-
-			response.sendRedirect(redirectUrl + "/join/agreement");
+		if (isFirstLogin(user)) {
+			handleFirstLogin(response, user);
 		} else {
-
-			TokenDTO tokenDTO = jwtUtil.generateTokens(providerId);
-
-			long accessTokenMaxAge = calculateRemainingSeconds(tokenDTO.getAccessToken());
-			long refreshTokenMaxAge = calculateRemainingSeconds(tokenDTO.getRefreshToken());
-
-			response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken(), accessTokenMaxAge));
-			response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken(), refreshTokenMaxAge));
-
-			response.sendRedirect(redirectUrl);
+			handleSuccessLogin(response, user);
 		}
 	}
 
-	private Cookie createCookie(String key, String value, long maxAgeInSeconds) {
-		Cookie cookie = new Cookie(key, value);
-		cookie.setMaxAge((int)maxAgeInSeconds);
-		// cookie.setSecure(true);
-		// cookie.setDomain("");
-		cookie.setPath("/");
-		cookie.setHttpOnly(true);
+	private User findUserByProviderId(String providerId) {
+		return userRepository.findByProviderId(providerId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
+	}
 
+	private boolean isFirstLogin(User user) {
+		return user.getPhoneNumber() == null;
+	}
+
+	private void handleFirstLogin(HttpServletResponse response, User user) throws IOException {
+		UserDetailResponseDTO dto = UserDetailResponseDTO.builder()
+			.id(user.getId())
+			.name(user.getName())
+			.email(user.getEmail())
+			.build();
+
+		ApiResponse<UserDetailResponseDTO> apiResponse = ApiResponse.onSuccess(dto);
+		String jsonResponse = objectMapper.writeValueAsString(apiResponse);
+
+		response.setContentType("application/json");
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.getWriter().write(jsonResponse);
+
+		response.sendRedirect(redirectUrl + "/join/agreement");
+	}
+
+	private void handleSuccessLogin(HttpServletResponse response, User user) throws IOException {
+		TokenDTO tokenDTO = jwtUtil.generateTokens(user.getProviderId());
+
+		long refreshTokenMaxAge = getTokenMaxAgeInSeconds(tokenDTO.getRefreshToken());
+
+		response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken(), refreshTokenMaxAge));
+		response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken(), refreshTokenMaxAge));
+
+		response.sendRedirect(redirectUrl);
+	}
+
+	private Cookie createCookie(String name, String value, long maxAgeInSeconds) {
+		Cookie cookie = new Cookie(name, value);
+		cookie.setHttpOnly(true);
+		cookie.setPath("/");
+		cookie.setMaxAge((int)maxAgeInSeconds);
 		return cookie;
 	}
 
-	private long calculateRemainingSeconds(String token) {
-		return (jwtUtil.getExpiration(token).getTime() - System.currentTimeMillis()) / 1000;
+	private long getTokenMaxAgeInSeconds(String token) {
+		long expiration = jwtUtil.getExpiration(token).getTime();
+		long now = System.currentTimeMillis();
+		return (expiration - now) / 1000;
 	}
 }
