@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
-import com.gotogether.global.oauth.dto.TokenDTO;
 import com.gotogether.global.oauth.service.CustomOAuth2UserService;
 import com.gotogether.global.oauth.service.OAuthLogoutService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -22,10 +22,10 @@ public class OAuthController {
 	private final OAuthLogoutService oAuthLogoutService;
 
 	@PostMapping("/reissue")
-	public ApiResponse<?> reissue(HttpServletRequest request,
+	public ApiResponse<?> reissue(HttpServletResponse response,
 		@AuthUser Long userId) {
-		TokenDTO dto = customOAuth2UserService.reissue(userId);
-		return ApiResponse.onSuccess(dto);
+		customOAuth2UserService.reissue(userId, response);
+		return ApiResponse.onSuccess("토큰 재발급 완료");
 	}
 
 	@PostMapping("/logout")
