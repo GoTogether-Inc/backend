@@ -1,10 +1,14 @@
 package com.gotogether.global.oauth.util;
 
+import static com.gotogether.global.util.CookieUtil.*;
+
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.gotogether.domain.user.dto.request.UserDTO;
@@ -12,6 +16,7 @@ import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.constants.Constants;
 import com.gotogether.global.oauth.dto.CustomOAuth2User;
 import com.gotogether.global.oauth.service.TokenBlacklistService;
 
@@ -19,56 +24,61 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
 	private final JWTUtil jwtUtil;
 	private final UserRepository userRepository;
-
 	private final TokenBlacklistService tokenBlacklistService;
 
-	public JWTFilter(JWTUtil jwtUtil, UserRepository userRepository, TokenBlacklistService tokenBlacklistService) {
-		this.jwtUtil = jwtUtil;
-		this.userRepository = userRepository;
-		this.tokenBlacklistService = tokenBlacklistService;
+	private static final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		return Constants.NO_NEED_FILTER_URLS.stream()
+			.anyMatch(pattern -> pathMatcher.match(pattern, uri));
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		String authorizationHeader = request.getHeader("Authorization");
+		Map<String, String> tokens = extractTokensFromCookie(request);
 
-		if (!jwtUtil.validateAuthorizationHeader(authorizationHeader)) {
-			filterChain.doFilter(request, response);
+		if (tokens.isEmpty() || tokens.get("refreshToken") == null) {
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._UNAUTHORIZED);
 			return;
 		}
 
-		String token = authorizationHeader.substring(7);
-
-		if (tokenBlacklistService.isTokenBlacklisted(token)) {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_BLACKLISTED);
-			return;
-		}
-
-		if (jwtUtil.isExpired(token)) {
+		if (tokens.get("accessToken") == null) {
 			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_EXPIRED);
 			return;
 		}
 
-		String tokenType = jwtUtil.getTokenType(token);
-
-		if (request.getRequestURI().equals("/api/v1/oauth/reissue")) {
-			if (!"refresh".equals(tokenType)) {
-				ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_TYPE_ERROR);
-				return;
-			}
-
-		} else if (!"access".equals(tokenType)) {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_TYPE_ERROR);
+		if (tokenBlacklistService.isTokenBlacklisted(tokens.get("accessToken"))) {
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_BLACKLISTED);
 			return;
 		}
 
+		if (jwtUtil.isExpired(tokens.get("accessToken"))) {
+			if (request.getRequestURI().equals("/api/v1/oauth/reissue")) {
+				authenticateUser(tokens.get("refreshToken"));
+				filterChain.doFilter(request, response);
+				return;
+			}
+
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_EXPIRED);
+			return;
+		}
+
+		authenticateUser(tokens.get("accessToken"));
+		filterChain.doFilter(request, response);
+	}
+
+	private void authenticateUser(String token) {
 		String providerId = jwtUtil.getProviderId(token);
 
 		User user = userRepository.findByProviderId(providerId)
@@ -83,12 +93,9 @@ public class JWTFilter extends OncePerRequestFilter {
 			.build();
 
 		CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
-
 		Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null,
 			customOAuth2User.getAuthorities());
 
 		SecurityContextHolder.getContext().setAuthentication(authToken);
-
-		filterChain.doFilter(request, response);
 	}
 }

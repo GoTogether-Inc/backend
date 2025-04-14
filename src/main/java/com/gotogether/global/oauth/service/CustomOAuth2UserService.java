@@ -20,6 +20,9 @@ import com.gotogether.global.oauth.dto.KakaoResponseDTO;
 import com.gotogether.global.oauth.dto.OAuth2Response;
 import com.gotogether.global.oauth.dto.TokenDTO;
 import com.gotogether.global.oauth.util.JWTUtil;
+import com.gotogether.global.util.CookieUtil;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -98,11 +101,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	}
 
 	@Transactional
-	public TokenDTO reissue(Long userId) {
+	public TokenDTO reissue(Long userId, HttpServletResponse response) {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 
-		return jwtUtil.generateTokens(user.getProviderId());
+		TokenDTO tokenDTO = jwtUtil.generateTokens(user.getProviderId());
+		long expiration = jwtUtil.getExpiration(tokenDTO.getRefreshToken()).getTime();
+
+		response.addCookie(CookieUtil.createCookie("accessToken", tokenDTO.getAccessToken(), expiration));
+
+		return tokenDTO;
 	}
 }

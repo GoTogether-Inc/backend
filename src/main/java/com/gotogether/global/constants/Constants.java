@@ -11,6 +11,7 @@ public final class Constants {
 		"/oauth2/authorization/kakao",
 		"/oauth2/authorization/google",
 		"/swagger-ui.html/**",
+		"/v3/api-docs",
 		"/v3/api-docs/**",
 		"/swagger-ui/**",
 		"/api/v1/events",

@@ -30,7 +30,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 		final Object userId = webRequest.getAttribute("USER_ID", WebRequest.SCOPE_REQUEST);
 
 		if (userId == null) {
-			throw new GeneralException(ErrorStatus._INVALID_HEADER_ERROR);
+			throw new GeneralException(ErrorStatus._INVALID_AUTH_USER_ERROR);
 		}
 
 		return userId;

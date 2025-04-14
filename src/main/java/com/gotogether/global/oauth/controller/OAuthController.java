@@ -1,21 +1,23 @@
 package com.gotogether.global.oauth.controller;
 
+import static com.gotogether.global.util.CookieUtil.*;
+
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
-import com.gotogether.global.oauth.dto.TokenDTO;
 import com.gotogether.global.oauth.service.CustomOAuth2UserService;
 import com.gotogether.global.oauth.service.OAuthLogoutService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/oauth")
 public class OAuthController {
@@ -24,21 +26,20 @@ public class OAuthController {
 	private final OAuthLogoutService oAuthLogoutService;
 
 	@PostMapping("/reissue")
-	public ApiResponse<?> reissue(HttpServletRequest request,
+	public ApiResponse<?> reissue(HttpServletResponse response,
 		@AuthUser Long userId) {
-		//TODO 파라미터 변경
-		TokenDTO dto = customOAuth2UserService.reissue(userId);
-		return ApiResponse.onSuccess(dto);
+		customOAuth2UserService.reissue(userId, response);
+		return ApiResponse.onSuccess("토큰 재발급 완료");
 	}
 
 	@PostMapping("/logout")
 	public ApiResponse<?> logout(
-		HttpServletRequest request
+		HttpServletRequest request,
+		HttpServletResponse response
 	) {
-		String authorizationHeader = request.getHeader("Authorization");
-		String token = authorizationHeader.substring(7);
-
-		oAuthLogoutService.logout(token);
+		Map<String, String> tokens = extractTokensFromCookie(request);
+		String token = tokens.get("accessToken");
+		oAuthLogoutService.logout(token, response);
 		return ApiResponse.onSuccess("로그아웃 완료");
 	}
 }

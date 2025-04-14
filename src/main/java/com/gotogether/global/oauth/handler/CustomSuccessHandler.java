@@ -17,9 +17,9 @@ import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.oauth.dto.CustomOAuth2User;
 import com.gotogether.global.oauth.dto.TokenDTO;
 import com.gotogether.global.oauth.util.JWTUtil;
+import com.gotogether.global.util.CookieUtil;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -29,6 +29,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private final UserRepository userRepository;
 	private final JWTUtil jwtUtil;
 	private final String redirectUrl;
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public CustomSuccessHandler(UserRepository userRepository, JWTUtil jwtUtil,
 		@Value("${app.redirect-url}") String redirectUrl) {
@@ -39,53 +40,53 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-		Authentication authentication) throws
-		IOException,
-		ServletException {
+		Authentication authentication) throws IOException, ServletException {
 
-		CustomOAuth2User customUserDetails = (CustomOAuth2User)authentication.getPrincipal();
+		CustomOAuth2User customUser = (CustomOAuth2User)authentication.getPrincipal();
+		User user = findUserByProviderId(customUser.getProviderId());
 
-		String providerId = customUserDetails.getProviderId();
-
-		User user = userRepository.findByProviderId(providerId)
-			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
-
-		if (user.getPhoneNumber() == null) {
-
-			UserDetailResponseDTO dto = UserDetailResponseDTO.builder()
-				.id(user.getId())
-				.name(user.getName())
-				.email(user.getEmail())
-				.build();
-
-			ApiResponse<UserDetailResponseDTO> apiResponse = ApiResponse.onSuccess(dto);
-
-			ObjectMapper objectMapper = new ObjectMapper();
-			String jsonResponse = objectMapper.writeValueAsString(apiResponse);
-
-			response.setContentType("application/json");
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.getWriter().write(jsonResponse);
-
-			response.sendRedirect(redirectUrl + "/join/agreement");
+		if (isFirstLogin(user)) {
+			handleFirstLogin(response, user);
 		} else {
-
-			TokenDTO tokenDTO = jwtUtil.generateTokens(providerId);
-
-			response.addCookie(createCookie("accessToken", tokenDTO.getAccessToken()));
-			response.addCookie(createCookie("refreshToken", tokenDTO.getRefreshToken()));
-
-			response.sendRedirect(redirectUrl);
+			handleSuccessLogin(response, user);
 		}
 	}
 
-	private Cookie createCookie(String key, String value) {
-		Cookie cookie = new Cookie(key, value);
-		cookie.setMaxAge(60 * 60 * 60);
-		//cookie.setSecure(true);
-		cookie.setPath("/");
-		cookie.setHttpOnly(true);
-
-		return cookie;
+	private User findUserByProviderId(String providerId) {
+		return userRepository.findByProviderId(providerId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
 	}
+
+	private boolean isFirstLogin(User user) {
+		return user.getPhoneNumber() == null;
+	}
+
+	private void handleFirstLogin(HttpServletResponse response, User user) throws IOException {
+		UserDetailResponseDTO dto = UserDetailResponseDTO.builder()
+			.id(user.getId())
+			.name(user.getName())
+			.email(user.getEmail())
+			.build();
+
+		ApiResponse<UserDetailResponseDTO> apiResponse = ApiResponse.onSuccess(dto);
+		String jsonResponse = objectMapper.writeValueAsString(apiResponse);
+
+		response.setContentType("application/json");
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.getWriter().write(jsonResponse);
+
+		response.sendRedirect(redirectUrl + "/join/agreement");
+	}
+
+	private void handleSuccessLogin(HttpServletResponse response, User user) throws IOException {
+		TokenDTO tokenDTO = jwtUtil.generateTokens(user.getProviderId());
+
+		long expiration = jwtUtil.getExpiration(tokenDTO.getRefreshToken()).getTime();
+
+		response.addCookie(CookieUtil.createCookie("accessToken", tokenDTO.getAccessToken(), expiration));
+		response.addCookie(CookieUtil.createCookie("refreshToken", tokenDTO.getRefreshToken(), expiration));
+
+		response.sendRedirect(redirectUrl);
+	}
+
 }

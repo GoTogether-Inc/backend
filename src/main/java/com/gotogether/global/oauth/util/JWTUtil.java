@@ -12,10 +12,7 @@ import org.springframework.stereotype.Component;
 import com.gotogether.global.oauth.dto.TokenDTO;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 
 @Component
 public class JWTUtil {
@@ -36,33 +33,12 @@ public class JWTUtil {
 	}
 
 	public String getProviderId(String token) {
-
 		return Jwts.parser()
 			.verifyWith(secretKey)
 			.build()
 			.parseSignedClaims(token)
 			.getPayload()
 			.get("providerId", String.class);
-	}
-
-	public String getRole(String token) {
-
-		return Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload()
-			.get("role", String.class);
-	}
-
-	public String getTokenType(String token) {
-
-		return Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload()
-			.get("tokenType", String.class);
 	}
 
 	public long getRemainingTime(String token) {
@@ -77,7 +53,20 @@ public class JWTUtil {
 		return (expiration.getTime() - now) / 1000;
 	}
 
+	public Date getExpiration(String token) {
+		return Jwts.parser()
+			.setSigningKey(secretKey)
+			.build()
+			.parseClaimsJws(token)
+			.getBody()
+			.getExpiration();
+	}
+
 	public Boolean isExpired(String token) {
+		if (token == null || token.trim().isEmpty()) {
+			return true;
+		}
+
 		try {
 			return Jwts.parser()
 				.verifyWith(secretKey)
@@ -88,23 +77,10 @@ public class JWTUtil {
 				.before(new Date());
 		} catch (ExpiredJwtException e) {
 			return true;
-		} catch (MalformedJwtException e) {
-			System.out.println("Malformed JWT: " + e.getMessage());
-			return true;
-		} catch (SignatureException e) {
-			System.out.println("Invalid signature: " + e.getMessage());
-			return true;
-		} catch (JwtException e) {
-			System.out.println("JWT error: " + e.getMessage());
-			return true;
-		} catch (Exception e) {
-			System.out.println("Unexpected error: " + e.getMessage());
-			return true;
 		}
 	}
 
 	public String createJwt(String providerId, String role, String tokenType, Long expiredMs) {
-
 		return Jwts.builder()
 			.claim("providerId", providerId)
 			.claim("role", role)
@@ -113,19 +89,6 @@ public class JWTUtil {
 			.expiration(new Date(System.currentTimeMillis() + expiredMs * 1000))
 			.signWith(secretKey)
 			.compact();
-	}
-
-	public boolean validateAuthorizationHeader(String authorizationHeader) {
-		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-			return false;
-		}
-
-		String token = extractTokenFromAuthorizationHeader(authorizationHeader);
-		return !isExpired(token);
-	}
-
-	public String extractTokenFromAuthorizationHeader(String authorizationHeader) {
-		return authorizationHeader.replace("Bearer ", "").trim();
 	}
 
 	public TokenDTO generateTokens(String providerId) {

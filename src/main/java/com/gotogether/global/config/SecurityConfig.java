@@ -100,7 +100,6 @@ public class SecurityConfig {
 			.exceptionHandling(exception -> exception
 				.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 			);
-		;
 
 		http
 			.authorizeHttpRequests(registry ->
