@@ -15,6 +15,7 @@ import com.gotogether.global.apipayload.ApiResponse;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.oauth.dto.CustomOAuth2User;
+import com.gotogether.global.oauth.dto.FirstLoginResponseDTO;
 import com.gotogether.global.oauth.dto.TokenDTO;
 import com.gotogether.global.oauth.util.JWTUtil;
 import com.gotogether.global.util.CookieUtil;
@@ -62,20 +63,23 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	}
 
 	private void handleFirstLogin(HttpServletResponse response, User user) throws IOException {
-		UserDetailResponseDTO dto = UserDetailResponseDTO.builder()
+		UserDetailResponseDTO userDto = UserDetailResponseDTO.builder()
 			.id(user.getId())
 			.name(user.getName())
 			.email(user.getEmail())
 			.build();
 
-		ApiResponse<UserDetailResponseDTO> apiResponse = ApiResponse.onSuccess(dto);
+		FirstLoginResponseDTO dto = FirstLoginResponseDTO.builder()
+			.user(userDto)
+			.redirect("/join/agreement")
+			.build();
+
+		ApiResponse<FirstLoginResponseDTO> apiResponse = ApiResponse.onSuccess(dto);
 		String jsonResponse = objectMapper.writeValueAsString(apiResponse);
 
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.getWriter().write(jsonResponse);
-
-		response.sendRedirect(redirectUrl + "/join/agreement");
 	}
 
 	private void handleSuccessLogin(HttpServletResponse response, User user) throws IOException {
@@ -88,5 +92,4 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 		response.sendRedirect(redirectUrl);
 	}
-
 }
