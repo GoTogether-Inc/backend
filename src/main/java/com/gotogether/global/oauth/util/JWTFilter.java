@@ -49,7 +49,7 @@ public class JWTFilter extends OncePerRequestFilter {
 		Map<String, String> tokens = extractTokensFromCookie(request);
 
 		if (tokens.isEmpty() || tokens.get("refreshToken") == null) {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._UNAUTHORIZED);
+			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._TOKEN_NOT_EXISTS);
 			return;
 		}
 
