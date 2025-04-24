@@ -1,10 +1,11 @@
 package com.gotogether.global.oauth.dto;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.gotogether.domain.user.dto.request.UserDTO;
@@ -25,31 +26,19 @@ public class CustomOAuth2User implements OAuth2User {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+	}
 
-		Collection<GrantedAuthority> collection = new ArrayList<>();
-
-		collection.add(() -> "ROLE_USER");
-
-		return collection;
+	@Override
+	public String getName() {
+		return userDTO.getProviderId();
 	}
 
 	public Long getId() {
 		return userDTO.getId();
 	}
 
-	public String getName() {
-		return userDTO.getName();
-	}
-
 	public String getProviderId() {
 		return userDTO.getProviderId();
-	}
-
-	public String getProvider() {
-		return userDTO.getProvider();
-	}
-
-	public String getEmail() {
-		return userDTO.getEmail();
 	}
 }
