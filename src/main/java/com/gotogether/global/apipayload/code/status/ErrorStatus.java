@@ -15,7 +15,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON5000", "서버 에러. 관리자에게 문의하세요."),
 	_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON4000", "잘못된 요청입니다."),
 	_INVALID_AUTH_USER_ERROR(HttpStatus.BAD_REQUEST, "COMMON4001", "사용자 인증에 실패했습니다."),
-	_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON4002", "로그인이 필요합니다."),
+	_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON4002", "인증 정보가 유효하지 않습니다."),
 
 	_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER4001", "사용자가 없습니다."),
 
@@ -46,7 +46,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "TOKEN4001", "토큰이 만료되었습니다."),
 	_TOKEN_TYPE_ERROR(HttpStatus.BAD_REQUEST, "TOKEN4002", "토큰 타입이 잘못되었습니다."),
 	_TOKEN_BLACKLISTED(HttpStatus.UNAUTHORIZED, "TOKEN4003", "로그아웃된 토큰입니다. 다시 로그인해주세요."),
-	_TOKEN_NOT_EXISTS(HttpStatus.UNAUTHORIZED, "TOKEN4004", "토큰이 존재하지 않습니다."),
+	_TOKEN_NOT_EXISTS(HttpStatus.UNAUTHORIZED, "TOKEN4004", "토큰이 존재하지 않습니다. 로그인이 필요합니다."),
 
 	_BOOKMARK_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "이미 북마크된 이벤트입니다."),
 	_BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK4002", "북마크를 찾을 수 없습니다."),
