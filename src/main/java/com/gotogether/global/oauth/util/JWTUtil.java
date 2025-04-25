@@ -20,16 +20,19 @@ public class JWTUtil {
 	private final SecretKey secretKey;
 	private final long accessExpiration;
 	private final long refreshExpiration;
+	private final long tempExpiration;
 
 	public JWTUtil(
 		@Value("${spring.jwt.secret}") String secret,
 		@Value("${spring.jwt.access-token-expiration}") long accessExpiration,
-		@Value("${spring.jwt.refresh-token-expiration}") long refreshExpiration
+		@Value("${spring.jwt.refresh-token-expiration}") long refreshExpiration,
+		@Value("${spring.jwt.temp-token-expiration}") long tempExpiration
 	) {
 		this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
 			Jwts.SIG.HS256.key().build().getAlgorithm());
 		this.accessExpiration = accessExpiration;
 		this.refreshExpiration = refreshExpiration;
+		this.tempExpiration = tempExpiration;
 	}
 
 	public String getProviderId(String token) {
@@ -95,6 +98,13 @@ public class JWTUtil {
 		return TokenDTO.of(
 			createJwt(providerId, "ROLE_USER", "access", accessExpiration),
 			createJwt(providerId, "ROLE_USER", "refresh", refreshExpiration)
+		);
+	}
+
+	public TokenDTO generateTempTokens(String providerId) {
+		return TokenDTO.of(
+			createJwt(providerId, "ROLE_USER", "access", tempExpiration),
+			createJwt(providerId, "ROLE_USER", "refresh", tempExpiration)
 		);
 	}
 }

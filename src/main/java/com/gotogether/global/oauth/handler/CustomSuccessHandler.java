@@ -8,14 +8,11 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gotogether.domain.user.dto.response.UserDetailResponseDTO;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
-import com.gotogether.global.apipayload.ApiResponse;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.oauth.dto.CustomOAuth2User;
-import com.gotogether.global.oauth.dto.FirstLoginResponseDTO;
 import com.gotogether.global.oauth.dto.TokenDTO;
 import com.gotogether.global.oauth.util.JWTUtil;
 import com.gotogether.global.util.CookieUtil;
@@ -63,28 +60,17 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	}
 
 	private void handleFirstLogin(HttpServletResponse response, User user) throws IOException {
-		UserDetailResponseDTO userDto = UserDetailResponseDTO.builder()
-			.id(user.getId())
-			.name(user.getName())
-			.email(user.getEmail())
-			.build();
-
-		FirstLoginResponseDTO dto = FirstLoginResponseDTO.builder()
-			.user(userDto)
-			.redirect("/join/agreement")
-			.build();
-
-		ApiResponse<FirstLoginResponseDTO> apiResponse = ApiResponse.onSuccess(dto);
-		String jsonResponse = objectMapper.writeValueAsString(apiResponse);
-
-		response.setContentType("application/json");
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.getWriter().write(jsonResponse);
+		TokenDTO tokenDTO = jwtUtil.generateTempTokens(user.getProviderId());
+		setTokenCookiesAndRedirect(response, tokenDTO, redirectUrl + "/join/agreement");
 	}
 
 	private void handleSuccessLogin(HttpServletResponse response, User user) throws IOException {
 		TokenDTO tokenDTO = jwtUtil.generateTokens(user.getProviderId());
+		setTokenCookiesAndRedirect(response, tokenDTO, redirectUrl);
+	}
 
+	private void setTokenCookiesAndRedirect(HttpServletResponse response, TokenDTO tokenDTO, String redirectUrl) throws
+		IOException {
 		long expiration = jwtUtil.getExpiration(tokenDTO.getRefreshToken()).getTime();
 
 		response.addCookie(CookieUtil.createCookie("accessToken", tokenDTO.getAccessToken(), expiration));
