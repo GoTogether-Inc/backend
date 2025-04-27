@@ -1,7 +1,6 @@
 package com.gotogether.domain.hashtag.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HashtagRequestDTO {
-	@JsonProperty("hashtagName")
+
+	@NotBlank(message = "해시태그 이름은 필수입니다.")
 	private String hashtagName;
 }
