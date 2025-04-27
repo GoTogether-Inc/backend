@@ -24,13 +24,15 @@ public class UserController {
 	private final UserService userService;
 
 	@PutMapping
-	public ApiResponse<?> updateUser(@RequestBody @Valid UserRequestDTO request) {
+	public ApiResponse<?> updateUser(
+		@RequestBody @Valid UserRequestDTO request) {
 		User user = userService.updateUser(request);
 		return ApiResponse.onSuccess("userId: " + user.getId());
 	}
 
 	@GetMapping
-	public ApiResponse<UserDetailResponseDTO> getDetailUser(@AuthUser Long userId) {
+	public ApiResponse<UserDetailResponseDTO> getDetailUser(
+		@AuthUser Long userId) {
 		UserDetailResponseDTO response = userService.getDetailUser(userId);
 		return ApiResponse.onSuccess(response);
 	}

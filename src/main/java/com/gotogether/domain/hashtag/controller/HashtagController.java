@@ -30,7 +30,8 @@ public class HashtagController {
 	private final HashtagService hashtagService;
 
 	@PostMapping
-	public ApiResponse<?> createHashtag(@RequestBody @Valid HashtagRequestDTO request) {
+	public ApiResponse<?> createHashtag(
+		@RequestBody @Valid HashtagRequestDTO request) {
 		Hashtag hashtag = hashtagService.createHashtag(request);
 		return ApiResponse.onSuccessCreated("hashtagId: " + hashtag.getId());
 	}
@@ -45,14 +46,16 @@ public class HashtagController {
 	}
 
 	@PutMapping("/{hashtagId}")
-	public ApiResponse<?> updateHashtag(@PathVariable Long hashtagId,
+	public ApiResponse<?> updateHashtag(
+		@PathVariable Long hashtagId,
 		@RequestBody @Valid HashtagRequestDTO request) {
 		Hashtag hashtag = hashtagService.updateHashtag(hashtagId, request);
 		return ApiResponse.onSuccess("hashtagId: " + hashtag.getId());
 	}
 
 	@DeleteMapping("/{hashtagId}")
-	public ApiResponse<?> deleteHashtag(@PathVariable Long hashtagId) {
+	public ApiResponse<?> deleteHashtag(
+		@PathVariable Long hashtagId) {
 		hashtagService.deleteHashtag(hashtagId);
 		return ApiResponse.onSuccess("해시태그 삭제 성공");
 	}
