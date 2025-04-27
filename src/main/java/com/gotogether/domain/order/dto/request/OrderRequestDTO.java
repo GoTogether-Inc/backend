@@ -1,19 +1,20 @@
 package com.gotogether.domain.order.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
 public class OrderRequestDTO {
-	@JsonProperty("ticketId")
+
+	@NotNull(message = "티켓 ID는 필수입니다.")
 	private Long ticketId;
 
-	@JsonProperty("eventId")
+	@NotNull(message = "이벤트 ID는 필수입니다.")
 	private Long eventId;
 
-	@JsonProperty("ticketCnt")
+	@Min(value = 1, message = "티켓 개수는 1개 이상이어야 합니다.")
 	private int ticketCnt;
 }
