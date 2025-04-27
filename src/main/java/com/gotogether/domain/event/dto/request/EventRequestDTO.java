@@ -5,64 +5,75 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.OnlineType;
 import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
 public class EventRequestDTO {
-	@JsonProperty("hostChannelId")
+	@NotNull(message = "hostChannelId는 필수입니다.")
 	private Long hostChannelId;
 
-	@JsonProperty("title")
+	@NotBlank(message = "제목은 필수입니다.")
 	private String title;
 
-	@JsonProperty("startDate")
+	@NotNull(message = "시작 날짜는 필수입니다.")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	private LocalDate startDate;
 
-	@JsonProperty("endDate")
+	@NotNull(message = "종료 날짜는 필수입니다.")
+	@Future(message = "종료 날짜는 미래여야 합니다.")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	private LocalDate endDate;
 
-	@JsonProperty("startTime")
+	@NotBlank(message = "시작 시간은 필수입니다.")
+	@Pattern(regexp = "^([01]\\d|2[0-3]):([0-5]\\d)$", message = "시작 시간은 HH:mm 형식이어야 합니다.")
 	private String startTime;
 
-	@JsonProperty("endTime")
+	@NotBlank(message = "종료 시간은 필수입니다.")
+	@Pattern(regexp = "^([01]\\d|2[0-3]):([0-5]\\d)$", message = "종료 시간은 HH:mm 형식이어야 합니다.")
 	private String endTime;
 
-	@JsonProperty("bannerImageUrl")
+	@NotBlank(message = "배너 이미지 URL은 필수입니다.")
 	private String bannerImageUrl;
 
-	@JsonProperty("description")
+	@NotBlank(message = "설명은 필수입니다.")
 	private String description;
 
-	@JsonProperty("referenceLinks")
+	@Valid
 	private List<ReferenceLinkDTO> referenceLinks;
 
-	@JsonProperty("onlineType")
+	@NotNull(message = "온라인 타입은 필수입니다.")
 	private OnlineType onlineType;
 
-	@JsonProperty("address")
+	@NotNull(message = "주소는 필수입니다.")
 	private String address;
 
-	@JsonProperty("location")
+	@NotNull(message = "좌표는 필수입니다.")
 	private Map<String, Double> location;
 
-	@JsonProperty("category")
+	@NotNull(message = "카테고리는 필수입니다.")
 	private Category category;
 
-	@JsonProperty("hashtags")
+	@Size(max = 5, message = "해시태그는 최대 5개까지 가능합니다.")
 	private List<String> hashtags;
 
-	@JsonProperty("organizerEmail")
+	@NotBlank(message = "이메일은 필수입니다.")
+	@Email(message = "올바른 이메일 형식이어야 합니다.")
 	private String organizerEmail;
 
-	@JsonProperty("organizerPhoneNumber")
+	@NotBlank(message = "전화번호는 필수입니다.")
+	@Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "올바른 전화번호 형식이어야 합니다.")
 	private String organizerPhoneNumber;
 }

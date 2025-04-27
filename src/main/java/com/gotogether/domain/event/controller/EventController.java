@@ -23,6 +23,7 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.service.EventService;
 import com.gotogether.global.apipayload.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -33,19 +34,22 @@ public class EventController {
 	private final EventService eventService;
 
 	@PostMapping
-	public ApiResponse<?> createEvent(@RequestBody EventRequestDTO request) {
+	public ApiResponse<?> createEvent(
+		@RequestBody @Valid EventRequestDTO request) {
 		Event event = eventService.createEvent(request);
 		return ApiResponse.onSuccessCreated("eventId: " + event.getId());
 	}
 
 	@GetMapping("/{eventId}")
-	public ApiResponse<EventDetailResponseDTO> getDetailEvent(@PathVariable Long eventId) {
+	public ApiResponse<EventDetailResponseDTO> getDetailEvent(
+		@PathVariable Long eventId) {
 		return ApiResponse.onSuccess(eventService.getDetailEvent(eventId));
 	}
 
 	@PutMapping("/{eventId}")
-	public ApiResponse<?> updateEvent(@PathVariable Long eventId,
-		@RequestBody EventRequestDTO request) {
+	public ApiResponse<?> updateEvent(
+		@PathVariable Long eventId,
+		@RequestBody @Valid EventRequestDTO request) {
 		Event event = eventService.updateEvent(eventId, request);
 		return ApiResponse.onSuccess("eventId: " + event.getId());
 	}
