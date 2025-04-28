@@ -1,22 +1,24 @@
 package com.gotogether.domain.hostchannel.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
 public class HostChannelRequestDTO {
-	@JsonProperty("profileImageUrl")
+
+	@NotBlank(message = "프로필 이미지 URL은 필수입니다.")
 	private String profileImageUrl;
 
-	@JsonProperty("hostChannelName")
+	@NotBlank(message = "호스트 채널명은 필수입니다.")
 	private String hostChannelName;
 
-	@JsonProperty("hostEmail")
+	@NotBlank(message = "호스트 이메일은 필수입니다.")
+	@Email(message = "올바른 이메일 형식이어야 합니다.")
 	private String hostEmail;
 
-	@JsonProperty("channelDescription")
+	@NotBlank(message = "채널 설명은 필수입니다.")
 	private String channelDescription;
 }

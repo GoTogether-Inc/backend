@@ -29,6 +29,7 @@ import com.gotogether.domain.hostchannel.service.HostChannelService;
 import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -39,8 +40,9 @@ public class HostChannelController {
 	private final HostChannelService hostChannelService;
 
 	@PostMapping
-	public ApiResponse<?> createEvent(@AuthUser Long userId,
-		@RequestBody HostChannelRequestDTO request) {
+	public ApiResponse<?> createEvent(
+		@AuthUser Long userId,
+		@RequestBody @Valid HostChannelRequestDTO request) {
 		HostChannel hostChannel = hostChannelService.createHostChannel(userId, request);
 		return ApiResponse.onSuccessCreated("hostChannelId: " + hostChannel.getId());
 	}
@@ -56,12 +58,14 @@ public class HostChannelController {
 	}
 
 	@GetMapping("/{hostChannelId}")
-	public ApiResponse<HostChannelDetailResponseDTO> getDetailHostChannel(@PathVariable Long hostChannelId) {
+	public ApiResponse<HostChannelDetailResponseDTO> getDetailHostChannel(
+		@PathVariable Long hostChannelId) {
 		return ApiResponse.onSuccess(hostChannelService.getDetailHostChannel(hostChannelId));
 	}
 
 	@GetMapping("/{hostChannelId}/info")
-	public ApiResponse<HostChannelInfoResponseDTO> getHostChannelInfo(@PathVariable Long hostChannelId) {
+	public ApiResponse<HostChannelInfoResponseDTO> getHostChannelInfo(
+		@PathVariable Long hostChannelId) {
 		return ApiResponse.onSuccess(hostChannelService.getHostChannelInfo(hostChannelId));
 	}
 
@@ -76,20 +80,23 @@ public class HostChannelController {
 	}
 
 	@PutMapping("/{hostChannelId}")
-	public ApiResponse<?> updateHostChannel(@PathVariable Long hostChannelId,
-		@RequestBody HostChannelRequestDTO request) {
+	public ApiResponse<?> updateHostChannel(
+		@PathVariable Long hostChannelId,
+		@RequestBody @Valid HostChannelRequestDTO request) {
 		HostChannel hostChannel = hostChannelService.updateHostChannel(hostChannelId, request);
 		return ApiResponse.onSuccess("hostChannelId: " + hostChannel.getId());
 	}
 
 	@DeleteMapping("/{hostChannelId}")
-	public ApiResponse<?> deleteHostChannel(@PathVariable Long hostChannelId) {
+	public ApiResponse<?> deleteHostChannel(
+		@PathVariable Long hostChannelId) {
 		hostChannelService.deleteHostChannel(hostChannelId);
 		return ApiResponse.onSuccess("호스트 채널 삭제 성공");
 	}
 
 	@PostMapping("/{hostChannelId}/members")
-	public ApiResponse<?> addMember(@PathVariable Long hostChannelId,
+	public ApiResponse<?> addMember(
+		@PathVariable Long hostChannelId,
 		@RequestParam(value = "email") String email) {
 		hostChannelService.addMember(hostChannelId, email);
 		return ApiResponse.onSuccess("멤버 초대 성공");
@@ -122,7 +129,8 @@ public class HostChannelController {
 	}
 
 	@PatchMapping("/dashboard/participant-management/approve")
-	public ApiResponse<?> approveOrderStatus(@RequestBody OrderStatusRequestDTO request) {
+	public ApiResponse<?> approveOrderStatus(
+		@RequestBody @Valid OrderStatusRequestDTO request) {
 		hostChannelService.approveOrderStatus(request.getOrderId());
 		return ApiResponse.onSuccess("주문 승인 완료");
 	}
