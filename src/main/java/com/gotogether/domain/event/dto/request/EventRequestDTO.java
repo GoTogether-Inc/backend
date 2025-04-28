@@ -58,7 +58,7 @@ public class EventRequestDTO {
 	@NotNull(message = "온라인 타입은 필수입니다.")
 	private OnlineType onlineType;
 
-	@NotNull(message = "주소는 필수입니다.")
+	@NotBlank(message = "주소는 필수입니다.")
 	private String address;
 
 	@NotNull(message = "좌표는 필수입니다.")
