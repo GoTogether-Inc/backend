@@ -32,6 +32,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' //AWS
     implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-validation' // Validation
 
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'

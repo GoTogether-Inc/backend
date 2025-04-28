@@ -17,6 +17,7 @@ import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.service.TicketService;
 import com.gotogether.global.apipayload.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -27,19 +28,22 @@ public class TicketController {
 	private final TicketService ticketService;
 
 	@PostMapping
-	public ApiResponse<?> createTicket(@RequestBody TicketRequestDTO request) {
+	public ApiResponse<?> createTicket(
+		@RequestBody @Valid TicketRequestDTO request) {
 		Ticket ticket = ticketService.createTicket(request);
 		return ApiResponse.onSuccessCreated("ticketId: " + ticket.getId());
 	}
 
 	@GetMapping
-	public ApiResponse<?> getTickets(@RequestParam Long eventId) {
+	public ApiResponse<?> getTickets(
+		@RequestParam Long eventId) {
 		List<TicketListResponseDTO> ticketList = ticketService.getTickets(eventId);
 		return ApiResponse.onSuccess(ticketList);
 	}
 
 	@DeleteMapping("/{ticketId}")
-	public ApiResponse<?> deleteTicket(@PathVariable Long ticketId) {
+	public ApiResponse<?> deleteTicket(
+		@PathVariable Long ticketId) {
 		ticketService.deleteTicket(ticketId);
 		return ApiResponse.onSuccess("티켓 삭제 성공");
 	}

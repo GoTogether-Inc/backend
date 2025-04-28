@@ -18,6 +18,7 @@ import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.reservationemail.service.ReservationEmailService;
 import com.gotogether.global.apipayload.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,13 +29,15 @@ public class ReservationEmailController {
 	private final ReservationEmailService reservationEmailService;
 
 	@PostMapping
-	public ApiResponse<?> createReservationEmail(@RequestBody ReservationEmailRequestDTO request) {
+	public ApiResponse<?> createReservationEmail(
+		@RequestBody @Valid ReservationEmailRequestDTO request) {
 		ReservationEmail reservationEmail = reservationEmailService.createReservationEmail(request);
 		return ApiResponse.onSuccessCreated("reservationEmailId: " + reservationEmail.getId());
 	}
 
 	@GetMapping
-	public ApiResponse<?> getReservationEmails(@RequestParam Long eventId,
+	public ApiResponse<?> getReservationEmails(
+		@RequestParam Long eventId,
 		@RequestParam(required = false) String status) {
 		List<ReservationEmailDetailResponseDTO> reservationEmailList = reservationEmailService.getReservationEmails(
 			eventId, status);
@@ -42,14 +45,16 @@ public class ReservationEmailController {
 	}
 
 	@PutMapping("/{reservationEmailId}")
-	public ApiResponse<?> updateReservationEmail(@PathVariable Long reservationEmailId,
-		@RequestBody ReservationEmailRequestDTO request) {
+	public ApiResponse<?> updateReservationEmail(
+		@PathVariable Long reservationEmailId,
+		@RequestBody @Valid ReservationEmailRequestDTO request) {
 		ReservationEmail reservationEmail = reservationEmailService.updateReservationEmail(reservationEmailId, request);
 		return ApiResponse.onSuccess("reservationEmailId: " + reservationEmail.getId());
 	}
 
 	@DeleteMapping("/{reservationEmailId}")
-	public ApiResponse<?> deleteReservationEmail(@PathVariable Long reservationEmailId) {
+	public ApiResponse<?> deleteReservationEmail(
+		@PathVariable Long reservationEmailId) {
 		reservationEmailService.deleteReservationEmail(reservationEmailId);
 		return ApiResponse.onSuccess("이벤트에 대한 예약 알림 삭제 성공");
 	}
