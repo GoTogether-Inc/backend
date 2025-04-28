@@ -22,6 +22,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class EventRequestDTO {
+
 	@NotNull(message = "hostChannelId는 필수입니다.")
 	private Long hostChannelId;
 
