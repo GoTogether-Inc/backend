@@ -11,7 +11,7 @@ import lombok.Getter;
 @Builder
 public class UserRequestDTO {
 
-	@NotNull(message = "사용자 ID는 필수입니다.")
+	@NotNull(message = "userId는 필수입니다.")
 	private Long id;
 
 	@NotBlank(message = "이름은 필수입니다.")
