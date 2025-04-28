@@ -20,6 +20,7 @@ import com.gotogether.domain.order.service.OrderService;
 import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,7 +33,7 @@ public class OrderController {
 	@PostMapping
 	public ApiResponse<?> createOrder(
 		@AuthUser Long userId,
-		@RequestBody OrderRequestDTO request) {
+		@RequestBody @Valid OrderRequestDTO request) {
 		List<Order> orders = orderService.createOrder(request, userId);
 
 		List<Long> orderIds = orders.stream()
