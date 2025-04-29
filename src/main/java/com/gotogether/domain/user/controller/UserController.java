@@ -24,9 +24,10 @@ public class UserController {
 	private final UserService userService;
 
 	@PutMapping
-	public ApiResponse<?> updateUser(
+	public ApiResponse<?> updateNameAndPhoneNumber(
+		@AuthUser Long userId,
 		@RequestBody @Valid UserRequestDTO request) {
-		User user = userService.updateUser(request);
+		User user = userService.updateNameAndPhoneNumber(userId, request);
 		return ApiResponse.onSuccess("userId: " + user.getId());
 	}
 

@@ -61,12 +61,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	private void handleFirstLogin(HttpServletResponse response, User user) throws IOException {
 		TokenDTO tokenDTO = jwtUtil.generateTempTokens(user.getProviderId());
-		setTokenCookiesAndRedirect(response, tokenDTO, redirectUrl + "/join/agreement");
+		setTokenCookiesAndRedirect(response, tokenDTO, redirectUrl + "new");
 	}
 
 	private void handleSuccessLogin(HttpServletResponse response, User user) throws IOException {
 		TokenDTO tokenDTO = jwtUtil.generateTokens(user.getProviderId());
-		setTokenCookiesAndRedirect(response, tokenDTO, redirectUrl);
+		setTokenCookiesAndRedirect(response, tokenDTO, redirectUrl + "existing");
 	}
 
 	private void setTokenCookiesAndRedirect(HttpServletResponse response, TokenDTO tokenDTO, String redirectUrl) throws

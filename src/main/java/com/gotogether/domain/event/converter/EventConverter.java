@@ -1,7 +1,6 @@
 package com.gotogether.domain.event.converter;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,12 +21,12 @@ public class EventConverter {
 		return Event.builder()
 			.title(request.getTitle())
 			.description(request.getDescription())
-			.startDate(request.getStartDate().atTime(LocalTime.parse(request.getStartTime())))
-			.endDate(request.getEndDate().atTime(LocalTime.parse(request.getEndTime())))
+			.startDate(request.getStartDate())
+			.endDate(request.getEndDate())
 			.bannerImageUrl(request.getBannerImageUrl())
 			.address(request.getAddress())
-			.locationLat(request.getLocation().get("lat"))
-			.locationLng(request.getLocation().get("lng"))
+			.locationLat(request.getLocationLat())
+			.locationLng(request.getLocationLng())
 			.onlineType(request.getOnlineType())
 			.category(request.getCategory())
 			.organizerEmail(request.getOrganizerEmail())

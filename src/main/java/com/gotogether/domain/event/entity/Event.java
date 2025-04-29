@@ -1,16 +1,15 @@
 package com.gotogether.domain.event.entity;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
 import com.gotogether.domain.eventhashtag.entity.EventHashtag;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.entity.ReferenceLink;
+import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.global.common.entity.BaseEntity;
 
@@ -55,7 +54,7 @@ public class Event extends BaseEntity {
 	@Column(name = "banner_image_url", nullable = false)
 	private String bannerImageUrl;
 
-	@Column(name = "address", nullable = false)
+	@Column(name = "address")
 	private String address;
 
 	@Column(name = "location_lat", nullable = false)
@@ -119,12 +118,12 @@ public class Event extends BaseEntity {
 	public void update(EventRequestDTO request) {
 		this.title = request.getTitle();
 		this.description = request.getDescription();
-		this.startDate = request.getStartDate().atTime(LocalTime.parse(request.getStartTime()));
-		this.endDate = request.getEndDate().atTime(LocalTime.parse(request.getEndTime()));
+		this.startDate = request.getStartDate();
+		this.endDate = request.getEndDate();
 		this.bannerImageUrl = request.getBannerImageUrl();
 		this.address = request.getAddress();
-		this.locationLat = request.getLocation().get("lat");
-		this.locationLng = request.getLocation().get("lng");
+		this.locationLat = request.getLocationLat();
+		this.locationLng = request.getLocationLng();
 		this.onlineType = request.getOnlineType();
 		this.category = request.getCategory();
 		this.organizerEmail = request.getOrganizerEmail();
