@@ -5,12 +5,12 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
 import com.gotogether.domain.eventhashtag.entity.EventHashtag;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.entity.ReferenceLink;
+import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.global.common.entity.BaseEntity;
 
@@ -55,7 +55,7 @@ public class Event extends BaseEntity {
 	@Column(name = "banner_image_url", nullable = false)
 	private String bannerImageUrl;
 
-	@Column(name = "address", nullable = false)
+	@Column(name = "address")
 	private String address;
 
 	@Column(name = "location_lat", nullable = false)
