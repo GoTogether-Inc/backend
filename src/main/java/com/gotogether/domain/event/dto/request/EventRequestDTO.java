@@ -2,7 +2,6 @@ package com.gotogether.domain.event.dto.request;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gotogether.domain.event.entity.Category;
@@ -61,8 +60,11 @@ public class EventRequestDTO {
 	@NotBlank(message = "주소는 필수입니다.")
 	private String address;
 
-	@NotNull(message = "좌표는 필수입니다.")
-	private Map<String, Double> location;
+	@NotNull(message = "위도는 필수입니다.")
+	private Double locationLat;
+
+	@NotNull(message = "경도는 필수입니다.")
+	private Double locationLng;
 
 	@NotNull(message = "카테고리는 필수입니다.")
 	private Category category;
