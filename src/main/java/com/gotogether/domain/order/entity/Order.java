@@ -44,7 +44,7 @@ public class Order extends BaseEntity {
 	@JoinColumn(name = "ticket_id", nullable = false)
 	private Ticket ticket;
 
-	@OneToOne(mappedBy = "order", fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "order")
 	private TicketQrCode ticketQrCode;
 
 	@Builder

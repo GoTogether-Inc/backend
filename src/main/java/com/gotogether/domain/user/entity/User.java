@@ -33,13 +33,13 @@ public class User extends BaseEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "phone_number", nullable = true, unique = true)
+	@Column(name = "phone_number", unique = true)
 	private String phoneNumber;
 
 	@Column(name = "email", nullable = false)
 	private String email;
 
-	@Column(name = "provider")
+	@Column(name = "provider", nullable = false)
 	private String provider;
 
 	@Column(name = "provider_id", nullable = false)
