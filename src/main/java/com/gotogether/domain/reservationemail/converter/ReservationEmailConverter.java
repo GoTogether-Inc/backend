@@ -1,7 +1,5 @@
 package com.gotogether.domain.reservationemail.converter;
 
-import java.time.LocalTime;
-
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.reservationemail.dto.request.ReservationEmailRequestDTO;
 import com.gotogether.domain.reservationemail.dto.response.ReservationEmailDetailResponseDTO;
@@ -16,7 +14,7 @@ public class ReservationEmailConverter {
 			.recipients(request.getRecipients())
 			.title(request.getTitle())
 			.content(request.getContent())
-			.reservationDate(request.getReservationDate().atTime(LocalTime.parse(request.getReservationTime())))
+			.reservationDate(request.getReservationDate())
 			.build();
 	}
 
