@@ -1,7 +1,6 @@
 package com.gotogether.domain.reservationemail.entity;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 import com.gotogether.domain.event.entity.Event;
@@ -71,7 +70,7 @@ public class ReservationEmail extends BaseEntity {
 		this.recipients = request.getRecipients();
 		this.title = request.getTitle();
 		this.content = request.getContent();
-		this.reservationDate = request.getReservationDate().atTime(LocalTime.parse(request.getReservationTime()));
+		this.reservationDate = request.getReservationDate();
 	}
 
 	public void markAsSent() {
