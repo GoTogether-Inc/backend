@@ -18,6 +18,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON4002", "인증 정보가 유효하지 않습니다."),
 
 	_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER4001", "사용자가 없습니다."),
+	_USER_PHONE_NUMBER_DUPLICATE(HttpStatus.BAD_REQUEST, "USER4002", "이미 등록된 전화번호입니다."),
 
 	_EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "EVENT4001", "이벤트가 없습니다."),
 

@@ -9,6 +9,8 @@ import com.gotogether.domain.user.dto.request.UserRequestDTO;
 import com.gotogether.domain.user.dto.response.UserDetailResponseDTO;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,10 @@ public class UserServiceImpl implements UserService {
 	public User updateNameAndPhoneNumber(Long userId, UserRequestDTO request) {
 		User user = eventFacade.getUserById(userId);
 
+		if (isPhoneNumberDuplicate(request.getPhoneNumber())) {
+			throw new GeneralException(ErrorStatus._USER_PHONE_NUMBER_DUPLICATE);
+		}
+
 		user.updateName(request.getName());
 		user.updatePhoneNumber(request.getPhoneNumber());
 		userRepository.save(user);
@@ -37,5 +43,9 @@ public class UserServiceImpl implements UserService {
 		User user = eventFacade.getUserById(userId);
 
 		return UserConverter.toUserDetailResponseDTO(user);
+	}
+
+	private boolean isPhoneNumberDuplicate(String phoneNumber) {
+		return userRepository.existsByPhoneNumber(phoneNumber);
 	}
 }
