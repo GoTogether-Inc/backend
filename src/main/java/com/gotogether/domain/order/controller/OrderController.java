@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
+import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.service.OrderService;
 import com.gotogether.global.annotation.AuthUser;
@@ -68,5 +69,14 @@ public class OrderController {
 		@RequestParam(value = "orderId") Long orderId) {
 		orderService.cancelOrder(userId, orderId);
 		return ApiResponse.onSuccess("주문 취소 성공");
+	}
+
+	@GetMapping("/purchaser-emails")
+	public ApiResponse<List<TicketPurchaserEmailResponseDTO>> getPurchaserEmails(
+		@RequestParam("eventId") Long eventId,
+		@RequestParam(value = "ticketId", required = false) Long ticketId
+	) {
+		List<TicketPurchaserEmailResponseDTO> purchaserEmails = orderService.getPurchaserEmails(eventId, ticketId);
+		return ApiResponse.onSuccess(purchaserEmails);
 	}
 }
