@@ -71,10 +71,10 @@ public class OrderController {
 	}
 
 	@GetMapping("/purchaser-emails")
-	public ApiResponse<List<TicketPurchaserEmailResponseDTO>> getPurchaserEmails(
+	public ApiResponse<TicketPurchaserEmailResponseDTO> getPurchaserEmails(
 		@RequestParam("eventId") Long eventId,
 		@RequestParam(value = "ticketId", required = false) Long ticketId) {
-		List<TicketPurchaserEmailResponseDTO> purchaserEmails = orderService.getPurchaserEmails(eventId, ticketId);
+		TicketPurchaserEmailResponseDTO purchaserEmails = orderService.getPurchaserEmails(eventId, ticketId);
 		return ApiResponse.onSuccess(purchaserEmails);
 	}
 }

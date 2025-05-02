@@ -1,5 +1,7 @@
 package com.gotogether.domain.order.dto.response;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,5 +11,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class TicketPurchaserEmailResponseDTO {
-	private String email;
+	private List<String> email;
 }

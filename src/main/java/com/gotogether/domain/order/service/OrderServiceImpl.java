@@ -139,17 +139,15 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TicketPurchaserEmailResponseDTO> getPurchaserEmails(Long eventId, Long ticketId) {
+	public TicketPurchaserEmailResponseDTO getPurchaserEmails(Long eventId, Long ticketId) {
+		List<String> purchaserEmails;
+
 		if (ticketId != null) {
-			List<String> purchaserEmails = orderRepository.findPurchaserEmailsByTicketId(ticketId);
-			return purchaserEmails.stream()
-				.map(TicketPurchaserEmailResponseDTO::new)
-				.toList();
+			purchaserEmails = orderRepository.findPurchaserEmailsByTicketId(ticketId);
+		} else {
+			purchaserEmails = orderRepository.findPurchaserEmailsByEventId(eventId);
 		}
 
-		List<String> purchaserEmails = orderRepository.findPurchaserEmailsByEventId(eventId);
-		return purchaserEmails.stream()
-			.map(TicketPurchaserEmailResponseDTO::new)
-			.toList();
+		return new TicketPurchaserEmailResponseDTO(purchaserEmails);
 	}
 }

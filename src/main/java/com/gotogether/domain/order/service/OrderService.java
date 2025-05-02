@@ -20,5 +20,5 @@ public interface OrderService {
 
 	void cancelOrder(Long userId, Long orderId);
 
-	List<TicketPurchaserEmailResponseDTO> getPurchaserEmails(Long eventId, Long ticketId);
+	TicketPurchaserEmailResponseDTO getPurchaserEmails(Long eventId, Long ticketId);
 }
