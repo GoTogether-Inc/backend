@@ -58,8 +58,7 @@ public class OrderController {
 	public ApiResponse<OrderInfoResponseDTO> getPurchaseConfirmation(
 		@AuthUser Long userId,
 		@RequestParam Long ticketId,
-		@RequestParam Long eventId
-	) {
+		@RequestParam Long eventId) {
 		return ApiResponse.onSuccess(orderService.getPurchaseConfirmation(userId, ticketId, eventId));
 	}
 
@@ -74,8 +73,7 @@ public class OrderController {
 	@GetMapping("/purchaser-emails")
 	public ApiResponse<List<TicketPurchaserEmailResponseDTO>> getPurchaserEmails(
 		@RequestParam("eventId") Long eventId,
-		@RequestParam(value = "ticketId", required = false) Long ticketId
-	) {
+		@RequestParam(value = "ticketId", required = false) Long ticketId) {
 		List<TicketPurchaserEmailResponseDTO> purchaserEmails = orderService.getPurchaserEmails(eventId, ticketId);
 		return ApiResponse.onSuccess(purchaserEmails);
 	}
