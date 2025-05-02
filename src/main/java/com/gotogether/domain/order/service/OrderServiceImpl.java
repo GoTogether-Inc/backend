@@ -148,6 +148,6 @@ public class OrderServiceImpl implements OrderService {
 			purchaserEmails = orderRepository.findPurchaserEmailsByEventId(eventId);
 		}
 
-		return new TicketPurchaserEmailResponseDTO(purchaserEmails);
+		return OrderConverter.toPurchaserEmailResponseDTO(purchaserEmails);
 	}
 }
