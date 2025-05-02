@@ -61,8 +61,7 @@ public class OrderConverter {
 			.build();
 	}
 
-	public static OrderInfoResponseDTO toOrderInfoResponseDTO(
-		Order order, Event event) {
+	public static OrderInfoResponseDTO toOrderInfoResponseDTO(Order order, Event event) {
 		return OrderInfoResponseDTO.builder()
 			.id(order.getId())
 			.title(event.getTitle())
