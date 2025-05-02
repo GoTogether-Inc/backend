@@ -15,6 +15,7 @@ import com.gotogether.domain.order.converter.OrderConverter;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
+import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.repository.OrderRepository;
@@ -134,5 +135,19 @@ public class OrderServiceImpl implements OrderService {
 		ticket.decreaseAvailableQuantity();
 
 		return order;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public TicketPurchaserEmailResponseDTO getPurchaserEmails(Long eventId, Long ticketId) {
+		List<String> purchaserEmails;
+
+		if (ticketId != null) {
+			purchaserEmails = orderRepository.findPurchaserEmailsByTicketId(ticketId);
+		} else {
+			purchaserEmails = orderRepository.findPurchaserEmailsByEventId(eventId);
+		}
+
+		return OrderConverter.toPurchaserEmailResponseDTO(purchaserEmails);
 	}
 }
