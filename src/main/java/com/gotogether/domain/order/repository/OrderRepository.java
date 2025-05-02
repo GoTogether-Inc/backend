@@ -42,7 +42,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	List<Order> findOrderByUserAndTicket(User user, Ticket ticket);
 
 	@Query("""
-			SELECT o.user.email
+			SELECT DISTINCT o.user.email
 			FROM Order o
 			WHERE o.ticket.id = :ticketId
 			AND o.status = 'COMPLETED'
