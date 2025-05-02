@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,10 +63,10 @@ public class OrderController {
 		return ApiResponse.onSuccess(orderService.getPurchaseConfirmation(userId, ticketId, eventId));
 	}
 
-	@PostMapping("/cancel")
+	@PostMapping("/{orderId}/cancel")
 	public ApiResponse<?> cancelOrder(
 		@AuthUser Long userId,
-		@RequestParam(value = "orderId") Long orderId) {
+		@PathVariable("orderId") Long orderId) {
 		orderService.cancelOrder(userId, orderId);
 		return ApiResponse.onSuccess("주문 취소 성공");
 	}
