@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.event.entity.OnlineType;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.converter.OrderConverter;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
@@ -125,12 +126,16 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	private Order createTicketOrder(User user, Ticket ticket) {
-		OrderStatus status = (ticket.getType() == TicketType.FIRST_COME) ? OrderStatus.COMPLETED : OrderStatus.PENDING;
+		Event event = ticket.getEvent();
+
+		OrderStatus status = (ticket.getType() == TicketType.FIRST_COME)
+			? OrderStatus.COMPLETED
+			: OrderStatus.PENDING;
 
 		Order order = OrderConverter.of(user, ticket, status);
 		orderRepository.save(order);
 
-		if (ticket.getType() == TicketType.FIRST_COME) {
+		if (ticket.getType() == TicketType.FIRST_COME && event.getOnlineType() == OnlineType.OFFLINE) {
 			TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
 			order.updateTicketQrCode(ticketQrCode);
 

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
 import com.gotogether.domain.channelorganizer.repository.ChannelOrganizerRepository;
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.event.entity.OnlineType;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.hostchannel.converter.HostChannelConverter;
@@ -205,17 +206,18 @@ public class HostChannelServiceImpl implements HostChannelService {
 	@Override
 	@Transactional
 	public void approveOrderStatus(Long orderId) {
-
 		Order order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
 
 		validateOrderStatus(order.getStatus());
 
-		TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
-		order.updateTicketQrCode(ticketQrCode);
-		order.approveOrder();
+		if (order.getTicket().getEvent().getOnlineType() == OnlineType.OFFLINE) {
+			TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
+			order.updateTicketQrCode(ticketQrCode);
 
-		orderRepository.save(order);
+			orderRepository.save(order);
+		}
+		order.approveOrder();
 	}
 
 	private User getUser(Long userId) {
