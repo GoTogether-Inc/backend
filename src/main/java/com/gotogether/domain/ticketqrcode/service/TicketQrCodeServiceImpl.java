@@ -9,9 +9,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.gotogether.domain.event.entity.Event;
-import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.domain.ticket.entity.TicketType;
+import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.ticketqrcode.entity.TicketStatus;
 import com.gotogether.domain.ticketqrcode.repository.TicketQrCodeRepository;
@@ -29,9 +27,8 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 
 	@Override
 	@Transactional
-	public TicketQrCode createQrCode(Event event, Ticket ticket, TicketType ticketType) {
-
-		String qrCodeImageUrl = generateQrCodeImageUrl(event, ticket);
+	public TicketQrCode createQrCode(Order order) {
+		String qrCodeImageUrl = generateQrCodeImageUrl(order);
 
 		TicketQrCode ticketQrCode = TicketQrCode.builder()
 			.qrCodeImageUrl(qrCodeImageUrl)
@@ -49,16 +46,12 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 		ticketQrCodeRepository.deleteByOrderId(orderId);
 	}
 
-	private String generateQrCodeImageUrl(Event Event, Ticket ticket) {
-
+	private String generateQrCodeImageUrl(Order order) {
 		try {
-
 			int width = 200;
 			int height = 200;
 
-			Long eventId = Event.getId();
-			Long ticketId = ticket.getId();
-			String qrCodeId = "ticketId:" + ticketId + "-" + "eventId: " + eventId;
+			String qrCodeId = "orderId-" + order.getId();
 
 			BitMatrix encode = new MultiFormatWriter()
 				.encode(qrCodeId, BarcodeFormat.QR_CODE, width, height);
