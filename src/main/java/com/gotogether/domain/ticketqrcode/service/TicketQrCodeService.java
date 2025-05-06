@@ -7,4 +7,6 @@ public interface TicketQrCodeService {
 	TicketQrCode createQrCode(Order order);
 
 	void deleteQrCode(Long orderId);
+
+	void validateSignedQrCode(Long orderId, String sig);
 }

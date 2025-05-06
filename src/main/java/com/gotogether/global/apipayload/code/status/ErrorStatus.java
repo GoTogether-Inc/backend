@@ -37,10 +37,13 @@ public enum ErrorStatus implements BaseErrorCode {
 	_TICKET_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "TICKET4002", "남은 티켓 수량이 부족합니다."),
 	_TICKET_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "TICKET4003", "이미 종료된 티켓입니다."),
 
+	_QR_CODE_ALREADY_USED(HttpStatus.BAD_REQUEST, "QR_CODE4001", "이미 사용된 QR 코드입니다."),
+	_INVALID_QR_CODE_FORMAT(HttpStatus.BAD_REQUEST, "QR_CODE4002", "잘못된 QR 코드 형식입니다."),
+	_QR_CODE_INVALID_SIGNATURE(HttpStatus.BAD_REQUEST, "QR_CODE4003", "QR 코드 서명이 유효하지 않습니다."),
 	_QR_CODE_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "QR_CODE5001", "QR 코드 생성에 실패하였습니다."),
 
 	_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER4001", "주문이 없습니다."),
-	_ORDER_NOT_MATCH_USER(HttpStatus.BAD_REQUEST, "ORDER4002", "주문과 사용자가 일치하지 않습니다."),
+	_ORDER_NOT_MATCH_USER(HttpStatus.BAD_REQUEST, "ORDER4002", "주문과 사용자 정보가 일치하지 않습니다."),
 	_ORDER_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "ORDER4003", "이미 취소된 주문입니다."),
 	_ORDER_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "ORDER4004", "이미 승인된 주문입니다."),
 

@@ -3,12 +3,17 @@ package com.gotogether.domain.ticketqrcode.service;
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
+import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.ticketqrcode.entity.TicketStatus;
@@ -24,11 +29,15 @@ import lombok.RequiredArgsConstructor;
 public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 
 	private final TicketQrCodeRepository ticketQrCodeRepository;
+	private final EventFacade eventFacade;
+
+	@Value("${qr.secret-key}")
+	private String qrSecretKey;
 
 	@Override
 	@Transactional
 	public TicketQrCode createQrCode(Order order) {
-		String qrCodeImageUrl = generateQrCodeImageUrl(order);
+		String qrCodeImageUrl = generateSignedQrCodeImage(order);
 
 		TicketQrCode ticketQrCode = TicketQrCode.builder()
 			.qrCodeImageUrl(qrCodeImageUrl)
@@ -46,15 +55,28 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 		ticketQrCodeRepository.deleteByOrderId(orderId);
 	}
 
-	private String generateQrCodeImageUrl(Order order) {
+	@Override
+	@Transactional
+	public void validateSignedQrCode(Long orderId, String sig) {
+		validateSignature(orderId, sig);
+
+		Order order = eventFacade.getOrderById(orderId);
+
+		TicketQrCode qrCode = getAvailableQrCode(order);
+		qrCode.updateStatus(TicketStatus.USED);
+	}
+
+	private String generateSignedQrCodeImage(Order order) {
 		try {
 			int width = 200;
 			int height = 200;
 
-			String qrCodeId = "orderId-" + order.getId();
+			String orderData = "orderId-" + order.getId();
+			String signature = hmacSHA256(orderData, qrSecretKey);
+			String qrCodePayload = orderData + "&sig=" + signature;
 
 			BitMatrix encode = new MultiFormatWriter()
-				.encode(qrCodeId, BarcodeFormat.QR_CODE, width, height);
+				.encode(qrCodePayload, BarcodeFormat.QR_CODE, width, height);
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -65,5 +87,38 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 		} catch (Exception e) {
 			throw new GeneralException(ErrorStatus._QR_CODE_GENERATION_FAILED);
 		}
+	}
+
+	private String hmacSHA256(String data, String secret) {
+		try {
+			Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+			SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
+			sha256_HMAC.init(secret_key);
+
+			byte[] hash = sha256_HMAC.doFinal(data.getBytes());
+
+			return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+		} catch (Exception e) {
+			throw new RuntimeException("HMAC SHA256 signing failed", e);
+		}
+	}
+
+	private void validateSignature(Long orderId, String sig) {
+		String orderData = "orderId-" + orderId;
+		String newSignature = hmacSHA256(orderData, qrSecretKey);
+
+		if (!newSignature.equals(sig)) {
+			throw new GeneralException(ErrorStatus._QR_CODE_INVALID_SIGNATURE);
+		}
+	}
+
+	private TicketQrCode getAvailableQrCode(Order order) {
+		TicketQrCode qrCode = order.getTicketQrCode();
+
+		if (qrCode.getStatus() != TicketStatus.AVAILABLE) {
+			throw new GeneralException(ErrorStatus._QR_CODE_ALREADY_USED);
+		}
+
+		return qrCode;
 	}
 }

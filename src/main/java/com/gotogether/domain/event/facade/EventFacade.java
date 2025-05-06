@@ -6,14 +6,14 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
+import com.gotogether.domain.order.entity.Order;
+import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
-import com.gotogether.domain.user.entity.User;
-import com.gotogether.domain.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +25,7 @@ public class EventFacade {
 	private final EventRepository eventRepository;
 	private final HostChannelRepository hostChannelRepository;
 	private final TicketRepository ticketRepository;
+	private final OrderRepository orderRepository;
 
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -40,9 +41,14 @@ public class EventFacade {
 		return hostChannelRepository.findById(hostChannelId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._HOST_CHANNEL_NOT_FOUND));
 	}
-    
+
 	public Ticket getTicketById(Long ticketId) {
 		return ticketRepository.findById(ticketId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
+	}
+
+	public Order getOrderById(Long orderId) {
+		return orderRepository.findById(orderId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
 	}
 }
