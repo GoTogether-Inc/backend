@@ -30,6 +30,8 @@ import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
+import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
+import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -48,6 +50,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final TicketRepository ticketRepository;
 	private final EventRepository eventRepository;
 	private final EventFacade eventFacade;
+	private final TicketQrCodeService ticketQrCodeService;
 
 	@Override
 	@Transactional
@@ -208,7 +211,11 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 		validateOrderStatus(order.getStatus());
 
+		TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
+		order.updateTicketQrCode(ticketQrCode);
 		order.approveOrder();
+
+		orderRepository.save(order);
 	}
 
 	private User getUser(Long userId) {
@@ -249,7 +256,6 @@ public class HostChannelServiceImpl implements HostChannelService {
 	}
 
 	private void validateOrderStatus(OrderStatus status) {
-
 		if (status == OrderStatus.COMPLETED) {
 			throw new GeneralException(ErrorStatus._ORDER_ALREADY_COMPLETED);
 		}

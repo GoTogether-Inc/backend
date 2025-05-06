@@ -132,13 +132,12 @@ public class OrderServiceImpl implements OrderService {
 
 		if (ticket.getType() == TicketType.FIRST_COME) {
 			TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
-
 			order.updateTicketQrCode(ticketQrCode);
+
 			orderRepository.save(order);
 		}
 
 		ticket.decreaseAvailableQuantity();
-
 		return order;
 	}
 }
