@@ -91,11 +91,11 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 
 	private String hmacSHA256(String data, String secret) {
 		try {
-			Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-			SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
-			sha256_HMAC.init(secret_key);
+			Mac hmacSHA256 = Mac.getInstance("HmacSHA256");
+			SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
+			hmacSHA256.init(secretKey);
 
-			byte[] hash = sha256_HMAC.doFinal(data.getBytes());
+			byte[] hash = hmacSHA256.doFinal(data.getBytes());
 
 			return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
 		} catch (Exception e) {
