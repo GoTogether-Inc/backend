@@ -4,13 +4,16 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.reservationemail.dto.request.ReservationEmailRequestDTO;
 import com.gotogether.domain.reservationemail.dto.response.ReservationEmailDetailResponseDTO;
 import com.gotogether.domain.reservationemail.entity.ReservationEmail;
+import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.global.util.DateFormatterUtil;
 
 public class ReservationEmailConverter {
 
-	public static ReservationEmail of(ReservationEmailRequestDTO request, Event event) {
+	public static ReservationEmail of(ReservationEmailRequestDTO request, Event event, Ticket ticket) {
 		return ReservationEmail.builder()
 			.event(event)
+			.targetType(request.getTargetType())
+			.targetTicket(ticket)
 			.recipients(request.getRecipients())
 			.title(request.getTitle())
 			.content(request.getContent())
