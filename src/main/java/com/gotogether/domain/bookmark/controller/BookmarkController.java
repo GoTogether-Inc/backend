@@ -27,7 +27,7 @@ public class BookmarkController {
 	@PostMapping
 	public ApiResponse<?> createBookmark(@PathVariable Long eventId, @AuthUser Long userId) {
 		Bookmark bookmark = bookmarkService.createBookmark(eventId, userId);
-		return ApiResponse.onSuccessCreated("bookmarkId: " + bookmark.getId());
+		return ApiResponse.onSuccessCreated(bookmark.getId());
 	}
 
 	@GetMapping

@@ -37,7 +37,7 @@ public class EventController {
 	public ApiResponse<?> createEvent(
 		@RequestBody @Valid EventRequestDTO request) {
 		Event event = eventService.createEvent(request);
-		return ApiResponse.onSuccessCreated("eventId: " + event.getId());
+		return ApiResponse.onSuccessCreated(event.getId());
 	}
 
 	@GetMapping("/{eventId}")
@@ -51,7 +51,7 @@ public class EventController {
 		@PathVariable Long eventId,
 		@RequestBody @Valid EventRequestDTO request) {
 		Event event = eventService.updateEvent(eventId, request);
-		return ApiResponse.onSuccess("eventId: " + event.getId());
+		return ApiResponse.onSuccess(event.getId());
 	}
 
 	@DeleteMapping("/{eventId}")

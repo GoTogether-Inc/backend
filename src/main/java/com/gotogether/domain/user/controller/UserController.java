@@ -28,7 +28,7 @@ public class UserController {
 		@AuthUser Long userId,
 		@RequestBody @Valid UserRequestDTO request) {
 		User user = userService.updateNameAndPhoneNumber(userId, request);
-		return ApiResponse.onSuccess("userId: " + user.getId());
+		return ApiResponse.onSuccess(user.getId());
 	}
 
 	@GetMapping
