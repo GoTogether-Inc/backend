@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gotogether.domain.bookmark.repository.BookmarkRepository;
 import com.gotogether.domain.event.converter.EventConverter;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
 import com.gotogether.domain.event.dto.response.EventDetailResponseDTO;
@@ -17,6 +18,7 @@ import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.hashtag.service.HashtagService;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.service.ReferenceLinkService;
+import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.scheduler.EventScheduler;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class EventServiceImpl implements EventService {
 	private final EventRepository eventRepository;
 	private final HashtagService hashtagService;
 	private final ReferenceLinkService referenceLinkService;
+	private final BookmarkRepository bookmarkRepository;
 	private final EventFacade eventFacade;
 	private final EventScheduler eventScheduler;
 
@@ -53,11 +56,18 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public EventDetailResponseDTO getDetailEvent(Long eventId) {
+	public EventDetailResponseDTO getDetailEvent(Long userId, Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
 		HostChannel hostChannel = eventFacade.getHostChannelById(event.getHostChannel().getId());
 
-		return EventConverter.toEventDetailResponseDTO(event, hostChannel);
+		boolean isBookmarked = false;
+
+		if (userId != null) {
+			User user = eventFacade.getUserById(userId);
+			isBookmarked = bookmarkRepository.existsByEventAndUser(event, user);
+		}
+
+		return EventConverter.toEventDetailResponseDTO(event, hostChannel, isBookmarked);
 	}
 
 	@Override

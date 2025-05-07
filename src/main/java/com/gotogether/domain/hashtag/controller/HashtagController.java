@@ -33,7 +33,7 @@ public class HashtagController {
 	public ApiResponse<?> createHashtag(
 		@RequestBody @Valid HashtagRequestDTO request) {
 		Hashtag hashtag = hashtagService.createHashtag(request);
-		return ApiResponse.onSuccessCreated("hashtagId: " + hashtag.getId());
+		return ApiResponse.onSuccessCreated(hashtag.getId());
 	}
 
 	@GetMapping
@@ -50,7 +50,7 @@ public class HashtagController {
 		@PathVariable Long hashtagId,
 		@RequestBody @Valid HashtagRequestDTO request) {
 		Hashtag hashtag = hashtagService.updateHashtag(hashtagId, request);
-		return ApiResponse.onSuccess("hashtagId: " + hashtag.getId());
+		return ApiResponse.onSuccess(hashtag.getId());
 	}
 
 	@DeleteMapping("/{hashtagId}")

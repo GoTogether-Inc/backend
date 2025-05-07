@@ -25,6 +25,7 @@ public class EventConverter {
 			.endDate(request.getEndDate())
 			.bannerImageUrl(request.getBannerImageUrl())
 			.address(request.getAddress())
+			.detailAddress(request.getDetailAddress())
 			.locationLat(request.getLocationLat())
 			.locationLng(request.getLocationLng())
 			.onlineType(request.getOnlineType())
@@ -35,7 +36,8 @@ public class EventConverter {
 			.build();
 	}
 
-	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, HostChannel hostChannel) {
+	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, HostChannel hostChannel,
+		boolean isBookmarked) {
 		List<ReferenceLinkDTO> links = event.getReferenceLinks().stream()
 			.map(link -> ReferenceLinkDTO.builder()
 				.title(link.getName())
@@ -53,6 +55,7 @@ public class EventConverter {
 			.startTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
 			.endTime(DateFormatterUtil.formatTime(event.getEndDate().toLocalTime()))
 			.address(event.getAddress())
+			.detailAddress(event.getDetailAddress())
 			.location(Map.of("lat", event.getLocationLat(), "lng", event.getLocationLng()))
 			.description(event.getDescription())
 			.hostChannelName(hostChannel.getName())
@@ -67,7 +70,7 @@ public class EventConverter {
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.collect(Collectors.toList()))
-
+			.isBookmarked(isBookmarked)
 			.build();
 	}
 

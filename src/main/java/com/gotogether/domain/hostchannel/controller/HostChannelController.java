@@ -44,7 +44,7 @@ public class HostChannelController {
 		@AuthUser Long userId,
 		@RequestBody @Valid HostChannelRequestDTO request) {
 		HostChannel hostChannel = hostChannelService.createHostChannel(userId, request);
-		return ApiResponse.onSuccessCreated("hostChannelId: " + hostChannel.getId());
+		return ApiResponse.onSuccessCreated(hostChannel.getId());
 	}
 
 	@GetMapping
@@ -84,7 +84,7 @@ public class HostChannelController {
 		@PathVariable Long hostChannelId,
 		@RequestBody @Valid HostChannelRequestDTO request) {
 		HostChannel hostChannel = hostChannelService.updateHostChannel(hostChannelId, request);
-		return ApiResponse.onSuccess("hostChannelId: " + hostChannel.getId());
+		return ApiResponse.onSuccess(hostChannel.getId());
 	}
 
 	@DeleteMapping("/{hostChannelId}")

@@ -45,8 +45,10 @@ public class EventRequestDTO {
 
 	@NotNull(message = "온라인 타입은 필수입니다.")
 	private OnlineType onlineType;
-	
+
 	private String address;
+
+	private String detailAddress;
 
 	@NotNull(message = "위도는 필수입니다.")
 	private Double locationLat;
