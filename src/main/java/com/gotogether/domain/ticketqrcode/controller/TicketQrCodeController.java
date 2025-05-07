@@ -9,6 +9,7 @@ import com.gotogether.domain.ticketqrcode.dto.request.ValidateQrCodeRequestDTO;
 import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
 import com.gotogether.global.apipayload.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,7 +21,7 @@ public class TicketQrCodeController {
 
 	@PostMapping("/validate")
 	public ApiResponse<?> validateQrCode(
-		@RequestBody ValidateQrCodeRequestDTO request) {
+		@RequestBody @Valid ValidateQrCodeRequestDTO request) {
 		ticketQrCodeService.validateSignedQrCode(request.getOrderId(), request.getSig());
 		return ApiResponse.onSuccess("QR 코드 검증 성공");
 	}
