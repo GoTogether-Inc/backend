@@ -52,7 +52,9 @@ public enum ErrorStatus implements BaseErrorCode {
 	_BOOKMARK_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "이미 북마크된 이벤트입니다."),
 	_BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK4002", "북마크를 찾을 수 없습니다."),
 
-	_RESERVATION_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_EMAIL4001", "예약 메일이 없습니다.");
+	_RESERVATION_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_EMAIL4001", "예약 메일이 없습니다."),
+
+	_TICKET_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET_OPTION4001", "티켓 옵션이 존재하지 않습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
