@@ -8,8 +8,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.gotogether.global.constants.Constants;
-import com.gotogether.global.intercepter.pre.AuthUserArgumentResolver;
-import com.gotogether.global.intercepter.pre.JWTInterceptor;
+import com.gotogether.global.interceptor.pre.AuthUserArgumentResolver;
+import com.gotogether.global.interceptor.pre.JWTInterceptor;
 
 import lombok.RequiredArgsConstructor;
 
