@@ -52,4 +52,8 @@ public class TicketQrCode extends BaseEntity {
 	public void updateOrder(Order order) {
 		this.order = order;
 	}
+
+	public void updateStatus(TicketStatus status) {
+		this.status = status;
+	}
 }

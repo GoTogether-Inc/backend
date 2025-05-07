@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.event.entity.OnlineType;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.converter.OrderConverter;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
@@ -43,14 +44,13 @@ public class OrderServiceImpl implements OrderService {
 	public List<Order> createOrder(OrderRequestDTO request, Long userId) {
 		User user = eventFacade.getUserById(userId);
 		Ticket ticket = eventFacade.getTicketById(request.getTicketId());
-		Event event = eventFacade.getEventById(request.getEventId());
 
 		int ticketCnt = request.getTicketCnt();
 		checkTicketAvailableQuantity(ticket, ticketCnt);
 		checkTicketStatus(ticket);
 
 		return IntStream.range(0, ticketCnt)
-			.mapToObj(i -> createTicketOrder(user, ticket, event))
+			.mapToObj(i -> createTicketOrder(user, ticket))
 			.collect(Collectors.toList());
 	}
 
@@ -99,44 +99,6 @@ public class OrderServiceImpl implements OrderService {
 		orderRepository.save(order);
 	}
 
-	private void checkTicketAvailableQuantity(Ticket ticket, int ticketCnt) {
-		if (ticket.getAvailableQuantity() < ticketCnt) {
-			throw new GeneralException(ErrorStatus._TICKET_NOT_ENOUGH);
-		}
-	}
-
-	private void checkTicketStatus(Ticket ticket) {
-		if (ticket.getStatus() == TicketStatus.CLOSE) {
-			throw new GeneralException(ErrorStatus._TICKET_ALREADY_CLOSED);
-		}
-	}
-
-	private Order createTicketOrder(User user, Ticket ticket, Event event) {
-
-		TicketQrCode ticketQrCode = null;
-		OrderStatus status = null;
-
-		if (ticket.getType() == TicketType.FIRST_COME) {
-
-			ticketQrCode = ticketQrCodeService.createQrCode(event, ticket, ticket.getType());
-			status = OrderStatus.COMPLETED;
-		} else {
-
-			status = OrderStatus.PENDING;
-		}
-
-		Order order = OrderConverter.of(user, ticket, status);
-
-		if (ticketQrCode != null) {
-			order.updateTicketQrCode(ticketQrCode);
-		}
-
-		orderRepository.save(order);
-		ticket.decreaseAvailableQuantity();
-
-		return order;
-	}
-
 	@Override
 	@Transactional(readOnly = true)
 	public TicketPurchaserEmailResponseDTO getPurchaserEmails(Long eventId, Long ticketId) {
@@ -149,5 +111,38 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		return OrderConverter.toPurchaserEmailResponseDTO(purchaserEmails);
+	}
+
+	private void checkTicketAvailableQuantity(Ticket ticket, int ticketCnt) {
+		if (ticket.getAvailableQuantity() < ticketCnt) {
+			throw new GeneralException(ErrorStatus._TICKET_NOT_ENOUGH);
+		}
+	}
+
+	private void checkTicketStatus(Ticket ticket) {
+		if (ticket.getStatus() == TicketStatus.CLOSE) {
+			throw new GeneralException(ErrorStatus._TICKET_ALREADY_CLOSED);
+		}
+	}
+
+	private Order createTicketOrder(User user, Ticket ticket) {
+		Event event = ticket.getEvent();
+
+		OrderStatus status = (ticket.getType() == TicketType.FIRST_COME)
+			? OrderStatus.COMPLETED
+			: OrderStatus.PENDING;
+
+		Order order = OrderConverter.of(user, ticket, status);
+		orderRepository.save(order);
+
+		if (ticket.getType() == TicketType.FIRST_COME && event.getOnlineType() == OnlineType.OFFLINE) {
+			TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
+			order.updateTicketQrCode(ticketQrCode);
+
+			orderRepository.save(order);
+		}
+
+		ticket.decreaseAvailableQuantity();
+		return order;
 	}
 }
