@@ -36,7 +36,8 @@ public class EventConverter {
 			.build();
 	}
 
-	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, HostChannel hostChannel) {
+	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, HostChannel hostChannel,
+		boolean isBookmarked) {
 		List<ReferenceLinkDTO> links = event.getReferenceLinks().stream()
 			.map(link -> ReferenceLinkDTO.builder()
 				.title(link.getName())
@@ -69,6 +70,7 @@ public class EventConverter {
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.collect(Collectors.toList()))
+			.isBookmarked(isBookmarked)
 			.build();
 	}
 

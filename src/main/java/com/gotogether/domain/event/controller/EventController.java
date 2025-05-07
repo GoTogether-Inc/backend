@@ -42,8 +42,9 @@ public class EventController {
 
 	@GetMapping("/{eventId}")
 	public ApiResponse<EventDetailResponseDTO> getDetailEvent(
+		@RequestParam(required = false) Long userId,
 		@PathVariable Long eventId) {
-		return ApiResponse.onSuccess(eventService.getDetailEvent(eventId));
+		return ApiResponse.onSuccess(eventService.getDetailEvent(userId, eventId));
 	}
 
 	@PutMapping("/{eventId}")
