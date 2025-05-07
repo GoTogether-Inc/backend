@@ -5,10 +5,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gotogether.domain.order.entity.Order;
+import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.ticketoption.converter.TicketOptionConverter;
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
+import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
 import com.gotogether.domain.ticketoption.entity.TicketOptionType;
@@ -29,6 +32,7 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 	private final TicketOptionChoiceRepository ticketOptionChoiceRepository;
 	private final TicketRepository ticketRepository;
 	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
+	private final OrderRepository orderRepository;
 
 	@Override
 	@Transactional
@@ -62,6 +66,27 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 			.build();
 
 		ticketOptionAssignmentRepository.save(assignment);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<TicketOptionPerTicketResponseDTO> getTicketOptionsPerTicket(Long userId) {
+		List<Order> completedOrders = orderRepository.findCompletedOrdersByUserId(userId);
+
+		return completedOrders.stream()
+			.map(order -> {
+				Ticket ticket = order.getTicket();
+
+				List<TicketOptionAssignment> assignments =
+					ticketOptionAssignmentRepository.findAllByTicket(ticket);
+
+				List<TicketOption> ticketOptions = assignments.stream()
+					.map(TicketOptionAssignment::getTicketOption)
+					.toList();
+
+				return TicketOptionConverter.toTicketOptionPerTicketResponseDTO(ticket, ticketOptions);
+			})
+			.toList();
 	}
 
 	private boolean isSelectableType(TicketOptionType type) {

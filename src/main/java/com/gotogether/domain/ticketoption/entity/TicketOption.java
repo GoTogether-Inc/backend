@@ -1,7 +1,11 @@
 package com.gotogether.domain.ticketoption.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.gotogether.global.common.entity.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -37,6 +42,9 @@ public class TicketOption extends BaseEntity {
 
 	@Column(name = "is_mandatory", nullable = false)
 	private boolean isMandatory;
+
+	@OneToMany(mappedBy = "ticketOption", cascade = CascadeType.ALL, orphanRemoval = false)
+	private List<TicketOptionChoice> choices = new ArrayList<>();
 
 	@Builder
 	public TicketOption(String name, String description, TicketOptionType type, boolean isMandatory) {

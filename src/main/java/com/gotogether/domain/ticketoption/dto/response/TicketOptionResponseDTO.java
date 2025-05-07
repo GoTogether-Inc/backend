@@ -21,5 +21,5 @@ public class TicketOptionResponseDTO {
 
 	private Boolean isMandatory;
 
-	private List<String> choices;
+	private List<TicketOptionChoiceResponseDTO> choices;
 }
