@@ -20,6 +20,7 @@ public class EventDetailResponseDTO {
 	private String startTime;
 	private String endTime;
 	private String address;
+	private String detailAddress;
 	private Map<String, Double> location;
 	private String description;
 	private String hostChannelName;

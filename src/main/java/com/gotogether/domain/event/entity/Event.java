@@ -57,6 +57,9 @@ public class Event extends BaseEntity {
 	@Column(name = "address")
 	private String address;
 
+	@Column(name = "detail_address")
+	private String detailAddress;
+
 	@Column(name = "location_lat", nullable = false)
 	private Double locationLat;
 
@@ -95,16 +98,17 @@ public class Event extends BaseEntity {
 	private List<ReferenceLink> referenceLinks;
 
 	@Builder
-	public Event(String title, String description, LocalDateTime startDate,
-		LocalDateTime endDate, String bannerImageUrl, String address, Double locationLat, Double locationLng,
-		OnlineType onlineType, Category category,
-		String organizerEmail, String organizerPhoneNumber, HostChannel hostChannel) {
+	public Event(String title, String description, LocalDateTime startDate, LocalDateTime endDate,
+		String bannerImageUrl, String address, String detailAddress, Double locationLat, Double locationLng,
+		OnlineType onlineType, Category category, String organizerEmail, String organizerPhoneNumber,
+		HostChannel hostChannel) {
 		this.title = title;
 		this.description = description;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.bannerImageUrl = bannerImageUrl;
 		this.address = address;
+		this.detailAddress = detailAddress;
 		this.locationLat = locationLat;
 		this.locationLng = locationLng;
 		this.onlineType = onlineType;
