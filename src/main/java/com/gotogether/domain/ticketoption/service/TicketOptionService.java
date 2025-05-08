@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
+import com.gotogether.domain.ticketoption.dto.response.TicketOptionResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 
 public interface TicketOptionService {
@@ -13,6 +14,8 @@ public interface TicketOptionService {
 	void assignTicketOption(Long ticketOptionId, Long ticketId);
 
 	List<TicketOptionPerTicketResponseDTO> getTicketOptionsPerTicket(Long userId);
+
+	TicketOptionResponseDTO getTicketOption(Long ticketOptionId);
 
 	TicketOption updateTicketOption(Long ticketOptionId, TicketOptionRequestDTO request);
 }

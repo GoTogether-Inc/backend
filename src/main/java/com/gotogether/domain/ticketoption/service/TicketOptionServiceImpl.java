@@ -12,6 +12,7 @@ import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.ticketoption.converter.TicketOptionConverter;
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
+import com.gotogether.domain.ticketoption.dto.response.TicketOptionResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
 import com.gotogether.domain.ticketoption.entity.TicketOptionType;
@@ -87,6 +88,15 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 				return TicketOptionConverter.toTicketOptionPerTicketResponseDTO(ticket, ticketOptions);
 			})
 			.toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public TicketOptionResponseDTO getTicketOption(Long ticketOptionId) {
+		TicketOption ticketOption = ticketOptionRepository.findById(ticketOptionId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
+
+		return TicketOptionConverter.toTicketOptionResponseDTO(ticketOption);
 	}
 
 	@Override
