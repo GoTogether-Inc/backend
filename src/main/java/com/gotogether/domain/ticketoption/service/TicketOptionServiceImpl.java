@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.ticketoption.converter.TicketOptionConverter;
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
@@ -31,7 +30,6 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 
 	private final TicketOptionRepository ticketOptionRepository;
 	private final TicketOptionChoiceRepository ticketOptionChoiceRepository;
-	private final TicketRepository ticketRepository;
 	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
 	private final OrderRepository orderRepository;
 
@@ -50,23 +48,6 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 		}
 
 		return ticketOption;
-	}
-
-	@Override
-	@Transactional
-	public void assignTicketOption(Long ticketOptionId, Long ticketId) {
-		Ticket ticket = ticketRepository.findById(ticketId)
-			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
-
-		TicketOption ticketOption = ticketOptionRepository.findById(ticketOptionId)
-			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
-
-		TicketOptionAssignment assignment = TicketOptionAssignment.builder()
-			.ticket(ticket)
-			.ticketOption(ticketOption)
-			.build();
-
-		ticketOptionAssignmentRepository.save(assignment);
 	}
 
 	@Override
