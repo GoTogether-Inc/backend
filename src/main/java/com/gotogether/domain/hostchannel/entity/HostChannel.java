@@ -10,6 +10,8 @@ import com.gotogether.global.common.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,6 +44,7 @@ public class HostChannel extends BaseEntity {
 	@Column(name = "profile_image_url", nullable = false)
 	private String profileImageUrl;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private HostChannelStatus status;
 
