@@ -38,4 +38,14 @@ public class TicketOptionAssignmentServiceImpl implements TicketOptionAssignment
 
 		ticketOptionAssignmentRepository.save(assignment);
 	}
+
+	@Override
+	@Transactional
+	public void unassignTicketOption(Long ticketId, Long ticketOptionId) {
+		TicketOptionAssignment assignment = ticketOptionAssignmentRepository
+			.findByTicketIdAndTicketOptionId(ticketId, ticketOptionId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_ASSIGNMENT_NOT_FOUND));
+
+		ticketOptionAssignmentRepository.delete(assignment);
+	}
 }
