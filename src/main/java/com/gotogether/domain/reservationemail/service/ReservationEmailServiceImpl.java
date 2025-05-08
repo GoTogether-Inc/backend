@@ -13,8 +13,10 @@ import com.gotogether.domain.reservationemail.dto.request.ReservationEmailReques
 import com.gotogether.domain.reservationemail.dto.response.ReservationEmailDetailResponseDTO;
 import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.reservationemail.entity.ReservationEmailStatus;
+import com.gotogether.domain.reservationemail.entity.ReservationEmailTargetType;
 import com.gotogether.domain.reservationemail.facade.ReservationEmailFacade;
 import com.gotogether.domain.reservationemail.repository.ReservationEmailRepository;
+import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.scheduler.EventScheduler;
@@ -35,7 +37,13 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 	@Transactional
 	public ReservationEmail createReservationEmail(ReservationEmailRequestDTO request) {
 		Event event = eventFacade.getEventById(request.getEventId());
-		ReservationEmail reservationEmail = ReservationEmailConverter.of(request, event);
+
+		Ticket ticket = null;
+		if (request.getTargetType() == ReservationEmailTargetType.TICKET) {
+			ticket = findTicketFromEvent(event, request.getTicketId());
+		}
+
+		ReservationEmail reservationEmail = ReservationEmailConverter.of(request, event, ticket);
 		reservationEmailRepository.save(reservationEmail);
 
 		eventScheduler.scheduleEmail(reservationEmail.getId(), reservationEmail.getReservationDate());
@@ -94,5 +102,12 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 
 		reservationEmail.markAsSent();
 		reservationEmailRepository.save(reservationEmail);
+	}
+
+	private Ticket findTicketFromEvent(Event event, Long ticketId) {
+		return event.getTickets().stream()
+			.filter(ticket -> ticket.getId().equals(ticketId))
+			.findFirst()
+			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 	}
 }
