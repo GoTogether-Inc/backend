@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gotogether.domain.bookmark.entity.Bookmark;
 import com.gotogether.domain.bookmark.repository.BookmarkRepository;
 import com.gotogether.domain.event.converter.EventConverter;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
@@ -60,14 +61,17 @@ public class EventServiceImpl implements EventService {
 		Event event = eventFacade.getEventById(eventId);
 		HostChannel hostChannel = eventFacade.getHostChannelById(event.getHostChannel().getId());
 
-		boolean isBookmarked = false;
+		Long bookmarkId = null;
 
 		if (userId != null) {
 			User user = eventFacade.getUserById(userId);
-			isBookmarked = bookmarkRepository.existsByEventAndUser(event, user);
+
+			bookmarkId = bookmarkRepository.findByEventAndUser(event, user)
+				.map(Bookmark::getId)
+				.orElse(null);
 		}
 
-		return EventConverter.toEventDetailResponseDTO(event, hostChannel, isBookmarked);
+		return EventConverter.toEventDetailResponseDTO(event, hostChannel, bookmarkId);
 	}
 
 	@Override

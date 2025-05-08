@@ -37,7 +37,7 @@ public class EventConverter {
 	}
 
 	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, HostChannel hostChannel,
-		boolean isBookmarked) {
+		Long bookmarkId) {
 		List<ReferenceLinkDTO> links = event.getReferenceLinks().stream()
 			.map(link -> ReferenceLinkDTO.builder()
 				.title(link.getName())
@@ -70,7 +70,8 @@ public class EventConverter {
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.collect(Collectors.toList()))
-			.isBookmarked(isBookmarked)
+			.bookmardId(bookmarkId)
+			.isBookmarked(bookmarkId != null)
 			.build();
 	}
 
