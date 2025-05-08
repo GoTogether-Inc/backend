@@ -62,11 +62,13 @@ public class ReservationEmail extends BaseEntity {
 	@Column(name = "reservation_date", nullable = false)
 	private LocalDateTime reservationDate;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private ReservationEmailStatus status;
 
 	@Builder
-	public ReservationEmail(Event event, ReservationEmailTargetType targetType, Ticket targetTicket,  List<String> recipients, String title, String content, LocalDateTime reservationDate) {
+	public ReservationEmail(Event event, ReservationEmailTargetType targetType, Ticket targetTicket,
+		List<String> recipients, String title, String content, LocalDateTime reservationDate) {
 		this.event = event;
 		this.targetType = targetType;
 		this.targetTicket = targetTicket;

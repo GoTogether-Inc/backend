@@ -16,6 +16,8 @@ import com.gotogether.global.common.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -66,9 +68,11 @@ public class Event extends BaseEntity {
 	@Column(name = "location_lng", nullable = false)
 	private Double locationLng;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "online_type", nullable = false)
 	private OnlineType onlineType;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "category", nullable = false)
 	private Category category;
 
@@ -78,6 +82,7 @@ public class Event extends BaseEntity {
 	@Column(name = "organizer_phone_number", nullable = false)
 	private String organizerPhoneNumber;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private EventStatus status;
 

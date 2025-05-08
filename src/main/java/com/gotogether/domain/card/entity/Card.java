@@ -5,6 +5,8 @@ import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -55,6 +57,7 @@ public class Card extends BaseEntity {
 	@Column(name = "is_default", nullable = false, columnDefinition = "bit(1) default 0")
 	private boolean isDefault;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private CardStatus status;
 
