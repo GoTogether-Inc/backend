@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,5 +47,13 @@ public class TicketOptionController {
 		@AuthUser Long userId) {
 		List<TicketOptionPerTicketResponseDTO> ticketOptionPerTicketList = ticketOptionService.getTicketOptionsPerTicket(userId);
 		return ApiResponse.onSuccess(ticketOptionPerTicketList);
+	}
+
+	@PutMapping("/{ticketOptionId}")
+	public ApiResponse<?> updateTicketOption(
+		@PathVariable Long ticketOptionId,
+		@RequestBody TicketOptionRequestDTO request) {
+		TicketOption updatedOption = ticketOptionService.updateTicketOption(ticketOptionId, request);
+		return ApiResponse.onSuccess("ticketOptionId: " + updatedOption.getId());
 	}
 }

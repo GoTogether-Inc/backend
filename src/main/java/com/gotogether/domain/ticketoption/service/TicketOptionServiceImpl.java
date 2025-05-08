@@ -89,6 +89,28 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 			.toList();
 	}
 
+	@Override
+	@Transactional
+	public TicketOption updateTicketOption(Long ticketOptionId, TicketOptionRequestDTO request) {
+		TicketOption ticketOption = ticketOptionRepository.findById(ticketOptionId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
+
+		ticketOption.update(
+			request.getName(),
+			request.getDescription(),
+			request.getType(),
+			request.getIsMandatory()
+		);
+
+		ticketOption.clearChoices();
+
+		if (request.getChoices() != null) {
+			request.getChoices().forEach(ticketOption::addChoice);
+		}
+
+		return ticketOption;
+	}
+
 	private boolean isSelectableType(TicketOptionType type) {
 		return type == TicketOptionType.SINGLE || type == TicketOptionType.MULTIPLE;
 	}

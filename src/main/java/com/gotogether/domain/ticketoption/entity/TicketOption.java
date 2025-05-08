@@ -43,7 +43,7 @@ public class TicketOption extends BaseEntity {
 	@Column(name = "is_mandatory", nullable = false)
 	private boolean isMandatory;
 
-	@OneToMany(mappedBy = "ticketOption", cascade = CascadeType.ALL, orphanRemoval = false)
+	@OneToMany(mappedBy = "ticketOption", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TicketOptionChoice> choices = new ArrayList<>();
 
 	@Builder
@@ -52,5 +52,25 @@ public class TicketOption extends BaseEntity {
 		this.description = description;
 		this.type = type;
 		this.isMandatory = isMandatory;
+	}
+
+	public void update(String name, String description, TicketOptionType type, Boolean isMandatory) {
+		this.name = name;
+		this.description = description;
+		this.type = type;
+		this.isMandatory = isMandatory;
+	}
+
+	public void clearChoices() {
+		this.choices.clear();
+	}
+
+	public void addChoice(String name) {
+		TicketOptionChoice ticketOptionChoice = TicketOptionChoice.builder()
+			.ticketOption(this)
+			.name(name)
+			.build();
+
+		this.choices.add(ticketOptionChoice);
 	}
 }
