@@ -40,4 +40,20 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	List<Order> findByTicketAndStatus(@Param("ticket") Ticket ticket, @Param("status") OrderStatus status);
 
 	List<Order> findOrderByUserAndTicket(User user, Ticket ticket);
+
+	@Query("""
+			SELECT DISTINCT o.user.email
+			FROM Order o
+			WHERE o.ticket.id = :ticketId
+			AND o.status = 'COMPLETED'
+		""")
+	List<String> findPurchaserEmailsByTicketId(@Param("ticketId") Long ticketId);
+
+	@Query("""
+			SELECT DISTINCT o.user.email
+			FROM Order o
+			WHERE o.ticket.event.id = :eventId
+			AND o.status = 'COMPLETED'
+		""")
+	List<String> findPurchaserEmailsByEventId(@Param("eventId") Long eventId);
 }

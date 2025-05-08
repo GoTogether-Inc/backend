@@ -1,4 +1,4 @@
-package com.gotogether.global.intercepter.pre;
+package com.gotogether.global.interceptor.pre;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

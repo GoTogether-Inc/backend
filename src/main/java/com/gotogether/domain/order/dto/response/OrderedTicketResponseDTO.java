@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class OrderedTicketResponseDTO {
 	private Long id;
-	EventListResponseDTO event;
+	private EventListResponseDTO event;
 	private String ticketQrCode;
 	private String ticketName;
 	private int ticketPrice;

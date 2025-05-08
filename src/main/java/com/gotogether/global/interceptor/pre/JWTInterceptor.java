@@ -1,4 +1,4 @@
-package com.gotogether.global.intercepter.pre;
+package com.gotogether.global.interceptor.pre;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

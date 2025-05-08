@@ -32,7 +32,7 @@ public class ReservationEmailController {
 	public ApiResponse<?> createReservationEmail(
 		@RequestBody @Valid ReservationEmailRequestDTO request) {
 		ReservationEmail reservationEmail = reservationEmailService.createReservationEmail(request);
-		return ApiResponse.onSuccessCreated("reservationEmailId: " + reservationEmail.getId());
+		return ApiResponse.onSuccessCreated(reservationEmail.getId());
 	}
 
 	@GetMapping
@@ -49,7 +49,7 @@ public class ReservationEmailController {
 		@PathVariable Long reservationEmailId,
 		@RequestBody @Valid ReservationEmailRequestDTO request) {
 		ReservationEmail reservationEmail = reservationEmailService.updateReservationEmail(reservationEmailId, request);
-		return ApiResponse.onSuccess("reservationEmailId: " + reservationEmail.getId());
+		return ApiResponse.onSuccess(reservationEmail.getId());
 	}
 
 	@DeleteMapping("/{reservationEmailId}")

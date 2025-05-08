@@ -1,6 +1,7 @@
 package com.gotogether.domain.bookmark.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +24,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 		WHERE b.user.id = :userId
 		""")
 	List<Bookmark> findByUserId(@Param("userId") Long userId);
+
+	Optional<Bookmark> findByEventAndUser(Event event, User user);
 }

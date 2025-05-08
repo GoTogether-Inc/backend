@@ -31,7 +31,7 @@ public class TicketController {
 	public ApiResponse<?> createTicket(
 		@RequestBody @Valid TicketRequestDTO request) {
 		Ticket ticket = ticketService.createTicket(request);
-		return ApiResponse.onSuccessCreated("ticketId: " + ticket.getId());
+		return ApiResponse.onSuccessCreated(ticket.getId());
 	}
 
 	@GetMapping

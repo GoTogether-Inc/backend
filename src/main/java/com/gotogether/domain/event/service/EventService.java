@@ -12,7 +12,7 @@ import com.gotogether.domain.event.entity.Event;
 public interface EventService {
 	Event createEvent(EventRequestDTO request);
 
-	EventDetailResponseDTO getDetailEvent(Long eventId);
+	EventDetailResponseDTO getDetailEvent(Long userId, Long eventId);
 
 	Event updateEvent(Long eventId, EventRequestDTO request);
 

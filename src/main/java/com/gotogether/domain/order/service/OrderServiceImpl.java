@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.event.entity.OnlineType;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.converter.OrderConverter;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
+import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.repository.OrderRepository;
@@ -42,14 +44,13 @@ public class OrderServiceImpl implements OrderService {
 	public List<Order> createOrder(OrderRequestDTO request, Long userId) {
 		User user = eventFacade.getUserById(userId);
 		Ticket ticket = eventFacade.getTicketById(request.getTicketId());
-		Event event = eventFacade.getEventById(request.getEventId());
 
 		int ticketCnt = request.getTicketCnt();
 		checkTicketAvailableQuantity(ticket, ticketCnt);
 		checkTicketStatus(ticket);
 
 		return IntStream.range(0, ticketCnt)
-			.mapToObj(i -> createTicketOrder(user, ticket, event))
+			.mapToObj(i -> createTicketOrder(user, ticket))
 			.collect(Collectors.toList());
 	}
 
@@ -98,6 +99,20 @@ public class OrderServiceImpl implements OrderService {
 		orderRepository.save(order);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public TicketPurchaserEmailResponseDTO getPurchaserEmails(Long eventId, Long ticketId) {
+		List<String> purchaserEmails;
+
+		if (ticketId != null) {
+			purchaserEmails = orderRepository.findPurchaserEmailsByTicketId(ticketId);
+		} else {
+			purchaserEmails = orderRepository.findPurchaserEmailsByEventId(eventId);
+		}
+
+		return OrderConverter.toPurchaserEmailResponseDTO(purchaserEmails);
+	}
+
 	private void checkTicketAvailableQuantity(Ticket ticket, int ticketCnt) {
 		if (ticket.getAvailableQuantity() < ticketCnt) {
 			throw new GeneralException(ErrorStatus._TICKET_NOT_ENOUGH);
@@ -110,29 +125,24 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
-	private Order createTicketOrder(User user, Ticket ticket, Event event) {
+	private Order createTicketOrder(User user, Ticket ticket) {
+		Event event = ticket.getEvent();
 
-		TicketQrCode ticketQrCode = null;
-		OrderStatus status = null;
-
-		if (ticket.getType() == TicketType.FIRST_COME) {
-
-			ticketQrCode = ticketQrCodeService.createQrCode(event, ticket, ticket.getType());
-			status = OrderStatus.COMPLETED;
-		} else {
-
-			status = OrderStatus.PENDING;
-		}
+		OrderStatus status = (ticket.getType() == TicketType.FIRST_COME)
+			? OrderStatus.COMPLETED
+			: OrderStatus.PENDING;
 
 		Order order = OrderConverter.of(user, ticket, status);
+		orderRepository.save(order);
 
-		if (ticketQrCode != null) {
+		if (ticket.getType() == TicketType.FIRST_COME && event.getOnlineType() == OnlineType.OFFLINE) {
+			TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
 			order.updateTicketQrCode(ticketQrCode);
+
+			orderRepository.save(order);
 		}
 
-		orderRepository.save(order);
 		ticket.decreaseAvailableQuantity();
-
 		return order;
 	}
 }
