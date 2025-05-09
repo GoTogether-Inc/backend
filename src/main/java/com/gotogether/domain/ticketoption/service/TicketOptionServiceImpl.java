@@ -10,8 +10,8 @@ import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketoption.converter.TicketOptionConverter;
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
-import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionDetailResponseDTO;
+import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
 import com.gotogether.domain.ticketoption.entity.TicketOptionStatus;
@@ -48,6 +48,22 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 		}
 
 		return ticketOption;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<TicketOptionDetailResponseDTO> getTicketOptionsByEventId(Long eventId) {
+		List<TicketOptionStatus> visibleStatuses = List.of(
+			TicketOptionStatus.CREATED,
+			TicketOptionStatus.ASSIGNED
+		);
+
+		List<TicketOption> ticketOptions =
+			ticketOptionRepository.findAllByEventIdAndStatusIn(eventId, visibleStatuses);
+
+		return ticketOptions.stream()
+			.map(TicketOptionConverter::toTicketOptionDetailResponseDTO)
+			.toList();
 	}
 
 	@Override

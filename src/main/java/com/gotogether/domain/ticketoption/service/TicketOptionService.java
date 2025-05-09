@@ -11,6 +11,8 @@ public interface TicketOptionService {
 
 	TicketOption createTicketOption(TicketOptionRequestDTO request);
 
+	List<TicketOptionDetailResponseDTO> getTicketOptionsByEventId(Long eventId);
+
 	List<TicketOptionPerTicketResponseDTO> getTicketOptionsPerTicket(Long userId);
 
 	TicketOptionDetailResponseDTO getTicketOption(Long ticketOptionId);
