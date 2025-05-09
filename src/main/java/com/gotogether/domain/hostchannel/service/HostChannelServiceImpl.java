@@ -189,17 +189,12 @@ public class HostChannelServiceImpl implements HostChannelService {
 	public HostDashboardResponseDTO getHostDashboard(Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
 
-		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
+		List<Order> orders = orderRepository.findCompletedOrdersByEventId(eventId, OrderStatus.COMPLETED);
 
-		Long totalTicketCnt = 0L;
-		Long totalPrice = 0L;
-
-		for (Ticket ticket : tickets) {
-			List<Order> orders = orderRepository.findByTicketAndStatus(ticket, OrderStatus.COMPLETED);
-
-			totalTicketCnt += orders.size();
-			totalPrice += (long)orders.size() * ticket.getPrice();
-		}
+		long totalTicketCnt = orders.size();
+		long totalPrice = orders.stream()
+			.mapToLong(order -> order.getTicket().getPrice())
+			.sum();
 
 		return HostChannelConverter.toHostDashboardResponseDTO(event, totalTicketCnt, totalPrice);
 	}

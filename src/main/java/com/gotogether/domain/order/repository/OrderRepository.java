@@ -32,12 +32,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	Page<Order> findByTicketIdInAndStatusNot(List<Long> ticketIds, OrderStatus status, Pageable pageable);
 
 	@Query("""
-		SELECT o
-		FROM Order o
-		WHERE o.ticket = :ticket
-		AND o.status = :status
+		    SELECT o
+		    FROM Order o
+		    JOIN FETCH o.ticket t
+			JOIN FETCH o.ticketQrCode
+		    WHERE t.event.id = :eventId AND o.status = :status
 		""")
-	List<Order> findByTicketAndStatus(@Param("ticket") Ticket ticket, @Param("status") OrderStatus status);
+	List<Order> findCompletedOrdersByEventId(@Param("eventId") Long eventId, @Param("status") OrderStatus status);
 
 	List<Order> findOrderByUserAndTicket(User user, Ticket ticket);
 
