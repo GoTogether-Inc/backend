@@ -6,7 +6,6 @@ import com.gotogether.domain.reservationemail.dto.response.ReservationEmailDetai
 import com.gotogether.domain.reservationemail.entity.ReservationEmail;
 import com.gotogether.domain.reservationemail.entity.ReservationEmailTargetType;
 import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.global.util.DateFormatterUtil;
 
 public class ReservationEmailConverter {
 
@@ -22,7 +21,8 @@ public class ReservationEmailConverter {
 			.build();
 	}
 
-	public static ReservationEmailDetailResponseDTO toReservationEmailDetailResponseDTO(ReservationEmail reservationEmail) {
+	public static ReservationEmailDetailResponseDTO toReservationEmailDetailResponseDTO(
+		ReservationEmail reservationEmail) {
 		String targetName = reservationEmail.getTargetType() == ReservationEmailTargetType.ALL
 			? "전체"
 			: reservationEmail.getTargetTicket().getName();
@@ -33,8 +33,7 @@ public class ReservationEmailConverter {
 			.recipients(reservationEmail.getRecipients())
 			.title(reservationEmail.getTitle())
 			.content(reservationEmail.getContent())
-			.reservationDate(DateFormatterUtil.formatDate(reservationEmail.getReservationDate()))
-			.reservationTime(DateFormatterUtil.formatDate(reservationEmail.getReservationDate()))
+			.reservationDate(String.valueOf(reservationEmail.getReservationDate()))
 			.build();
 	}
 
