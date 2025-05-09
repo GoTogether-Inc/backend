@@ -38,8 +38,7 @@ public class TicketOptionController {
 	@GetMapping("/me")
 	public ApiResponse<List<TicketOptionPerTicketResponseDTO>> getTicketOptionsPerTicket(
 		@AuthUser Long userId) {
-		List<TicketOptionPerTicketResponseDTO> ticketOptionPerTicketList = ticketOptionService.getTicketOptionsPerTicket(
-			userId);
+		List<TicketOptionPerTicketResponseDTO> ticketOptionPerTicketList = ticketOptionService.getTicketOptionsPerTicket(userId);
 		return ApiResponse.onSuccess(ticketOptionPerTicketList);
 	}
 

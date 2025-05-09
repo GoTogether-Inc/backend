@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
+import com.gotogether.domain.ticketoption.entity.TicketOptionStatus;
 import com.gotogether.domain.ticketoption.repository.TicketOptionRepository;
 import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
 import com.gotogether.domain.ticketoptionassignment.repository.TicketOptionAssignmentRepository;
@@ -31,6 +32,10 @@ public class TicketOptionAssignmentServiceImpl implements TicketOptionAssignment
 		TicketOption ticketOption = ticketOptionRepository.findById(ticketOptionId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
 
+		if (ticketOption.getStatus() == TicketOptionStatus.CREATED) {
+			ticketOption.markAsAssigned();
+		}
+
 		TicketOptionAssignment assignment = TicketOptionAssignment.builder()
 			.ticket(ticket)
 			.ticketOption(ticketOption)
@@ -46,6 +51,14 @@ public class TicketOptionAssignmentServiceImpl implements TicketOptionAssignment
 			.findByTicketIdAndTicketOptionId(ticketId, ticketOptionId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_ASSIGNMENT_NOT_FOUND));
 
+		TicketOption ticketOption = assignment.getTicketOption();
+
 		ticketOptionAssignmentRepository.delete(assignment);
+
+		boolean stillAssigned = ticketOptionAssignmentRepository.existsByTicketOption(ticketOption);
+
+		if (!stillAssigned) {
+			ticketOptionRepository.delete(ticketOption);
+		}
 	}
 }

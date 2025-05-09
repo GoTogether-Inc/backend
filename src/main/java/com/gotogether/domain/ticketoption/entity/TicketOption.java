@@ -82,6 +82,10 @@ public class TicketOption extends BaseEntity {
 		return this.type == TicketOptionType.SINGLE || this.type == TicketOptionType.MULTIPLE;
 	}
 
+	public void markAsAssigned() {
+		this.status = TicketOptionStatus.ASSIGNED;
+	}
+
 	public void markAsDeleted() {
 		this.status = TicketOptionStatus.DELETED;
 	}
