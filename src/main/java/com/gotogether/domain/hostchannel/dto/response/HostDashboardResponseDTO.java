@@ -10,9 +10,7 @@ public class HostDashboardResponseDTO {
 	private boolean isTicket;
 	private boolean isTicketOption;
 	private String eventStartDate;
-	private String eventStartTime;
 	private String eventEndDate;
-	private String eventEndTime;
 	private Long totalTicketCnt;
 	private Long totalPrice;
 }

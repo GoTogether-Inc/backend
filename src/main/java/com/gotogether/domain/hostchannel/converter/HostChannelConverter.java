@@ -16,7 +16,6 @@ import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.order.entity.Order;
-import com.gotogether.global.util.DateFormatterUtil;
 import com.gotogether.global.util.DateUtil;
 
 public class HostChannelConverter {
@@ -48,7 +47,7 @@ public class HostChannelConverter {
 				.bannerImageUrl(event.getBannerImageUrl())
 				.title(event.getTitle())
 				.hostChannelName(hostChannel.getName())
-				.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
+				.startDate(String.valueOf(event.getStartDate()))
 				.address(event.getAddress())
 				.onlineType(String.valueOf(event.getOnlineType()))
 				.hashtags(
@@ -75,7 +74,6 @@ public class HostChannelConverter {
 
 	public static HostChannelInfoResponseDTO toHostChannelInfoResponseDTO(HostChannel hostChannel,
 		List<HostChannelMemberResponseDTO> members) {
-
 		return HostChannelInfoResponseDTO.builder()
 			.id(hostChannel.getId())
 			.profileImageUrl(hostChannel.getProfileImageUrl())
@@ -100,7 +98,7 @@ public class HostChannelConverter {
 			.participant(order.getUser().getName())
 			.email(order.getUser().getEmail())
 			.phoneNumber(order.getUser().getPhoneNumber())
-			.purchaseDate(DateFormatterUtil.formatDate(order.getCreatedAt()))
+			.purchaseDate(String.valueOf(order.getCreatedAt()))
 			.ticketName(order.getTicket().getName())
 			.isCheckedIn(order.getTicketQrCode().getStatus().isCheckIn())
 			.orderStatus(order.getStatus().name())
@@ -113,10 +111,8 @@ public class HostChannelConverter {
 			.eventName(event.getTitle())
 			.isTicket(!event.getTickets().isEmpty())
 			.isTicketOption(false) //TODO 옵션 데이터 추가
-			.eventStartDate(DateFormatterUtil.formatDate(event.getStartDate()))
-			.eventStartTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
-			.eventEndDate(DateFormatterUtil.formatDate(event.getEndDate()))
-			.eventEndTime(DateFormatterUtil.formatTime(event.getEndDate().toLocalTime()))
+			.eventStartDate(String.valueOf(event.getStartDate()))
+			.eventEndDate(String.valueOf(event.getEndDate()))
 			.totalTicketCnt(totalTicketCnt)
 			.totalPrice(totalPrice)
 			.build();
