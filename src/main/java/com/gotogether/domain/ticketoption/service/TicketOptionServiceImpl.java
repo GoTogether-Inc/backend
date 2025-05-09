@@ -14,7 +14,6 @@ import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResp
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
-import com.gotogether.domain.ticketoption.entity.TicketOptionType;
 import com.gotogether.domain.ticketoption.repository.TicketOptionChoiceRepository;
 import com.gotogether.domain.ticketoption.repository.TicketOptionRepository;
 import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
@@ -41,7 +40,7 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 
 		ticketOptionRepository.save(ticketOption);
 
-		if (isSelectableType(request.getType())) {
+		if (ticketOption.isSelectableType()) {
 			List<TicketOptionChoice> choices =
 				TicketOptionConverter.toTicketOptionChoiceList(request.getChoices(), ticketOption);
 			ticketOptionChoiceRepository.saveAll(choices);
@@ -102,7 +101,18 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 		return ticketOption;
 	}
 
-	private boolean isSelectableType(TicketOptionType type) {
-		return type == TicketOptionType.SINGLE || type == TicketOptionType.MULTIPLE;
+	@Override
+	@Transactional
+	public void deleteTicketOption(Long ticketOptionId) {
+		TicketOption ticketOption = ticketOptionRepository.findById(ticketOptionId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
+
+		boolean isAssigned = ticketOptionAssignmentRepository.existsByTicketOption(ticketOption);
+
+		if (isAssigned) {
+			ticketOption.markAsDeleted();
+		} else {
+			ticketOptionRepository.delete(ticketOption);
+		}
 	}
 }

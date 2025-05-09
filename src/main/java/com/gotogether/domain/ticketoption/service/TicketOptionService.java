@@ -16,4 +16,6 @@ public interface TicketOptionService {
 	TicketOptionResponseDTO getTicketOption(Long ticketOptionId);
 
 	TicketOption updateTicketOption(Long ticketOptionId, TicketOptionRequestDTO request);
+
+	void deleteTicketOption(Long ticketOptionId);
 }

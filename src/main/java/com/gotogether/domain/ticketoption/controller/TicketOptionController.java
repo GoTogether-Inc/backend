@@ -2,6 +2,7 @@ package com.gotogether.domain.ticketoption.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +38,8 @@ public class TicketOptionController {
 	@GetMapping("/me")
 	public ApiResponse<List<TicketOptionPerTicketResponseDTO>> getTicketOptionsPerTicket(
 		@AuthUser Long userId) {
-		List<TicketOptionPerTicketResponseDTO> ticketOptionPerTicketList = ticketOptionService.getTicketOptionsPerTicket(userId);
+		List<TicketOptionPerTicketResponseDTO> ticketOptionPerTicketList = ticketOptionService.getTicketOptionsPerTicket(
+			userId);
 		return ApiResponse.onSuccess(ticketOptionPerTicketList);
 	}
 
@@ -54,5 +56,12 @@ public class TicketOptionController {
 		@RequestBody TicketOptionRequestDTO request) {
 		TicketOption updatedOption = ticketOptionService.updateTicketOption(ticketOptionId, request);
 		return ApiResponse.onSuccess("ticketOptionId: " + updatedOption.getId());
+	}
+
+	@DeleteMapping("/{ticketOptionId}")
+	public ApiResponse<?> deleteTicketOption(
+		@PathVariable Long ticketOptionId) {
+		ticketOptionService.deleteTicketOption(ticketOptionId);
+		return ApiResponse.onSuccess("티켓 옵션 삭제 성공");
 	}
 }

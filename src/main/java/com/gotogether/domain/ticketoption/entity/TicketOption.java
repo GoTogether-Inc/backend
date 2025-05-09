@@ -46,6 +46,10 @@ public class TicketOption extends BaseEntity {
 	@OneToMany(mappedBy = "ticketOption", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TicketOptionChoice> choices = new ArrayList<>();
 
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private TicketOptionStatus status = TicketOptionStatus.CREATED;
+
 	@Builder
 	public TicketOption(String name, String description, TicketOptionType type, boolean isMandatory) {
 		this.name = name;
@@ -76,5 +80,9 @@ public class TicketOption extends BaseEntity {
 
 	public boolean isSelectableType() {
 		return this.type == TicketOptionType.SINGLE || this.type == TicketOptionType.MULTIPLE;
+	}
+
+	public void markAsDeleted() {
+		this.status = TicketOptionStatus.DELETED;
 	}
 }
