@@ -7,7 +7,6 @@ import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.user.entity.User;
-import com.gotogether.global.util.DateFormatterUtil;
 import com.gotogether.global.util.DateUtil;
 
 public class BookmarkConverter {
@@ -27,7 +26,7 @@ public class BookmarkConverter {
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
 			.hostChannelName(event.getHostChannel().getName())
-			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
+			.startDate(String.valueOf(event.getStartDate()))
 			.address(event.getAddress())
 			.onlineType(String.valueOf(event.getOnlineType()))
 
