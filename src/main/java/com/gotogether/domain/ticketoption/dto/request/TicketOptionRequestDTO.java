@@ -11,6 +11,8 @@ import lombok.Getter;
 @Builder
 public class TicketOptionRequestDTO {
 
+	private Long eventId;
+
 	private String name;
 
 	private String description;

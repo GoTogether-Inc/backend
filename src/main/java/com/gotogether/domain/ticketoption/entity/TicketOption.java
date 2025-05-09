@@ -30,6 +30,9 @@ public class TicketOption extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(name = "event_id", nullable = false)
+	private Long eventId;
+
 	@Column(name = "name", nullable = false)
 	private String name;
 
@@ -51,7 +54,8 @@ public class TicketOption extends BaseEntity {
 	private TicketOptionStatus status = TicketOptionStatus.CREATED;
 
 	@Builder
-	public TicketOption(String name, String description, TicketOptionType type, boolean isMandatory) {
+	public TicketOption(Long eventId, String name, String description, TicketOptionType type, boolean isMandatory) {
+		this.eventId = eventId;
 		this.name = name;
 		this.description = description;
 		this.type = type;

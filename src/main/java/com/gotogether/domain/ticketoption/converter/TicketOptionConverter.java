@@ -15,6 +15,7 @@ public class TicketOptionConverter {
 
 	public static TicketOption of(TicketOptionRequestDTO request) {
 		return TicketOption.builder()
+			.eventId(request.getEventId())
 			.name(request.getName())
 			.description(request.getDescription())
 			.type(request.getType())
