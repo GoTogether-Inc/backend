@@ -70,7 +70,7 @@ public class EventConverter {
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.collect(Collectors.toList()))
-			.bookmardId(bookmarkId)
+			.bookmarkId(bookmarkId)
 			.isBookmarked(bookmarkId != null)
 			.build();
 	}

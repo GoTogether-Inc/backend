@@ -32,6 +32,6 @@ public class EventDetailResponseDTO {
 	private String onlineType;
 	private String status;
 	private List<String> hashtags;
-	private Long bookmardId;
+	private Long bookmarkId;
 	private boolean isBookmarked;
 }
