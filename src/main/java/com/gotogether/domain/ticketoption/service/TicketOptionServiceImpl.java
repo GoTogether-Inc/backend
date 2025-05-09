@@ -11,9 +11,10 @@ import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketoption.converter.TicketOptionConverter;
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
-import com.gotogether.domain.ticketoption.dto.response.TicketOptionResponseDTO;
+import com.gotogether.domain.ticketoption.dto.response.TicketOptionDetailResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
+import com.gotogether.domain.ticketoption.entity.TicketOptionStatus;
 import com.gotogether.domain.ticketoption.repository.TicketOptionChoiceRepository;
 import com.gotogether.domain.ticketoption.repository.TicketOptionRepository;
 import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
@@ -72,11 +73,11 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public TicketOptionResponseDTO getTicketOption(Long ticketOptionId) {
+	public TicketOptionDetailResponseDTO getTicketOption(Long ticketOptionId) {
 		TicketOption ticketOption = ticketOptionRepository.findById(ticketOptionId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
 
-		return TicketOptionConverter.toTicketOptionResponseDTO(ticketOption);
+		return TicketOptionConverter.toTicketOptionDetailResponseDTO(ticketOption);
 	}
 
 	@Override

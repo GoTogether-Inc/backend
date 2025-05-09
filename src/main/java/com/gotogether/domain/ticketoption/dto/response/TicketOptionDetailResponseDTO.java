@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class TicketOptionResponseDTO {
+public class TicketOptionDetailResponseDTO {
 
 	private Long id;
 

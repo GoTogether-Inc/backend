@@ -7,7 +7,7 @@ import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionChoiceResponseDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
-import com.gotogether.domain.ticketoption.dto.response.TicketOptionResponseDTO;
+import com.gotogether.domain.ticketoption.dto.response.TicketOptionDetailResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
 
@@ -37,17 +37,17 @@ public class TicketOptionConverter {
 			.ticketId(ticket.getId())
 			.ticketName(ticket.getName())
 			.options(ticketOptions.stream()
-				.map(TicketOptionConverter::toTicketOptionResponseDTO)
+				.map(TicketOptionConverter::toTicketOptionDetailResponseDTO)
 				.collect(Collectors.toList()))
 			.build();
 	}
 
-	public static TicketOptionResponseDTO toTicketOptionResponseDTO(TicketOption ticketOption) {
+	public static TicketOptionDetailResponseDTO toTicketOptionDetailResponseDTO(TicketOption ticketOption) {
 		List<TicketOptionChoiceResponseDTO> choices = ticketOption.getChoices().stream()
 			.map(TicketOptionConverter::toTicketOptionChoiceResponseDTO)
 			.collect(Collectors.toList());
 
-		return TicketOptionResponseDTO.builder()
+		return TicketOptionDetailResponseDTO.builder()
 			.id(ticketOption.getId())
 			.name(ticketOption.getName())
 			.description(ticketOption.getDescription())

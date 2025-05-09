@@ -13,5 +13,5 @@ public class TicketOptionPerTicketResponseDTO {
 
 	private String ticketName;
 
-	private List<TicketOptionResponseDTO> options;
+	private List<TicketOptionDetailResponseDTO> options;
 }

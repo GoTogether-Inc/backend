@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
-import com.gotogether.domain.ticketoption.dto.response.TicketOptionResponseDTO;
+import com.gotogether.domain.ticketoption.dto.response.TicketOptionDetailResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.service.TicketOptionService;
 import com.gotogether.global.annotation.AuthUser;
@@ -45,7 +45,7 @@ public class TicketOptionController {
 	@GetMapping("/{ticketOptionId}")
 	public ApiResponse<?> getTicketOption(
 		@PathVariable Long ticketOptionId) {
-		TicketOptionResponseDTO ticketOption = ticketOptionService.getTicketOption(ticketOptionId);
+		TicketOptionDetailResponseDTO ticketOption = ticketOptionService.getTicketOption(ticketOptionId);
 		return ApiResponse.onSuccess(ticketOption);
 	}
 
