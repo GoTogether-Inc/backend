@@ -73,4 +73,8 @@ public class TicketOption extends BaseEntity {
 
 		this.choices.add(ticketOptionChoice);
 	}
+
+	public boolean isSelectableType() {
+		return this.type == TicketOptionType.SINGLE || this.type == TicketOptionType.MULTIPLE;
+	}
 }

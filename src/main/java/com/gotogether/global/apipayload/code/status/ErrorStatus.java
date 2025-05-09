@@ -55,7 +55,8 @@ public enum ErrorStatus implements BaseErrorCode {
 	_RESERVATION_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_EMAIL4001", "예약 메일이 없습니다."),
 
 	_TICKET_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET_OPTION4001", "티켓 옵션이 존재하지 않습니다."),
-	_TICKET_OPTION_ASSIGNMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET_OPTION_ASSIGN4001", "해당 티켓에 부착된 옵션이 없습니다.");
+	_TICKET_OPTION_ASSIGNMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET_OPTION_ASSIGN4001", "해당 티켓에 부착된 옵션이 없습니다."),
+	_TICKET_OPTION_CHOICE_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET_OPTION_CHOICE4001", "선택지를 찾을 수 없습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

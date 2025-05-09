@@ -1,6 +1,8 @@
-package com.gotogether.domain.ticketoption.entity;
+package com.gotogether.domain.ticketoptionanswer.entity;
 
 import com.gotogether.domain.order.entity.Order;
+import com.gotogether.domain.ticketoption.entity.TicketOption;
+import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
 import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
