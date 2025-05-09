@@ -150,7 +150,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 	public List<HostChannelMemberResponseDTO> getMembers(Long hostChannelId) {
 		HostChannel hostChannel = eventFacade.getHostChannelById(hostChannelId);
 
-		List<ChannelOrganizer> organizers = channelOrganizerRepository.findByHostChannel(hostChannel);
+		List<ChannelOrganizer> organizers = channelOrganizerRepository.findChannelOrganizerWithUserByHostChannel(
+			hostChannel);
 
 		return organizers.stream()
 			.map(HostChannelConverter::toHostChannelMemberResponseDTO)
