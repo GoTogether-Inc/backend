@@ -1,7 +1,8 @@
 package com.gotogether.domain.controller;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
@@ -9,25 +10,25 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotogether.domain.ticket.dto.request.TicketRequestDTO;
 import com.gotogether.domain.ticket.dto.response.TicketListResponseDTO;
 import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticket.service.TicketService;
-import com.gotogether.domain.user.dto.request.UserDTO;
-import com.gotogether.global.oauth.dto.CustomOAuth2User;
+import com.gotogether.global.util.TestUserUtil;
+import com.gotogether.global.util.TestUserUtil.TestUser;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -42,27 +43,36 @@ class TicketControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private Ticket ticket;
+	@Autowired
+	private TestUserUtil testUserUtil;
+
+	private TestUser testUser;
 
 	@BeforeEach
 	void setUp() {
-		UserDTO mockUserDTO = UserDTO.builder()
-			.id(1L)
-			.name("Test User")
-			.email("test@example.com")
-			.provider("google")
-			.providerId("123456789")
+		testUser = testUserUtil.createTestUser();
+	}
+
+	@Test
+	@DisplayName("티켓 생성 성공")
+	void testCreateTicket_onSuccess() throws Exception {
+		// GIVEN
+		TicketRequestDTO request = TicketRequestDTO.builder()
+			.eventId(null)
+			.ticketName("Test Ticket")
+			.ticketDescription("This is a test ticket.")
+			.ticketPrice(10000)
+			.availableQuantity(50)
+			.startDate(LocalDate.now())
+			.endDate(LocalDate.now().plusDays(1))
+			.startTime("10:00")
+			.endTime("12:00")
+			.ticketType(TicketType.FIRST_COME)
+			.eventId(1L)
 			.build();
 
-		CustomOAuth2User customOAuth2User = new CustomOAuth2User(mockUserDTO);
-		UsernamePasswordAuthenticationToken authentication =
-			new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
-
-		SecurityContext context = SecurityContextHolder.createEmptyContext();
-		context.setAuthentication(authentication);
-		SecurityContextHolder.setContext(context);
-		
-		ticket = Ticket.builder()
+		Ticket mockTicket = Ticket.builder()
+			.event(null)
 			.name("Test Ticket")
 			.description("This is a test ticket.")
 			.price(10000)
@@ -70,40 +80,31 @@ class TicketControllerTest {
 			.startDate(LocalDateTime.now())
 			.endDate(LocalDateTime.now().plusDays(1))
 			.type(TicketType.FIRST_COME)
-			.build();
-	}
-
-	@Test
-	void testCreateTicket_onSuccess() throws Exception {
-		// GIVEN
-		TicketRequestDTO ticketRequestDTO = TicketRequestDTO.builder()
-			.ticketName("Test Ticket")
-			.ticketDescription("This is a test ticket.")
-			.ticketPrice(10000)
-			.availableQuantity(50)
-			.startDate(LocalDate.now())
-			.endDate(LocalDate.now().plusDays(1))
-			.startTime(String.valueOf(LocalDateTime.now().getHour() + LocalDateTime.now().getMinute()))
-			.endTime(
-				String.valueOf(LocalDateTime.now().plusDays(1).getHour() + LocalDateTime.now().plusDays(1).getMinute()))
+			.status(TicketStatus.OPEN)
 			.build();
 
-		when(ticketService.createTicket(any(TicketRequestDTO.class))).thenReturn(ticket);
+		ReflectionTestUtils.setField(mockTicket, "id", 1L);
+
+		given(ticketService.createTicket(any(TicketRequestDTO.class))).willReturn(mockTicket);
 
 		// WHEN & THEN
 		mockMvc.perform(post("/api/v1/tickets")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(ticket)))
+				.content(objectMapper.writeValueAsString(request))
+				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
+			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
-			.andExpect(jsonPath("$.code").value("201"));
+			.andExpect(jsonPath("$.code").value("201"))
+			.andDo(print());
 
-		verify(ticketService, times(1)).createTicket(any(TicketRequestDTO.class));
+		verify(ticketService).createTicket(refEq(request));
 	}
 
 	@Test
+	@DisplayName("티켓 목록 조회 성공")
 	void testGetTickets_onSuccess() throws Exception {
 		// GIVEN
-		TicketListResponseDTO ticketResponse = TicketListResponseDTO.builder()
+		TicketListResponseDTO response = TicketListResponseDTO.builder()
 			.ticketId(1L)
 			.ticketName("Test Ticket")
 			.ticketDescription("This is a test ticket.")
@@ -111,33 +112,39 @@ class TicketControllerTest {
 			.availableQuantity(50)
 			.build();
 
-		when(ticketService.getTickets(1L)).thenReturn(Collections.singletonList(ticketResponse));
+		given(ticketService.getTickets(1L))
+			.willReturn(Collections.singletonList(response));
 
 		// WHEN & THEN
 		mockMvc.perform(get("/api/v1/tickets")
 				.param("eventId", "1")
-				.contentType(MediaType.APPLICATION_JSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
 			.andExpect(jsonPath("$.result[0].ticketName").value("Test Ticket"))
 			.andExpect(jsonPath("$.result[0].ticketDescription").value("This is a test ticket."))
 			.andExpect(jsonPath("$.result[0].ticketPrice").value(10000))
-			.andExpect(jsonPath("$.result[0].availableQuantity").value(50));
+			.andExpect(jsonPath("$.result[0].availableQuantity").value(50))
+			.andDo(print());
 
-		verify(ticketService, times(1)).getTickets(1L);
+		verify(ticketService).getTickets(1L);
 	}
 
 	@Test
+	@DisplayName("티켓 삭제 성공")
 	void testDeleteTicket_onSuccess() throws Exception {
 		// GIVEN
-		doNothing().when(ticketService).deleteTicket(1L);
+		willDoNothing().given(ticketService).deleteTicket(1L);
 
 		// WHEN & THEN
-		mockMvc.perform(delete("/api/v1/tickets/{ticketId}", 1L))
+		mockMvc.perform(delete("/api/v1/tickets/{ticketId}", 1L)
+				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
-			.andExpect(jsonPath("$.result").value("티켓 삭제 성공"));
+			.andExpect(jsonPath("$.result").value("티켓 삭제 성공"))
+			.andDo(print());
 
-		verify(ticketService, times(1)).deleteTicket(1L);
+		verify(ticketService).deleteTicket(1L);
 	}
 }
