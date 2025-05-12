@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
@@ -37,7 +36,6 @@ import com.gotogether.global.util.TestUserUtil.TestUser;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 class HostChannelControllerTest {
 
 	@Autowired

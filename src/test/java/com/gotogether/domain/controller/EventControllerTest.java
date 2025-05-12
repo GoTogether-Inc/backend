@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
@@ -39,7 +38,6 @@ import com.gotogether.global.util.TestUserUtil.TestUser;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 class EventControllerTest {
 
 	@Autowired
@@ -114,11 +112,11 @@ class EventControllerTest {
 
 		ReflectionTestUtils.setField(createdEvent, "id", 1L);
 
-		given(eventService.createEvent(argThat(req -> 
+		given(eventService.createEvent(argThat(req ->
 			req.getTitle().equals(request.getTitle()) &&
-			req.getHostChannelId().equals(request.getHostChannelId()) &&
-			req.getCategory().equals(request.getCategory()) &&
-			req.getOnlineType().equals(request.getOnlineType())
+				req.getHostChannelId().equals(request.getHostChannelId()) &&
+				req.getCategory().equals(request.getCategory()) &&
+				req.getOnlineType().equals(request.getOnlineType())
 		))).willReturn(createdEvent);
 
 		// WHEN & THEN
@@ -132,11 +130,11 @@ class EventControllerTest {
 			.andExpect(jsonPath("$.result").value(1L))
 			.andDo(print());
 
-		verify(eventService).createEvent(argThat(req -> 
+		verify(eventService).createEvent(argThat(req ->
 			req.getTitle().equals(request.getTitle()) &&
-			req.getHostChannelId().equals(request.getHostChannelId()) &&
-			req.getCategory().equals(request.getCategory()) &&
-			req.getOnlineType().equals(request.getOnlineType())
+				req.getHostChannelId().equals(request.getHostChannelId()) &&
+				req.getCategory().equals(request.getCategory()) &&
+				req.getOnlineType().equals(request.getOnlineType())
 		));
 	}
 
@@ -233,11 +231,11 @@ class EventControllerTest {
 
 		ReflectionTestUtils.setField(updatedEvent, "id", eventId);
 
-		given(eventService.updateEvent(eq(eventId), argThat(req -> 
+		given(eventService.updateEvent(eq(eventId), argThat(req ->
 			req.getTitle().equals(request.getTitle()) &&
-			req.getHostChannelId().equals(request.getHostChannelId()) &&
-			req.getCategory().equals(request.getCategory()) &&
-			req.getOnlineType().equals(request.getOnlineType())
+				req.getHostChannelId().equals(request.getHostChannelId()) &&
+				req.getCategory().equals(request.getCategory()) &&
+				req.getOnlineType().equals(request.getOnlineType())
 		))).willReturn(updatedEvent);
 
 		// WHEN & THEN
@@ -251,11 +249,11 @@ class EventControllerTest {
 			.andExpect(jsonPath("$.result").value(eventId))
 			.andDo(print());
 
-		verify(eventService).updateEvent(eq(eventId), argThat(req -> 
+		verify(eventService).updateEvent(eq(eventId), argThat(req ->
 			req.getTitle().equals(request.getTitle()) &&
-			req.getHostChannelId().equals(request.getHostChannelId()) &&
-			req.getCategory().equals(request.getCategory()) &&
-			req.getOnlineType().equals(request.getOnlineType())
+				req.getHostChannelId().equals(request.getHostChannelId()) &&
+				req.getCategory().equals(request.getCategory()) &&
+				req.getOnlineType().equals(request.getOnlineType())
 		));
 	}
 
