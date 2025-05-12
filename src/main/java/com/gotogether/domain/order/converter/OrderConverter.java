@@ -2,7 +2,6 @@ package com.gotogether.domain.order.converter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,6 @@ import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.user.entity.User;
-import com.gotogether.global.util.DateFormatterUtil;
 import com.gotogether.global.util.DateUtil;
 
 @Component
@@ -39,7 +37,7 @@ public class OrderConverter {
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
 			.hostChannelName(event.getHostChannel().getName())
-			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
+			.startDate(String.valueOf(event.getStartDate()))
 			.address(event.getAddress())
 			.onlineType(String.valueOf(event.getOnlineType()))
 
@@ -67,15 +65,15 @@ public class OrderConverter {
 		return OrderInfoResponseDTO.builder()
 			.id(order.getId())
 			.title(event.getTitle())
-			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
-			.startTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
+			.startDate(String.valueOf(event.getStartDate()))
 			.ticketName(order.getTicket().getName())
 			.hostChannelName(event.getHostChannel().getName())
 			.hostChannelDescription(event.getHostChannel().getDescription())
 			.organizerEmail(event.getOrganizerEmail())
 			.organizerPhoneNumber(event.getOrganizerPhoneNumber())
 			.eventAddress(event.getAddress())
-			.location(Map.of("lat", event.getLocationLat(), "lng", event.getLocationLng()))
+			.locationLat(event.getLocationLat())
+			.locationLng(event.getLocationLng())
 			.orderStatus(order.getStatus().name())
 			.build();
 	}

@@ -2,7 +2,6 @@ package com.gotogether.domain.event.converter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.gotogether.domain.event.dto.request.EventRequestDTO;
@@ -12,7 +11,6 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
-import com.gotogether.global.util.DateFormatterUtil;
 import com.gotogether.global.util.DateUtil;
 
 public class EventConverter {
@@ -50,13 +48,12 @@ public class EventConverter {
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
 			.participantCount(event.getTickets().size())
-			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
-			.endDate(DateFormatterUtil.formatDate(event.getEndDate()))
-			.startTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
-			.endTime(DateFormatterUtil.formatTime(event.getEndDate().toLocalTime()))
+			.startDate(String.valueOf(event.getStartDate()))
+			.endDate(String.valueOf(event.getEndDate()))
 			.address(event.getAddress())
 			.detailAddress(event.getDetailAddress())
-			.location(Map.of("lat", event.getLocationLat(), "lng", event.getLocationLng()))
+			.locationLat(event.getLocationLat())
+			.locationLng(event.getLocationLng())
 			.description(event.getDescription())
 			.hostChannelName(hostChannel.getName())
 			.hostChannelDescription(hostChannel.getDescription())
@@ -70,7 +67,7 @@ public class EventConverter {
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.collect(Collectors.toList()))
-			.bookmardId(bookmarkId)
+			.bookmarkId(bookmarkId)
 			.isBookmarked(bookmarkId != null)
 			.build();
 	}
@@ -81,7 +78,7 @@ public class EventConverter {
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
 			.hostChannelName(event.getHostChannel().getName())
-			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
+			.startDate(String.valueOf(event.getStartDate()))
 			.address(event.getAddress())
 			.onlineType(String.valueOf(event.getOnlineType()))
 
