@@ -38,7 +38,7 @@ import com.gotogether.global.util.TestUserUtil.TestUser;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class HostChannelControllerTest {
+class HostChannelControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
