@@ -20,13 +20,14 @@ public class TestUserUtil {
 	private JWTUtil jwtUtil;
 
 	public TestUser createTestUser() {
-		User user = User.builder()
-			.name("test User")
-			.email("test@example.com")
-			.phoneNumber("010-9999-9999")
-			.provider("testProvider")
-			.providerId("testProviderId")
-			.build();
+		User user = userRepository.findByProviderId("TestProviderId")
+			.orElseGet(() -> userRepository.save(User.builder()
+				.name("Test User")
+				.email("test@example.com")
+				.phoneNumber("010-9999-9999")
+				.provider("TestProvider")
+				.providerId("TestProviderId")
+				.build()));
 
 		user = userRepository.save(user);
 		TokenDTO tokenDTO = jwtUtil.generateTokens(user.getProviderId());
