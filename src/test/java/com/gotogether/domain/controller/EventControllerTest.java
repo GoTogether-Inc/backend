@@ -363,4 +363,43 @@ class EventControllerTest {
 
 		verify(eventService).searchEvents(keyword, PageRequest.of(page, size));
 	}
+
+	@Test
+	@DisplayName("카테고리별 이벤트 조회 성공")
+	void testGetEventsByCategory() throws Exception {
+		// GIVEN
+		EventListResponseDTO response = EventListResponseDTO.builder()
+			.id(1L)
+			.bannerImageUrl("https://example.com/banner.jpg")
+			.title("Test Event")
+			.hostChannelName("Test Channel")
+			.startDate(String.valueOf(LocalDateTime.now()))
+			.address("Test Address")
+			.onlineType("ONLINE")
+			.hashtags(List.of("DEVELOP", "CONFERENCE"))
+			.remainDays("D-5")
+			.build();
+
+		Page<EventListResponseDTO> page = new PageImpl<>(List.of(response));
+
+		given(eventService.getEventsByCategory(eq(Category.DEVELOPMENT_STUDY), any(PageRequest.class)))
+			.willReturn(page);
+
+		// WHEN & THEN
+		mockMvc.perform(get("/api/v1/events/categories")
+				.param("category", "DEVELOPMENT_STUDY")
+				.param("page", "0")
+				.param("size", "10")
+				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.isSuccess").value(true))
+			.andExpect(jsonPath("$.code").value("200"))
+			.andExpect(jsonPath("$.result[0].id").value(1L))
+			.andExpect(jsonPath("$.result[0].title").value("Test Event"))
+			.andExpect(jsonPath("$.result[0].hostChannelName").value("Test Channel"))
+			.andExpect(jsonPath("$.result[0].onlineType").value("ONLINE"))
+			.andDo(print());
+
+		verify(eventService).getEventsByCategory(eq(Category.DEVELOPMENT_STUDY), any(PageRequest.class));
+	}
 }
