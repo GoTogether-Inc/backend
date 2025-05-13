@@ -24,7 +24,7 @@ public class HostChannelConverter {
 	public static HostChannel toEntity(HostChannelRequestDTO request) {
 		return HostChannel.builder()
 			.profileImageUrl(request.getProfileImageUrl())
-			.name(request.getHostChannelName())
+			.name(request.getHostChannelName().trim())
 			.email(request.getHostEmail())
 			.description(request.getChannelDescription())
 			.build();

@@ -58,17 +58,16 @@ public class HostChannelServiceImpl implements HostChannelService {
 	public HostChannel createHostChannel(Long userId, HostChannelRequestDTO request) {
 		User user = getUser(userId);
 
-		Optional<HostChannel> existingHostChannel = hostChannelRepository.findByNameAndUser(
-			request.getHostChannelName(), user);
+		Optional<HostChannel> existingHostChannel = hostChannelRepository.findByName(
+			request.getHostChannelName());
 
 		if (existingHostChannel.isPresent()) {
-
 			HostChannel hostChannel = existingHostChannel.get();
-			hostChannel.updateStatus(HostChannelStatus.ACTIVE);
-			return hostChannel;
-		}
 
-		if (hostChannelRepository.findByName(request.getHostChannelName().trim()).isPresent()) {
+			if (channelOrganizerRepository.existsByUserAndHostChannel(user, hostChannel)) {
+				hostChannel.updateStatus(HostChannelStatus.ACTIVE);
+				return hostChannel;
+			}
 			throw new GeneralException(ErrorStatus._HOST_CHANNEL_EXISTS);
 		}
 
