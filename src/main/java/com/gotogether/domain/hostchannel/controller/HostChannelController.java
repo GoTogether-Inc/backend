@@ -49,12 +49,9 @@ public class HostChannelController {
 
 	@GetMapping
 	public ApiResponse<List<HostChannelListResponseDTO>> getHostChannelsByUser(
-		@AuthUser Long userId,
-		@RequestParam(value = "page", defaultValue = "0") int page,
-		@RequestParam(value = "size", defaultValue = "10") int size) {
-		Pageable pageable = PageRequest.of(page, size);
-		Page<HostChannelListResponseDTO> hostChannels = hostChannelService.getHostChannels(userId, pageable);
-		return ApiResponse.onSuccess(hostChannels.getContent());
+		@AuthUser Long userId) {
+		List<HostChannelListResponseDTO> hostChannels = hostChannelService.getHostChannels(userId);
+		return ApiResponse.onSuccess(hostChannels);
 	}
 
 	@GetMapping("/{hostChannelId}")

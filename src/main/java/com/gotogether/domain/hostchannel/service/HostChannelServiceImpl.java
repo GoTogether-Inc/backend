@@ -53,6 +53,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final EventFacade eventFacade;
 	private final TicketQrCodeService ticketQrCodeService;
 
+	private static final HostChannelStatus EXCLUDED_STATUS = HostChannelStatus.INACTIVE;
+
 	@Override
 	@Transactional
 	public HostChannel createHostChannel(Long userId, HostChannelRequestDTO request) {
@@ -82,11 +84,13 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<HostChannelListResponseDTO> getHostChannels(Long userId, Pageable pageable) {
+	public List<HostChannelListResponseDTO> getHostChannels(Long userId) {
 		User user = getUser(userId);
-		Page<HostChannel> hostChannels = hostChannelRepository.findByUser(user, pageable);
+		List<HostChannel> hostChannels = hostChannelRepository.findActiveHostChannelsByUser(user, HostChannelStatus.INACTIVE);
 
-		return hostChannels.map(HostChannelConverter::toHostChannelListResponseDTO);
+		return hostChannels.stream()
+			.map(HostChannelConverter::toHostChannelListResponseDTO)
+			.toList();
 	}
 
 	@Override

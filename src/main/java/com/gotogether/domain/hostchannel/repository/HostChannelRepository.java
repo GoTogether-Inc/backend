@@ -1,39 +1,32 @@
 package com.gotogether.domain.hostchannel.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.gotogether.domain.hostchannel.entity.HostChannel;
+import com.gotogether.domain.hostchannel.entity.HostChannelStatus;
 import com.gotogether.domain.user.entity.User;
 
 @Repository
 public interface HostChannelRepository extends JpaRepository<HostChannel, Long> {
 
-	@Query("""
-		SELECT h
-		FROM HostChannel h
-		JOIN h.channelOrganizers co
-		WHERE co.user = :user
-		AND h.status != com.gotogether.domain.hostchannel.entity.HostChannelStatus.INACTIVE
-		""")
-	Page<HostChannel> findByUser(@Param("user") User user, Pageable pageable);
-
 	Optional<HostChannel> findByName(String name);
 
 	@Query("""
-		SELECT h
+		SELECT DISTINCT h
 		FROM HostChannel h
-		JOIN h.channelOrganizers co
-		WHERE h.name = :name
-		AND co.user = :user
+		JOIN FETCH h.channelOrganizers co
+		JOIN FETCH co.user
+		WHERE co.user = :user
+		AND h.status != :status
 		""")
-	Optional<HostChannel> findByNameAndUser(String name, User user);
+	List<HostChannel> findActiveHostChannelsByUser(User user, HostChannelStatus status);
 
 	@Query("""
 		SELECT h
