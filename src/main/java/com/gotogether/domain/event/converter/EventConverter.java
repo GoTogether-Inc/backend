@@ -85,6 +85,7 @@ public class EventConverter {
 			.onlineType(String.valueOf(event.getOnlineType()))
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
+				.distinct()
 				.collect(Collectors.toList()))
 
 			.remainDays(DateUtil.getDdayStatus(
