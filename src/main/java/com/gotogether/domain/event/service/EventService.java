@@ -18,7 +18,7 @@ public interface EventService {
 
 	void deleteEvent(Long eventId);
 
-	Page<EventListResponseDTO> getEventsByTag(String tags, Pageable pageable);
+	Page<EventListResponseDTO> getEventsByTag(String tag, Pageable pageable);
 
 	Page<EventListResponseDTO> searchEvents(String keyword, Pageable pageable);
 
