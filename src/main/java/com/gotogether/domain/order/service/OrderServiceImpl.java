@@ -68,14 +68,12 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderInfoResponseDTO getPurchaseConfirmation(Long userId, Long ticketId, Long eventId) {
-		User user = eventFacade.getUserById(userId);
-		Event event = eventFacade.getEventById(eventId);
-		Ticket ticket = eventFacade.getTicketById(ticketId);
+	@Transactional(readOnly = true)
+	public OrderInfoResponseDTO getPurchaseConfirmation(Long orderId) {
+		Order order = orderRepository.findOrderWithTicketAndEventAndHostById(orderId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
 
-		List<Order> orders = orderRepository.findOrderByUserAndTicket(user, ticket);
-
-		return OrderConverter.toOrderInfoResponseDTO(orders.get(0), event);
+		return OrderConverter.toOrderInfoResponseDTO(order);
 	}
 
 	@Override

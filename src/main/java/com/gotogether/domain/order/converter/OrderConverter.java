@@ -64,19 +64,21 @@ public class OrderConverter {
 			.build();
 	}
 
-	public static OrderInfoResponseDTO toOrderInfoResponseDTO(Order order, Event event) {
+	public static OrderInfoResponseDTO toOrderInfoResponseDTO(Order order) {
 		return OrderInfoResponseDTO.builder()
 			.id(order.getId())
-			.title(event.getTitle())
-			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
-			.startTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
+			.title(order.getTicket().getEvent().getTitle())
+			.startDate(DateFormatterUtil.formatDate(order.getTicket().getEvent().getStartDate()))
+			.startTime(DateFormatterUtil.formatTime(order.getTicket().getEvent().getStartDate().toLocalTime()))
 			.ticketName(order.getTicket().getName())
-			.hostChannelName(event.getHostChannel().getName())
-			.hostChannelDescription(event.getHostChannel().getDescription())
-			.organizerEmail(event.getOrganizerEmail())
-			.organizerPhoneNumber(event.getOrganizerPhoneNumber())
-			.eventAddress(event.getAddress())
-			.location(Map.of("lat", event.getLocationLat(), "lng", event.getLocationLng()))
+			.hostChannelName(order.getTicket().getEvent().getHostChannel().getName())
+			.hostChannelDescription(order.getTicket().getEvent().getHostChannel().getDescription())
+			.organizerEmail(order.getTicket().getEvent().getOrganizerEmail())
+			.organizerPhoneNumber(order.getTicket().getEvent().getOrganizerPhoneNumber())
+			.eventAddress(order.getTicket().getEvent().getAddress())
+			.location(
+				Map.of("lat", order.getTicket().getEvent().getLocationLat(),
+					"lng", order.getTicket().getEvent().getLocationLng()))
 			.orderStatus(order.getStatus().name())
 			.build();
 	}
