@@ -1,14 +1,13 @@
 package com.gotogether.domain.order.converter;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.gotogether.domain.event.converter.EventConverter;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
-import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
@@ -18,7 +17,6 @@ import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.util.DateFormatterUtil;
-import com.gotogether.global.util.DateUtil;
 
 @Component
 public class OrderConverter {
@@ -36,25 +34,7 @@ public class OrderConverter {
 		TicketQrCode ticketQrCode = order.getTicketQrCode();
 		Event event = ticket.getEvent();
 
-		EventListResponseDTO eventListDTO = EventListResponseDTO.builder()
-			.id(event.getId())
-			.bannerImageUrl(event.getBannerImageUrl())
-			.title(event.getTitle())
-			.hostChannelName(event.getHostChannel().getName())
-			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
-			.address(event.getAddress())
-			.onlineType(String.valueOf(event.getOnlineType()))
-
-			.hashtags(event.getHashtags().stream()
-				.map(Hashtag::getName)
-				.distinct()
-				.toList()
-			)
-
-			.remainDays(DateUtil.getDdayStatus(
-				LocalDate.from(event.getStartDate()),
-				LocalDate.from(event.getEndDate())))
-			.build();
+		EventListResponseDTO eventListDTO = EventConverter.toEventListResponseDTO(event);
 
 		return OrderedTicketResponseDTO.builder()
 			.id(order.getId())

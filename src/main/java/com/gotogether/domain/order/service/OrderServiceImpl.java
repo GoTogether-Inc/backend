@@ -56,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
 			.collect(Collectors.toList());
 	}
 
-	//TODO 정렬 리펙토링
+	//TODO 정렬 리펙토링 (HHH90003004)
 	@Override
 	@Transactional(readOnly = true)
 	public Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable) {
