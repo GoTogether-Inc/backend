@@ -1,7 +1,6 @@
 package com.gotogether.domain.order.converter;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,6 @@ import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.user.entity.User;
-import com.gotogether.global.util.DateFormatterUtil;
 
 @Component
 public class OrderConverter {
@@ -53,17 +51,15 @@ public class OrderConverter {
 		return OrderInfoResponseDTO.builder()
 			.id(order.getId())
 			.title(event.getTitle())
-			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
-			.startTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
+			.startDate(String.valueOf(event.getStartDate()))
 			.ticketName(ticket.getName())
 			.hostChannelName(event.getHostChannel().getName())
 			.hostChannelDescription(event.getHostChannel().getDescription())
 			.organizerEmail(event.getOrganizerEmail())
 			.organizerPhoneNumber(event.getOrganizerPhoneNumber())
 			.eventAddress(event.getAddress())
-			.location(
-				Map.of("lat", event.getLocationLat(),
-					"lng", event.getLocationLng()))
+			.locationLat(event.getLocationLat())
+			.locationLng(event.getLocationLng())
 			.orderStatus(order.getStatus().name())
 			.build();
 	}

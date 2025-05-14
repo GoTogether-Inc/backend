@@ -14,5 +14,4 @@ public class ReservationEmailDetailResponseDTO {
 	private String title;
 	private String content;
 	private String reservationDate;
-	private String reservationTime;
 }
