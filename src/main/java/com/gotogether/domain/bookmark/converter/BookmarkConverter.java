@@ -30,7 +30,6 @@ public class BookmarkConverter {
 			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
 			.address(event.getAddress())
 			.onlineType(String.valueOf(event.getOnlineType()))
-
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.toList()

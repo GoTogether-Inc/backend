@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.hashtag.entity.Hashtag;
-import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
@@ -36,13 +35,12 @@ public class OrderConverter {
 		Ticket ticket = order.getTicket();
 		TicketQrCode ticketQrCode = order.getTicketQrCode();
 		Event event = ticket.getEvent();
-		HostChannel hostChannel = event.getHostChannel();
 
 		EventListResponseDTO eventListDTO = EventListResponseDTO.builder()
 			.id(event.getId())
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
-			.hostChannelName(hostChannel.getName())
+			.hostChannelName(event.getHostChannel().getName())
 			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
 			.address(event.getAddress())
 			.onlineType(String.valueOf(event.getOnlineType()))
@@ -71,7 +69,6 @@ public class OrderConverter {
 	public static OrderInfoResponseDTO toOrderInfoResponseDTO(Order order) {
 		Ticket ticket = order.getTicket();
 		Event event = ticket.getEvent();
-		HostChannel hostChannel = event.getHostChannel();
 
 		return OrderInfoResponseDTO.builder()
 			.id(order.getId())
@@ -79,8 +76,8 @@ public class OrderConverter {
 			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
 			.startTime(DateFormatterUtil.formatTime(event.getStartDate().toLocalTime()))
 			.ticketName(ticket.getName())
-			.hostChannelName(hostChannel.getName())
-			.hostChannelDescription(hostChannel.getDescription())
+			.hostChannelName(event.getHostChannel().getName())
+			.hostChannelDescription(event.getHostChannel().getDescription())
 			.organizerEmail(event.getOrganizerEmail())
 			.organizerPhoneNumber(event.getOrganizerPhoneNumber())
 			.eventAddress(event.getAddress())

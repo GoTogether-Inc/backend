@@ -36,8 +36,7 @@ public class EventConverter {
 			.build();
 	}
 
-	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, HostChannel hostChannel,
-		Long bookmarkId) {
+	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, Long bookmarkId) {
 		List<ReferenceLinkDTO> links = event.getReferenceLinks().stream()
 			.map(link -> ReferenceLinkDTO.builder()
 				.title(link.getName())
@@ -58,18 +57,18 @@ public class EventConverter {
 			.detailAddress(event.getDetailAddress())
 			.location(Map.of("lat", event.getLocationLat(), "lng", event.getLocationLng()))
 			.description(event.getDescription())
-			.hostChannelName(hostChannel.getName())
-			.hostChannelDescription(hostChannel.getDescription())
+			.hostChannelName(event.getHostChannel().getName())
+			.hostChannelDescription(event.getHostChannel().getDescription())
 			.organizerEmail(event.getOrganizerEmail())
 			.organizerPhoneNumber(event.getOrganizerPhoneNumber())
 			.referenceLinks(links)
 			.category(String.valueOf(event.getCategory()))
 			.onlineType(String.valueOf(event.getOnlineType()))
 			.status(String.valueOf(event.getStatus()))
-
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.collect(Collectors.toList()))
+
 			.bookmardId(bookmarkId)
 			.isBookmarked(bookmarkId != null)
 			.build();
@@ -84,7 +83,6 @@ public class EventConverter {
 			.startDate(DateFormatterUtil.formatDate(event.getStartDate()))
 			.address(event.getAddress())
 			.onlineType(String.valueOf(event.getOnlineType()))
-
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
 				.collect(Collectors.toList()))
