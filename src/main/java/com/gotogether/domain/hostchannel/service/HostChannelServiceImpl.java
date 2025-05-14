@@ -28,6 +28,7 @@ import com.gotogether.domain.hostchannel.entity.HostChannelStatus;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
+import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
@@ -48,12 +49,11 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final ChannelOrganizerRepository channelOrganizerRepository;
 	private final UserRepository userRepository;
 	private final OrderRepository orderRepository;
+	private final OrderCustomRepository orderCustomRepository;
 	private final TicketRepository ticketRepository;
 	private final EventRepository eventRepository;
 	private final EventFacade eventFacade;
 	private final TicketQrCodeService ticketQrCodeService;
-
-	private static final HostChannelStatus EXCLUDED_STATUS = HostChannelStatus.INACTIVE;
 
 	@Override
 	@Transactional
@@ -86,7 +86,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 	@Transactional(readOnly = true)
 	public List<HostChannelListResponseDTO> getHostChannels(Long userId) {
 		User user = getUser(userId);
-		List<HostChannel> hostChannels = hostChannelRepository.findActiveHostChannelsByUser(user, HostChannelStatus.INACTIVE);
+		List<HostChannel> hostChannels = hostChannelRepository.findActiveHostChannelsByUser(user,
+			HostChannelStatus.INACTIVE);
 
 		return hostChannels.stream()
 			.map(HostChannelConverter::toHostChannelListResponseDTO)
@@ -163,8 +164,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId,
-		String tags, Pageable pageable) {
+	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, String tags,
+		Pageable pageable) {
 
 		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
 
@@ -172,15 +173,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 			.map(Ticket::getId)
 			.collect(Collectors.toList());
 
-		Page<Order> orders;
-
-		if (tags.equals("approved")) {
-			orders = orderRepository.findByTicketIdInAndStatus(ticketIds, OrderStatus.COMPLETED, pageable);
-		} else if (tags.equals("pending")) {
-			orders = orderRepository.findByTicketIdInAndStatus(ticketIds, OrderStatus.PENDING, pageable);
-		} else {
-			orders = orderRepository.findByTicketIdInAndStatusNot(ticketIds, OrderStatus.CANCELED, pageable);
-		}
+		Page<Order> orders = orderCustomRepository.findByTicketIdsAndStatus(ticketIds, tags, pageable);
 
 		return orders.stream()
 			.map(HostChannelConverter::toParticipantManagementResponseDTO)
