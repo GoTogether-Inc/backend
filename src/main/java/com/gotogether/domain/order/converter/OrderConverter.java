@@ -45,6 +45,7 @@ public class OrderConverter {
 
 			.hashtags(event.getHashtags().stream()
 				.map(Hashtag::getName)
+				.distinct()
 				.toList()
 			)
 

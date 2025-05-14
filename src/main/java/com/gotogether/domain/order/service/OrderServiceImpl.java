@@ -19,6 +19,7 @@ import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
+import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.entity.TicketStatus;
@@ -38,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderRepository orderRepository;
 	private final EventFacade eventFacade;
 	private final TicketQrCodeService ticketQrCodeService;
+	private final OrderCustomRepository orderCustomRepository;
 
 	@Override
 	@Transactional
@@ -60,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
 	public Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable) {
 		User user = eventFacade.getUserById(userId);
 
-		Page<Order> orders = orderRepository.findOrdersByUser(user, pageable);
+		Page<Order> orders = orderCustomRepository.findByUser(user, pageable);
 
 		return orders.map(OrderConverter::toOrderedTicketResponseDTO);
 	}
