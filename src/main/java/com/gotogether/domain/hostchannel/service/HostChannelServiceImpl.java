@@ -164,7 +164,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, String tags,
+	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, String tag,
 		Pageable pageable) {
 
 		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
@@ -173,7 +173,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 			.map(Ticket::getId)
 			.collect(Collectors.toList());
 
-		Page<Order> orders = orderCustomRepository.findByTicketIdsAndStatus(ticketIds, tags, pageable);
+		Page<Order> orders = orderCustomRepository.findByTicketIdsAndStatus(ticketIds, tag, pageable);
 
 		return orders.stream()
 			.map(HostChannelConverter::toParticipantManagementResponseDTO)

@@ -118,11 +118,11 @@ public class HostChannelController {
 	@GetMapping("/dashboard/participant-management")
 	public ApiResponse<List<ParticipantManagementResponseDTO>> getParticipantManagement(
 		@RequestParam Long eventId,
-		@RequestParam(name = "tags", defaultValue = "all") String tags,
+		@RequestParam(name = "tag", defaultValue = "all") String tag,
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		return ApiResponse.onSuccess(hostChannelService.getParticipantManagement(eventId, tags, pageable));
+		return ApiResponse.onSuccess(hostChannelService.getParticipantManagement(eventId, tag, pageable));
 	}
 
 	@PatchMapping("/dashboard/participant-management/approve")

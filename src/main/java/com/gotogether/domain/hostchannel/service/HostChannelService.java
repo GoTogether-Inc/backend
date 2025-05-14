@@ -33,7 +33,7 @@ public interface HostChannelService {
 
 	List<HostChannelMemberResponseDTO> getMembers(Long hostChannelId);
 
-	List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, String tags,
+	List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, String tag,
 		Pageable pageable);
 
 	HostDashboardResponseDTO getHostDashboard(Long eventId);

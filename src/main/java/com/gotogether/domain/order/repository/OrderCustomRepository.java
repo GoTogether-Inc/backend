@@ -10,7 +10,7 @@ import com.gotogether.domain.user.entity.User;
 
 public interface OrderCustomRepository {
 
-	Page<Order> findByTicketIdsAndStatus(List<Long> ticketIds, String tags, Pageable pageable);
+	Page<Order> findByTicketIdsAndStatus(List<Long> ticketIds, String tag, Pageable pageable);
 
 	Page<Order> findByUser(User user, Pageable pageable);
 }
