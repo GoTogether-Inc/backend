@@ -21,6 +21,8 @@ import com.gotogether.domain.hashtag.service.HashtagService;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.service.ReferenceLinkService;
 import com.gotogether.domain.user.entity.User;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.scheduler.EventScheduler;
 
 import lombok.RequiredArgsConstructor;
@@ -60,11 +62,10 @@ public class EventServiceImpl implements EventService {
 	@Override
 	@Transactional(readOnly = true)
 	public EventDetailResponseDTO getDetailEvent(Long userId, Long eventId) {
-		Event event = eventFacade.getEventById(eventId);
-		HostChannel hostChannel = eventFacade.getHostChannelById(event.getHostChannel().getId());
+		Event event = eventCustomRepository.findEventWithDetails(eventId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._EVENT_NOT_FOUND));
 
 		Long bookmarkId = null;
-
 		if (userId != null) {
 			User user = eventFacade.getUserById(userId);
 
@@ -73,7 +74,7 @@ public class EventServiceImpl implements EventService {
 				.orElse(null);
 		}
 
-		return EventConverter.toEventDetailResponseDTO(event, hostChannel, bookmarkId);
+		return EventConverter.toEventDetailResponseDTO(event, bookmarkId);
 	}
 
 	@Override

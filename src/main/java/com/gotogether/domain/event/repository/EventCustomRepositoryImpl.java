@@ -2,6 +2,7 @@ package com.gotogether.domain.event.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,6 +13,8 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.entity.QEvent;
 import com.gotogether.domain.eventhashtag.entity.QEventHashtag;
 import com.gotogether.domain.hashtag.entity.QHashtag;
+import com.gotogether.domain.hostchannel.entity.QHostChannel;
+import com.gotogether.domain.referencelink.entity.QReferenceLink;
 import com.gotogether.domain.ticket.entity.QTicket;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -40,7 +43,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 			.select(event.id)
 			.from(event)
 			.where(baseCondition)
-			.orderBy(getOrderSpecifier(event, ticket, tag))
+			.orderBy(getSortOrder(event, ticket, tag))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
@@ -51,7 +54,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 			.leftJoin(event.eventHashtags, eventHashtag).fetchJoin()
 			.leftJoin(eventHashtag.hashtag, hashtag).fetchJoin()
 			.where(event.id.in(eventIds))
-			.orderBy(getOrderSpecifier(event, ticket, tag))
+			.orderBy(getSortOrder(event, ticket, tag))
 			.fetch();
 
 		long totalCount = queryFactory
@@ -63,7 +66,30 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 		return new PageImpl<>(events, pageable, totalCount);
 	}
 
-	private OrderSpecifier<?> getOrderSpecifier(QEvent event, QTicket ticket, String tag) {
+	@Override
+	public Optional<Event> findEventWithDetails(Long eventId) {
+		QEvent event = QEvent.event;
+		QHostChannel hostChannel = QHostChannel.hostChannel;
+		QTicket ticket = QTicket.ticket;
+		QReferenceLink referenceLink = QReferenceLink.referenceLink;
+		QEventHashtag eventHashtag = QEventHashtag.eventHashtag;
+		QHashtag hashtag = QHashtag.hashtag;
+
+		Event result = queryFactory
+			.selectFrom(event)
+			.leftJoin(event.hostChannel, hostChannel).fetchJoin()
+			.leftJoin(event.tickets, ticket)
+			.leftJoin(event.referenceLinks, referenceLink)
+			.leftJoin(event.eventHashtags, eventHashtag)
+			.leftJoin(eventHashtag.hashtag, hashtag)
+			.where(event.id.eq(eventId))
+			.distinct()
+			.fetchOne();
+
+		return Optional.ofNullable(result);
+	}
+
+	private OrderSpecifier<?> getSortOrder(QEvent event, QTicket ticket, String tag) {
 		if ("deadline".equals(tag)) {
 
 			return event.endDate.asc();
