@@ -78,8 +78,6 @@ class TicketServiceTest {
 			.endDate(LocalDate.now().plusDays(1))
 			.startTime("09:00")
 			.endTime("18:00")
-			.ticketType(TicketType.FIRST_COME)
-			.eventId(1L)
 			.build();
 
 		ticket = Ticket.builder()
