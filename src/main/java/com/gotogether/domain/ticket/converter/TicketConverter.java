@@ -1,7 +1,5 @@
 package com.gotogether.domain.ticket.converter;
 
-import java.time.LocalTime;
-
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.ticket.dto.request.TicketRequestDTO;
 import com.gotogether.domain.ticket.dto.response.TicketListResponseDTO;
@@ -18,8 +16,8 @@ public class TicketConverter {
 			.description(request.getTicketDescription())
 			.price(request.getTicketPrice())
 			.availableQuantity(request.getAvailableQuantity())
-			.startDate(request.getStartDate().atTime(LocalTime.parse(request.getStartTime())))
-			.endDate(request.getEndDate().atTime(LocalTime.parse(request.getEndTime())))
+			.startDate(request.getStartDate())
+			.endDate(request.getEndDate())
 			.status(TicketStatus.OPEN)
 			.build();
 	}

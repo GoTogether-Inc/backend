@@ -55,12 +55,10 @@ public class OrderController {
 		return ApiResponse.onSuccess(purchasedTickets.getContent());
 	}
 
-	@GetMapping("/purchase-confirmation")
+	@GetMapping("/{orderId}/purchase-confirmation")
 	public ApiResponse<OrderInfoResponseDTO> getPurchaseConfirmation(
-		@AuthUser Long userId,
-		@RequestParam Long ticketId,
-		@RequestParam Long eventId) {
-		return ApiResponse.onSuccess(orderService.getPurchaseConfirmation(userId, ticketId, eventId));
+		@PathVariable("orderId") Long orderId) {
+		return ApiResponse.onSuccess(orderService.getPurchaseConfirmation(orderId));
 	}
 
 	@PostMapping("/{orderId}/cancel")

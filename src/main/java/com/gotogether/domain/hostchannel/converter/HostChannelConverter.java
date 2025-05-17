@@ -1,12 +1,11 @@
 package com.gotogether.domain.hostchannel.converter;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import com.gotogether.domain.channelorganizer.entity.ChannelOrganizer;
+import com.gotogether.domain.event.converter.EventConverter;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
-import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelInfoResponseDTO;
@@ -16,21 +15,19 @@ import com.gotogether.domain.hostchannel.dto.response.HostDashboardResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.ParticipantManagementResponseDTO;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.order.entity.Order;
-import com.gotogether.global.util.DateUtil;
 
 public class HostChannelConverter {
 
 	public static HostChannel toEntity(HostChannelRequestDTO request) {
 		return HostChannel.builder()
 			.profileImageUrl(request.getProfileImageUrl())
-			.name(request.getHostChannelName())
+			.name(request.getHostChannelName().trim())
 			.email(request.getHostEmail())
 			.description(request.getChannelDescription())
 			.build();
 	}
 
-	public static HostChannelListResponseDTO toHostChannelListResponseDTO(
-		HostChannel hostChannel) {
+	public static HostChannelListResponseDTO toHostChannelListResponseDTO(HostChannel hostChannel) {
 		return HostChannelListResponseDTO.builder()
 			.id(hostChannel.getId())
 			.profileImageUrl(hostChannel.getProfileImageUrl())
@@ -38,29 +35,9 @@ public class HostChannelConverter {
 			.build();
 	}
 
-	public static HostChannelDetailResponseDTO toHostChannelDetailResponseDTO(
-		HostChannel hostChannel) {
-
+	public static HostChannelDetailResponseDTO toHostChannelDetailResponseDTO(HostChannel hostChannel) {
 		List<EventListResponseDTO> eventListResponseDTOList = hostChannel.getEvents().stream()
-			.map(event -> EventListResponseDTO.builder()
-				.id(event.getId())
-				.bannerImageUrl(event.getBannerImageUrl())
-				.title(event.getTitle())
-				.hostChannelName(hostChannel.getName())
-				.startDate(String.valueOf(event.getStartDate()))
-				.address(event.getAddress())
-				.onlineType(String.valueOf(event.getOnlineType()))
-				.hashtags(
-					event.getHashtags().stream()
-						.map(Hashtag::getName)
-						.toList()
-				)
-
-				.remainDays(DateUtil.getDdayStatus(
-					LocalDate.from(event.getStartDate()),
-					LocalDate.from(event.getEndDate())))
-				.build()
-			)
+			.map(EventConverter::toEventListResponseDTO)
 			.toList();
 
 		return HostChannelDetailResponseDTO.builder()
@@ -74,6 +51,7 @@ public class HostChannelConverter {
 
 	public static HostChannelInfoResponseDTO toHostChannelInfoResponseDTO(HostChannel hostChannel,
 		List<HostChannelMemberResponseDTO> members) {
+
 		return HostChannelInfoResponseDTO.builder()
 			.id(hostChannel.getId())
 			.profileImageUrl(hostChannel.getProfileImageUrl())
@@ -107,6 +85,7 @@ public class HostChannelConverter {
 
 	public static HostDashboardResponseDTO toHostDashboardResponseDTO(Event event, Long totalTicketCnt,
 		Long totalPrice) {
+
 		return HostDashboardResponseDTO.builder()
 			.eventName(event.getTitle())
 			.isTicket(!event.getTickets().isEmpty())

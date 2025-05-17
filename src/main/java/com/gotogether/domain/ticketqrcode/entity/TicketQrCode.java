@@ -40,10 +40,10 @@ public class TicketQrCode extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
-	private TicketStatus status;
+	private TicketQrCodeStatus status;
 
 	@Builder
-	public TicketQrCode(Order order, String qrCodeImageUrl, TicketStatus status) {
+	public TicketQrCode(Order order, String qrCodeImageUrl, TicketQrCodeStatus status) {
 		this.order = order;
 		this.qrCodeImageUrl = qrCodeImageUrl;
 		this.status = status;
@@ -53,7 +53,7 @@ public class TicketQrCode extends BaseEntity {
 		this.order = order;
 	}
 
-	public void updateStatus(TicketStatus status) {
+	public void updateStatus(TicketQrCodeStatus status) {
 		this.status = status;
 	}
 }

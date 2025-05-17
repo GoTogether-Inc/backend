@@ -15,11 +15,14 @@ import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.entity.EventStatus;
 import com.gotogether.domain.event.facade.EventFacade;
+import com.gotogether.domain.event.repository.EventCustomRepository;
 import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.hashtag.service.HashtagService;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
 import com.gotogether.domain.referencelink.service.ReferenceLinkService;
 import com.gotogether.domain.user.entity.User;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.scheduler.EventScheduler;
 
 import lombok.RequiredArgsConstructor;
@@ -28,11 +31,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
 
+	private final EventFacade eventFacade;
 	private final EventRepository eventRepository;
+	private final EventCustomRepository eventCustomRepository;
+	private final BookmarkRepository bookmarkRepository;
 	private final HashtagService hashtagService;
 	private final ReferenceLinkService referenceLinkService;
-	private final BookmarkRepository bookmarkRepository;
-	private final EventFacade eventFacade;
 	private final EventScheduler eventScheduler;
 
 	@Override
@@ -58,11 +62,10 @@ public class EventServiceImpl implements EventService {
 	@Override
 	@Transactional(readOnly = true)
 	public EventDetailResponseDTO getDetailEvent(Long userId, Long eventId) {
-		Event event = eventFacade.getEventById(eventId);
-		HostChannel hostChannel = eventFacade.getHostChannelById(event.getHostChannel().getId());
+		Event event = eventCustomRepository.findEventWithDetails(eventId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._EVENT_NOT_FOUND));
 
 		Long bookmarkId = null;
-
 		if (userId != null) {
 			User user = eventFacade.getUserById(userId);
 
@@ -71,7 +74,7 @@ public class EventServiceImpl implements EventService {
 				.orElse(null);
 		}
 
-		return EventConverter.toEventDetailResponseDTO(event, hostChannel, bookmarkId);
+		return EventConverter.toEventDetailResponseDTO(event, bookmarkId);
 	}
 
 	@Override
@@ -107,16 +110,8 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<EventListResponseDTO> getEventsByTag(String tags, Pageable pageable) {
-		Page<Event> events;
-
-		if (tags.equals("deadline")) {
-			events = eventRepository.findDeadlineEvents(pageable);
-		} else if (tags.equals("popular")) {
-			events = eventRepository.findPopularEvents(pageable);
-		} else {
-			events = eventRepository.findCurrentEvents(pageable);
-		}
+	public Page<EventListResponseDTO> getEventsByTag(String tag, Pageable pageable) {
+		Page<Event> events = eventCustomRepository.findEventsByTag(tag, pageable);
 		return events.map(EventConverter::toEventListResponseDTO);
 	}
 

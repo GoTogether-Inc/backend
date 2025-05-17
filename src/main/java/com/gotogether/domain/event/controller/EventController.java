@@ -63,11 +63,11 @@ public class EventController {
 
 	@GetMapping
 	public ApiResponse<List<EventListResponseDTO>> getEvents(
-		@RequestParam(name = "tags", defaultValue = "current") String tags,
+		@RequestParam(name = "tag", defaultValue = "current") String tag,
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<EventListResponseDTO> events = eventService.getEventsByTag(tags, pageable);
+		Page<EventListResponseDTO> events = eventService.getEventsByTag(tag, pageable);
 		return ApiResponse.onSuccess(events.getContent());
 	}
 

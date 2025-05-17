@@ -1,21 +1,20 @@
 package com.gotogether.domain.order.converter;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.gotogether.domain.event.converter.EventConverter;
 import com.gotogether.domain.event.dto.response.EventListResponseDTO;
 import com.gotogether.domain.event.entity.Event;
-import com.gotogether.domain.hashtag.entity.Hashtag;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.user.entity.User;
-import com.gotogether.global.util.DateUtil;
 
 @Component
 public class OrderConverter {
@@ -29,44 +28,31 @@ public class OrderConverter {
 	}
 
 	public static OrderedTicketResponseDTO toOrderedTicketResponseDTO(Order order) {
+		Ticket ticket = order.getTicket();
+		TicketQrCode ticketQrCode = order.getTicketQrCode();
+		Event event = ticket.getEvent();
 
-		Event event = order.getTicket().getEvent();
-
-		EventListResponseDTO eventListDTO = EventListResponseDTO.builder()
-			.id(event.getId())
-			.bannerImageUrl(event.getBannerImageUrl())
-			.title(event.getTitle())
-			.hostChannelName(event.getHostChannel().getName())
-			.startDate(String.valueOf(event.getStartDate()))
-			.address(event.getAddress())
-			.onlineType(String.valueOf(event.getOnlineType()))
-
-			.hashtags(event.getHashtags().stream()
-				.map(Hashtag::getName)
-				.toList()
-			)
-
-			.remainDays(DateUtil.getDdayStatus(
-				LocalDate.from(event.getStartDate()),
-				LocalDate.from(event.getEndDate())))
-			.build();
+		EventListResponseDTO eventListDTO = EventConverter.toEventListResponseDTO(event);
 
 		return OrderedTicketResponseDTO.builder()
 			.id(order.getId())
 			.event(eventListDTO)
-			.ticketQrCode(order.getTicketQrCode().getQrCodeImageUrl())
-			.ticketName(order.getTicket().getName())
+			.ticketQrCode(ticketQrCode.getQrCodeImageUrl())
+			.ticketName(ticket.getName())
 			.orderStatus(order.getStatus().name())
-			.isCheckIn(order.getTicketQrCode().getStatus().isCheckIn())
+			.isCheckIn(ticketQrCode.getStatus().isCheckIn())
 			.build();
 	}
 
-	public static OrderInfoResponseDTO toOrderInfoResponseDTO(Order order, Event event) {
+	public static OrderInfoResponseDTO toOrderInfoResponseDTO(Order order) {
+		Ticket ticket = order.getTicket();
+		Event event = ticket.getEvent();
+
 		return OrderInfoResponseDTO.builder()
 			.id(order.getId())
 			.title(event.getTitle())
 			.startDate(String.valueOf(event.getStartDate()))
-			.ticketName(order.getTicket().getName())
+			.ticketName(ticket.getName())
 			.hostChannelName(event.getHostChannel().getName())
 			.hostChannelDescription(event.getHostChannel().getDescription())
 			.organizerEmail(event.getOrganizerEmail())

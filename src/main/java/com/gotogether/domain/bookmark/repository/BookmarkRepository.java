@@ -17,11 +17,13 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 	boolean existsByEventAndUser(Event event, User user);
 
 	@Query("""
-		SELECT b
-		FROM Bookmark b
-		JOIN FETCH b.event e
-		LEFT JOIN FETCH e.eventHashtags
-		WHERE b.user.id = :userId
+		    SELECT DISTINCT b
+		    FROM Bookmark b
+		    JOIN FETCH b.event e
+		    JOIN FETCH e.hostChannel hc
+		    LEFT JOIN FETCH e.eventHashtags eh
+		    LEFT JOIN FETCH eh.hashtag h
+		    WHERE b.user.id = :userId
 		""")
 	List<Bookmark> findByUserId(@Param("userId") Long userId);
 

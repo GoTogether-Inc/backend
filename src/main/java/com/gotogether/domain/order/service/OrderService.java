@@ -16,7 +16,7 @@ public interface OrderService {
 
 	Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable);
 
-	OrderInfoResponseDTO getPurchaseConfirmation(Long userId, Long ticketId, Long eventId);
+	OrderInfoResponseDTO getPurchaseConfirmation(Long orderId);
 
 	void cancelOrder(Long userId, Long orderId);
 

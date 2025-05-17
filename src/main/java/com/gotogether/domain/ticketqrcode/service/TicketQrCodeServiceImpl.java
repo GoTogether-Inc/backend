@@ -16,7 +16,7 @@ import com.google.zxing.common.BitMatrix;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
-import com.gotogether.domain.ticketqrcode.entity.TicketStatus;
+import com.gotogether.domain.ticketqrcode.entity.TicketQrCodeStatus;
 import com.gotogether.domain.ticketqrcode.repository.TicketQrCodeRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
@@ -41,7 +41,7 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 
 		TicketQrCode ticketQrCode = TicketQrCode.builder()
 			.qrCodeImageUrl(qrCodeImageUrl)
-			.status(TicketStatus.AVAILABLE)
+			.status(TicketQrCodeStatus.AVAILABLE)
 			.build();
 
 		ticketQrCodeRepository.save(ticketQrCode);
@@ -63,7 +63,7 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 		Order order = eventFacade.getOrderById(orderId);
 
 		TicketQrCode qrCode = getAvailableQrCode(order);
-		qrCode.updateStatus(TicketStatus.USED);
+		qrCode.updateStatus(TicketQrCodeStatus.USED);
 	}
 
 	private String generateSignedQrCodeImage(Order order) {
@@ -115,7 +115,7 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 	private TicketQrCode getAvailableQrCode(Order order) {
 		TicketQrCode qrCode = order.getTicketQrCode();
 
-		if (qrCode.getStatus() != TicketStatus.AVAILABLE) {
+		if (qrCode.getStatus() != TicketQrCodeStatus.AVAILABLE) {
 			throw new GeneralException(ErrorStatus._QR_CODE_ALREADY_USED);
 		}
 

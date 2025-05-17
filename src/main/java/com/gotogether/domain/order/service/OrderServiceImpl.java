@@ -19,6 +19,7 @@ import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
+import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.entity.TicketStatus;
@@ -38,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderRepository orderRepository;
 	private final EventFacade eventFacade;
 	private final TicketQrCodeService ticketQrCodeService;
+	private final OrderCustomRepository orderCustomRepository;
 
 	@Override
 	@Transactional
@@ -54,26 +56,24 @@ public class OrderServiceImpl implements OrderService {
 			.collect(Collectors.toList());
 	}
 
-	//TODO 정렬 리펙토링
+	//TODO 정렬 리펙토링 (HHH90003004)
 	@Override
 	@Transactional(readOnly = true)
 	public Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable) {
 		User user = eventFacade.getUserById(userId);
 
-		Page<Order> orders = orderRepository.findOrdersByUser(user, pageable);
+		Page<Order> orders = orderCustomRepository.findByUser(user, pageable);
 
 		return orders.map(OrderConverter::toOrderedTicketResponseDTO);
 	}
 
 	@Override
-	public OrderInfoResponseDTO getPurchaseConfirmation(Long userId, Long ticketId, Long eventId) {
-		User user = eventFacade.getUserById(userId);
-		Event event = eventFacade.getEventById(eventId);
-		Ticket ticket = eventFacade.getTicketById(ticketId);
+	@Transactional(readOnly = true)
+	public OrderInfoResponseDTO getPurchaseConfirmation(Long orderId) {
+		Order order = orderRepository.findOrderWithTicketAndEventAndHostById(orderId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
 
-		List<Order> orders = orderRepository.findOrderByUserAndTicket(user, ticket);
-
-		return OrderConverter.toOrderInfoResponseDTO(orders.get(0), event);
+		return OrderConverter.toOrderInfoResponseDTO(order);
 	}
 
 	@Override

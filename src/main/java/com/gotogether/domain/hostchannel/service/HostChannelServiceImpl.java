@@ -28,6 +28,7 @@ import com.gotogether.domain.hostchannel.entity.HostChannelStatus;
 import com.gotogether.domain.hostchannel.repository.HostChannelRepository;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
+import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
@@ -48,6 +49,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final ChannelOrganizerRepository channelOrganizerRepository;
 	private final UserRepository userRepository;
 	private final OrderRepository orderRepository;
+	private final OrderCustomRepository orderCustomRepository;
 	private final TicketRepository ticketRepository;
 	private final EventRepository eventRepository;
 	private final EventFacade eventFacade;
@@ -58,17 +60,16 @@ public class HostChannelServiceImpl implements HostChannelService {
 	public HostChannel createHostChannel(Long userId, HostChannelRequestDTO request) {
 		User user = getUser(userId);
 
-		Optional<HostChannel> existingHostChannel = hostChannelRepository.findByNameAndUser(
-			request.getHostChannelName(), user);
+		Optional<HostChannel> existingHostChannel = hostChannelRepository.findByName(
+			request.getHostChannelName());
 
 		if (existingHostChannel.isPresent()) {
-
 			HostChannel hostChannel = existingHostChannel.get();
-			hostChannel.updateStatus(HostChannelStatus.ACTIVE);
-			return hostChannel;
-		}
 
-		if (hostChannelRepository.findByName(request.getHostChannelName().trim()).isPresent()) {
+			if (channelOrganizerRepository.existsByUserAndHostChannel(user, hostChannel)) {
+				hostChannel.updateStatus(HostChannelStatus.ACTIVE);
+				return hostChannel;
+			}
 			throw new GeneralException(ErrorStatus._HOST_CHANNEL_EXISTS);
 		}
 
@@ -83,11 +84,14 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<HostChannelListResponseDTO> getHostChannels(Long userId, Pageable pageable) {
+	public List<HostChannelListResponseDTO> getHostChannels(Long userId) {
 		User user = getUser(userId);
-		Page<HostChannel> hostChannels = hostChannelRepository.findByUser(user, pageable);
+		List<HostChannel> hostChannels = hostChannelRepository.findActiveHostChannelsByUser(user,
+			HostChannelStatus.INACTIVE);
 
-		return hostChannels.map(HostChannelConverter::toHostChannelListResponseDTO);
+		return hostChannels.stream()
+			.map(HostChannelConverter::toHostChannelListResponseDTO)
+			.toList();
 	}
 
 	@Override
@@ -150,7 +154,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 	public List<HostChannelMemberResponseDTO> getMembers(Long hostChannelId) {
 		HostChannel hostChannel = eventFacade.getHostChannelById(hostChannelId);
 
-		List<ChannelOrganizer> organizers = channelOrganizerRepository.findByHostChannel(hostChannel);
+		List<ChannelOrganizer> organizers = channelOrganizerRepository.findChannelOrganizerWithUserByHostChannel(
+			hostChannel);
 
 		return organizers.stream()
 			.map(HostChannelConverter::toHostChannelMemberResponseDTO)
@@ -159,8 +164,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId,
-		String tags, Pageable pageable) {
+	public List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, String tag,
+		Pageable pageable) {
 
 		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
 
@@ -168,15 +173,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 			.map(Ticket::getId)
 			.collect(Collectors.toList());
 
-		Page<Order> orders;
-
-		if (tags.equals("approved")) {
-			orders = orderRepository.findByTicketIdInAndStatus(ticketIds, OrderStatus.COMPLETED, pageable);
-		} else if (tags.equals("pending")) {
-			orders = orderRepository.findByTicketIdInAndStatus(ticketIds, OrderStatus.PENDING, pageable);
-		} else {
-			orders = orderRepository.findByTicketIdInAndStatusNot(ticketIds, OrderStatus.CANCELED, pageable);
-		}
+		Page<Order> orders = orderCustomRepository.findByTicketIdsAndStatus(ticketIds, tag, pageable);
 
 		return orders.stream()
 			.map(HostChannelConverter::toParticipantManagementResponseDTO)
@@ -188,17 +185,12 @@ public class HostChannelServiceImpl implements HostChannelService {
 	public HostDashboardResponseDTO getHostDashboard(Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
 
-		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
+		List<Order> orders = orderRepository.findCompletedOrdersByEventId(eventId, OrderStatus.COMPLETED);
 
-		Long totalTicketCnt = 0L;
-		Long totalPrice = 0L;
-
-		for (Ticket ticket : tickets) {
-			List<Order> orders = orderRepository.findByTicketAndStatus(ticket, OrderStatus.COMPLETED);
-
-			totalTicketCnt += orders.size();
-			totalPrice += (long)orders.size() * ticket.getPrice();
-		}
+		long totalTicketCnt = orders.size();
+		long totalPrice = orders.stream()
+			.mapToLong(order -> order.getTicket().getPrice())
+			.sum();
 
 		return HostChannelConverter.toHostDashboardResponseDTO(event, totalTicketCnt, totalPrice);
 	}

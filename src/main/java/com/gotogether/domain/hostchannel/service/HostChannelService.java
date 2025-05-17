@@ -17,7 +17,7 @@ import com.gotogether.domain.hostchannel.entity.HostChannel;
 public interface HostChannelService {
 	HostChannel createHostChannel(Long userId, HostChannelRequestDTO request);
 
-	Page<HostChannelListResponseDTO> getHostChannels(Long userId, Pageable pageable);
+	List<HostChannelListResponseDTO> getHostChannels(Long userId);
 
 	HostChannelDetailResponseDTO getDetailHostChannel(Long hostChannelId);
 
@@ -33,7 +33,7 @@ public interface HostChannelService {
 
 	List<HostChannelMemberResponseDTO> getMembers(Long hostChannelId);
 
-	List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, String tags,
+	List<ParticipantManagementResponseDTO> getParticipantManagement(Long eventId, String tag,
 		Pageable pageable);
 
 	HostDashboardResponseDTO getHostDashboard(Long eventId);

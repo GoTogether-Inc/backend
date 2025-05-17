@@ -1,9 +1,8 @@
 package com.gotogether.domain.order.repository;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,35 +10,29 @@ import org.springframework.stereotype.Repository;
 
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
-import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.domain.user.entity.User;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	@Query("""
-		SELECT o
-		FROM Order o
-		WHERE o.user = :user
-		AND o.ticket.event.startDate >= CURRENT_DATE
-		AND o.status != 'CANCELED'
-		ORDER BY ABS(DATEDIFF(o.ticket.event.startDate, CURRENT_DATE)) ASC
+		    SELECT o
+		    FROM Order o
+		    JOIN FETCH o.ticket t
+			JOIN FETCH o.ticketQrCode
+		    WHERE t.event.id = :eventId AND o.status = :status
 		""")
-	Page<Order> findOrdersByUser(@Param("user") User user, Pageable pageable);
-
-	Page<Order> findByTicketIdInAndStatus(List<Long> ticketIds, OrderStatus status, Pageable pageable);
-
-	Page<Order> findByTicketIdInAndStatusNot(List<Long> ticketIds, OrderStatus status, Pageable pageable);
+	List<Order> findCompletedOrdersByEventId(@Param("eventId") Long eventId, @Param("status") OrderStatus status);
 
 	@Query("""
-		SELECT o
-		FROM Order o
-		WHERE o.ticket = :ticket
-		AND o.status = :status
+			SELECT o
+			FROM Order o
+			LEFT JOIN FETCH o.ticketQrCode
+			LEFT JOIN FETCH o.ticket t
+			LEFT JOIN FETCH t.event e
+			LEFT JOIN FETCH e.hostChannel
+			WHERE o.id = :orderId
 		""")
-	List<Order> findByTicketAndStatus(@Param("ticket") Ticket ticket, @Param("status") OrderStatus status);
-
-	List<Order> findOrderByUserAndTicket(User user, Ticket ticket);
+	Optional<Order> findOrderWithTicketAndEventAndHostById(@Param("orderId") Long orderId);
 
 	@Query("""
 			SELECT DISTINCT o.user.email

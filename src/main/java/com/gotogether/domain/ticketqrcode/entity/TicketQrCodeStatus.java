@@ -1,12 +1,12 @@
 package com.gotogether.domain.ticketqrcode.entity;
 
-public enum TicketStatus {
+public enum TicketQrCodeStatus {
 	AVAILABLE(false),
 	USED(true);
 
 	private final boolean isCheckIn;
 
-	TicketStatus(boolean isCheckIn) {
+	TicketQrCodeStatus(boolean isCheckIn) {
 		this.isCheckIn = isCheckIn;
 	}
 
