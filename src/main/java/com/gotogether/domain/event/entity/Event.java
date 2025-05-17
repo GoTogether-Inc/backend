@@ -1,6 +1,7 @@
 package com.gotogether.domain.event.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,16 +92,16 @@ public class Event extends BaseEntity {
 	private HostChannel hostChannel;
 
 	@OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<Ticket> tickets;
+	private List<Ticket> tickets = new ArrayList<>();
 
 	@OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<EventHashtag> eventHashtags;
+	private List<EventHashtag> eventHashtags = new ArrayList<>();
 
 	@OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<ReservationEmail> reservationEmails;
+	private List<ReservationEmail> reservationEmails = new ArrayList<>();
 
 	@OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<ReferenceLink> referenceLinks;
+	private List<ReferenceLink> referenceLinks = new ArrayList<>();
 
 	@Builder
 	public Event(String title, String description, LocalDateTime startDate, LocalDateTime endDate,
