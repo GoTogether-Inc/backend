@@ -18,7 +18,7 @@ import com.gotogether.domain.order.entity.Order;
 
 public class HostChannelConverter {
 
-	public static HostChannel toEntity(HostChannelRequestDTO request) {
+	public static HostChannel of(HostChannelRequestDTO request) {
 		return HostChannel.builder()
 			.profileImageUrl(request.getProfileImageUrl())
 			.name(request.getHostChannelName().trim())

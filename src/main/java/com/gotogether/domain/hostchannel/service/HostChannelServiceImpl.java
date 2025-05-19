@@ -73,7 +73,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 			throw new GeneralException(ErrorStatus._HOST_CHANNEL_EXISTS);
 		}
 
-		HostChannel newHostChannel = HostChannelConverter.toEntity(request);
+		HostChannel newHostChannel = HostChannelConverter.of(request);
 		hostChannelRepository.save(newHostChannel);
 
 		ChannelOrganizer channelOrganizer = createChannelOrganizer(user, newHostChannel);
