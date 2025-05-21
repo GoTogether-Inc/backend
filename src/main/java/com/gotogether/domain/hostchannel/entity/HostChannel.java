@@ -41,7 +41,7 @@ public class HostChannel extends BaseEntity {
 	@Column(name = "description", nullable = false)
 	private String description;
 
-	@Column(name = "profile_image_url", nullable = false)
+	@Column(name = "profile_image_url")
 	private String profileImageUrl;
 
 	@Enumerated(EnumType.STRING)
