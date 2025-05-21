@@ -9,7 +9,6 @@ import lombok.Getter;
 @Builder
 public class HostChannelRequestDTO {
 
-	@NotBlank(message = "프로필 이미지 URL은 필수입니다.")
 	private String profileImageUrl;
 
 	@NotBlank(message = "호스트 채널명은 필수입니다.")
