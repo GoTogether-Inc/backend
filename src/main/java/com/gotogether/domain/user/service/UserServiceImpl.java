@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 	public User updateNameAndPhoneNumber(Long userId, UserRequestDTO request) {
 		User user = eventFacade.getUserById(userId);
 
-		if (isPhoneNumberDuplicate(request.getPhoneNumber())) {
+		if (isPhoneNumberDuplicate(request.getPhoneNumber(), userId)) {
 			throw new GeneralException(ErrorStatus._USER_PHONE_NUMBER_DUPLICATE);
 		}
 
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 		return UserConverter.toUserDetailResponseDTO(user);
 	}
 
-	private boolean isPhoneNumberDuplicate(String phoneNumber) {
-		return userRepository.existsByPhoneNumber(phoneNumber);
+	private boolean isPhoneNumberDuplicate(String phoneNumber, Long userId) {
+		return userRepository.existsByPhoneNumberAndIdNot(phoneNumber, userId);
 	}
 }
