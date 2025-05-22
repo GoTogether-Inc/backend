@@ -10,9 +10,9 @@ public class TermConverter {
 
 	public static Term of(TermRequestDTO request, User user) {
 		return Term.builder()
-			.isPersonalInfoUsageAgreed(request.isMarketingAgreed())
-			.isPrivacyPolicyAgree(request.isPrivacyPolicyAgree())
 			.isServiceAgreed(request.isServiceAgreed())
+			.isPrivacyPolicyAgree(request.isPrivacyPolicyAgree())
+			.isPersonalInfoUsageAgreed(request.isPersonalInfoUsageAgreed())
 			.isMarketingAgreed(request.isMarketingAgreed())
 			.agreedAt(LocalDateTime.now())
 			.user(user)
