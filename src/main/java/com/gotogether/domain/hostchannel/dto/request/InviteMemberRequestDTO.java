@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class InviteMemberRequest {
+public class InviteMemberRequestDTO {
 
 	@Email(message = "올바른 이메일 형식이어야 합니다.")
 	private String email;
