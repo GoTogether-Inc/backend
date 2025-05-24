@@ -21,9 +21,8 @@ public class TicketOptionAnswerController {
 
 	@PostMapping
 	public ApiResponse<?> createTicketOptionAnswer(
-		@AuthUser Long userId,
 		@RequestBody TicketOptionAnswerRequestDTO request) {
-		ticketOptionAnswerService.createTicketOptionAnswer(userId, request);
+		ticketOptionAnswerService.createTicketOptionAnswer(request);
 		return ApiResponse.onSuccess("티켓 옵션 응답 등록 완료");
 	}
 }
