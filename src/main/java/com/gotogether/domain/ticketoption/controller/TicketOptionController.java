@@ -9,15 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
-import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionDetailResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.service.TicketOptionService;
-import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -36,18 +33,18 @@ public class TicketOptionController {
 		return ApiResponse.onSuccessCreated("ticketOptionId: " + ticketOption.getId());
 	}
 
-	@GetMapping
+	@GetMapping("/events/{eventId}")
 	public ApiResponse<List<TicketOptionDetailResponseDTO>> getTicketOptionsByEventId(
-		@RequestParam Long eventId) {
+		@PathVariable Long eventId) {
 		List<TicketOptionDetailResponseDTO> ticketOptions = ticketOptionService.getTicketOptionsByEventId(eventId);
 		return ApiResponse.onSuccess(ticketOptions);
 	}
 
-	@GetMapping("/me")
-	public ApiResponse<List<TicketOptionPerTicketResponseDTO>> getTicketOptionsPerTicket(
-		@AuthUser Long userId) {
-		List<TicketOptionPerTicketResponseDTO> ticketOptionPerTicketList = ticketOptionService.getTicketOptionsPerTicket(userId);
-		return ApiResponse.onSuccess(ticketOptionPerTicketList);
+	@GetMapping("/tickets/{ticketId}")
+	public ApiResponse<List<TicketOptionDetailResponseDTO>> getTicketOptionsByTicketId(
+		@PathVariable Long ticketId) {
+		List<TicketOptionDetailResponseDTO> ticketOptions = ticketOptionService.getTicketOptionsByTicketId(ticketId);
+		return ApiResponse.onSuccess(ticketOptions);
 	}
 
 	@GetMapping("/{ticketOptionId}")

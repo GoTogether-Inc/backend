@@ -3,7 +3,6 @@ package com.gotogether.domain.ticketoption.service;
 import java.util.List;
 
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
-import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionDetailResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 
@@ -13,7 +12,7 @@ public interface TicketOptionService {
 
 	List<TicketOptionDetailResponseDTO> getTicketOptionsByEventId(Long eventId);
 
-	List<TicketOptionPerTicketResponseDTO> getTicketOptionsPerTicket(Long userId);
+	List<TicketOptionDetailResponseDTO> getTicketOptionsByTicketId(Long ticketId);
 
 	TicketOptionDetailResponseDTO getTicketOption(Long ticketOptionId);
 
