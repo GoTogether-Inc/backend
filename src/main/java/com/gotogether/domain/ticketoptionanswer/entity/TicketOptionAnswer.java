@@ -3,6 +3,7 @@ package com.gotogether.domain.ticketoptionanswer.entity;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
+import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -34,6 +35,10 @@ public class TicketOptionAnswer extends BaseEntity {
 	private Order order;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ticket_option_id", nullable = false)
 	private TicketOption ticketOption;
 
@@ -45,7 +50,8 @@ public class TicketOptionAnswer extends BaseEntity {
 	private String answerText;
 
 	@Builder
-	public TicketOptionAnswer(Order order, TicketOption ticketOption, TicketOptionChoice ticketOptionChoice, String answerText) {
+	public TicketOptionAnswer(User user, Order order, TicketOption ticketOption, TicketOptionChoice ticketOptionChoice, String answerText) {
+		this.user = user;
 		this.order = order;
 		this.ticketOption = ticketOption;
 		this.ticketOptionChoice = ticketOptionChoice;
