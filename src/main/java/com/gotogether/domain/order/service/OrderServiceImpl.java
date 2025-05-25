@@ -24,6 +24,8 @@ import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
+import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
+import com.gotogether.domain.ticketoptionanswer.service.TicketOptionAnswerService;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
 import com.gotogether.domain.user.entity.User;
@@ -40,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
 	private final EventFacade eventFacade;
 	private final TicketQrCodeService ticketQrCodeService;
 	private final OrderCustomRepository orderCustomRepository;
+	private final TicketOptionAnswerService ticketOptionAnswerService;
 
 	@Override
 	@Transactional
@@ -51,8 +54,15 @@ public class OrderServiceImpl implements OrderService {
 		checkTicketAvailableQuantity(ticket, ticketCnt);
 		checkTicketStatus(ticket);
 
+		List<TicketOptionAnswer> answers = ticketOptionAnswerService.getPendingAnswersByTicket(ticket);
+
 		return IntStream.range(0, ticketCnt)
-			.mapToObj(i -> createTicketOrder(user, ticket))
+			.mapToObj(i -> {
+				Order order = createTicketOrder(user, ticket);
+				TicketOptionAnswer answer = answers.get(i);
+				answer.assignOrder(order);
+				return order;
+			})
 			.collect(Collectors.toList());
 	}
 

@@ -32,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService {
 
-	private final OrderRepository orderRepository;
 	private final TicketOptionRepository ticketOptionRepository;
 	private final TicketOptionChoiceRepository ticketOptionChoiceRepository;
 	private final TicketOptionAnswerRepository ticketOptionAnswerRepository;
@@ -107,5 +106,16 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 				return TicketOptionAnswerConverter.toPurchaserAnswerResponseDTO(option, answers);
 			})
 			.toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<TicketOptionAnswer> getPendingAnswersByTicket(Ticket ticket) {
+		List<TicketOptionAssignment> assignments = ticketOptionAssignmentRepository.findAllByTicket(ticket);
+		List<Long> ticketOptionIds = assignments.stream()
+			.map(a -> a.getTicketOption().getId())
+			.toList();
+
+		return ticketOptionAnswerRepository.findByTicketOptionIdInAndOrderIsNull(ticketOptionIds);
 	}
 }

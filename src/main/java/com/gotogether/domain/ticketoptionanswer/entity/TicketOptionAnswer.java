@@ -57,4 +57,8 @@ public class TicketOptionAnswer extends BaseEntity {
 		this.ticketOptionChoice = ticketOptionChoice;
 		this.answerText = answerText;
 	}
+
+	public void assignOrder(Order order) {
+		this.order = order;
+	}
 }

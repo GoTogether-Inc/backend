@@ -5,13 +5,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gotogether.domain.order.entity.Order;
-import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.ticketoption.converter.TicketOptionConverter;
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionDetailResponseDTO;
-import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
 import com.gotogether.domain.ticketoption.entity.TicketOptionStatus;
@@ -31,7 +29,7 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 	private final TicketOptionRepository ticketOptionRepository;
 	private final TicketOptionChoiceRepository ticketOptionChoiceRepository;
 	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
-	private final OrderRepository orderRepository;
+	private final TicketRepository ticketRepository;
 
 	@Override
 	@Transactional
@@ -68,22 +66,18 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TicketOptionPerTicketResponseDTO> getTicketOptionsPerTicket(Long userId) {
-		List<Order> completedOrders = orderRepository.findCompletedOrdersByUserId(userId);
+	public List<TicketOptionDetailResponseDTO> getTicketOptionsByTicketId(Long ticketId) {
+		Ticket ticket = ticketRepository.findById(ticketId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 
-		return completedOrders.stream()
-			.map(order -> {
-				Ticket ticket = order.getTicket();
+		List<TicketOptionAssignment> assignments = ticketOptionAssignmentRepository.findAllByTicket(ticket);
 
-				List<TicketOptionAssignment> assignments =
-					ticketOptionAssignmentRepository.findAllByTicket(ticket);
+		List<TicketOption> ticketOptions = assignments.stream()
+			.map(TicketOptionAssignment::getTicketOption)
+			.toList();
 
-				List<TicketOption> ticketOptions = assignments.stream()
-					.map(TicketOptionAssignment::getTicketOption)
-					.toList();
-
-				return TicketOptionConverter.toTicketOptionPerTicketResponseDTO(ticket, ticketOptions);
-			})
+		return ticketOptions.stream()
+			.map(TicketOptionConverter::toTicketOptionDetailResponseDTO)
 			.toList();
 	}
 
