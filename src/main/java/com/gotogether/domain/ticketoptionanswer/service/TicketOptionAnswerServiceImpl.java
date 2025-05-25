@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
@@ -21,6 +20,8 @@ import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
 import com.gotogether.domain.ticketoptionanswer.repository.TicketOptionAnswerRepository;
 import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
 import com.gotogether.domain.ticketoptionassignment.repository.TicketOptionAssignmentRepository;
+import com.gotogether.domain.user.entity.User;
+import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 
@@ -35,6 +36,7 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 	private final TicketOptionChoiceRepository ticketOptionChoiceRepository;
 	private final TicketOptionAnswerRepository ticketOptionAnswerRepository;
 	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
+	private final UserRepository userRepository;
 
 	@Override
 	@Transactional
@@ -42,11 +44,12 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 		TicketOption ticketOption = ticketOptionRepository.findById(request.getTicketOptionId())
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
 
-		Order order = orderRepository.findCompletedOrdersByUserId(userId).stream()
-			.filter(o -> ticketOptionAssignmentRepository.findAllByTicket(o.getTicket()).stream()
-				.anyMatch(assignment -> assignment.getTicketOption().getId().equals(ticketOption.getId())))
-			.findFirst()
-			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
+		boolean alreadyAnswered = ticketOptionAnswerRepository
+			.existsByUserIdAndTicketOptionId(userId, ticketOption.getId());
+
+		if (alreadyAnswered) {
+			throw new GeneralException(ErrorStatus._TICKET_OPTION_ANSWER_ALREADY_EXISTS);
+		}
 
 		TicketOptionChoice choice = null;
 		if (ticketOption.isSelectableType() && request.getTicketOptionChoiceId() != null) {
@@ -54,8 +57,11 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 				.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_CHOICE_NOT_FOUND));
 		}
 
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
+
 		TicketOptionAnswer answer = TicketOptionAnswer.builder()
-			.order(order)
+			.user(user)
 			.ticketOption(ticketOption)
 			.ticketOptionChoice(choice)
 			.answerText(request.getAnswerText())

@@ -11,4 +11,6 @@ import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
 public interface TicketOptionAnswerRepository extends JpaRepository<TicketOptionAnswer, Long> {
 
 	List<TicketOptionAnswer> findByTicketOptionIdIn(List<Long> ticketOptionIds);
+
+	boolean existsByUserIdAndTicketOptionId(Long userId, Long ticketOptionId);
 }
