@@ -15,6 +15,7 @@ import com.gotogether.domain.ticketoption.repository.TicketOptionChoiceRepositor
 import com.gotogether.domain.ticketoption.repository.TicketOptionRepository;
 import com.gotogether.domain.ticketoptionanswer.converter.TicketOptionAnswerConverter;
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
+import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerDetailResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
 import com.gotogether.domain.ticketoptionanswer.repository.TicketOptionAnswerRepository;
@@ -68,6 +69,16 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 			.build();
 
 		ticketOptionAnswerRepository.save(answer);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<PurchaserAnswerDetailResponseDTO> getAnswersByUserAndTicket(Long userId, Long ticketId) {
+		List<TicketOptionAnswer> answers = ticketOptionAnswerRepository.findByUserIdAndTicketId(userId, ticketId);
+
+		return answers.stream()
+			.map(TicketOptionAnswerConverter::toPurchaserAnswerDetailResponseDTO)
+			.toList();
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
+import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerDetailResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.service.TicketOptionAnswerService;
 import com.gotogether.global.annotation.AuthUser;
@@ -30,6 +31,14 @@ public class TicketOptionAnswerController {
 		@RequestBody TicketOptionAnswerRequestDTO request) {
 		ticketOptionAnswerService.createTicketOptionAnswer(userId, request);
 		return ApiResponse.onSuccess("티켓 옵션 응답 등록 완료");
+	}
+
+	@GetMapping
+	public ApiResponse<List<PurchaserAnswerDetailResponseDTO>> getAnswersByUserAndTicket(
+		@AuthUser Long userId,
+		@RequestParam Long ticketId) {
+		List<PurchaserAnswerDetailResponseDTO> answers = ticketOptionAnswerService.getAnswersByUserAndTicket(userId, ticketId);
+		return ApiResponse.onSuccess(answers);
 	}
 
 	@GetMapping("/purchaser-answer")

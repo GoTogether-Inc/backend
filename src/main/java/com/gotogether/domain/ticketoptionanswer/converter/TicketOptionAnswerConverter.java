@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.gotogether.domain.ticketoption.entity.TicketOption;
+import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerDetailResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.TicketOptionAnswerResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
@@ -32,6 +33,19 @@ public class TicketOptionAnswerConverter {
 			.optionId(ticketOption.getId())
 			.optionName(ticketOption.getName())
 			.answers(response)
+			.build();
+	}
+
+	public static PurchaserAnswerDetailResponseDTO toPurchaserAnswerDetailResponseDTO(TicketOptionAnswer answer) {
+		String response = answer.getAnswerText() != null
+			? answer.getAnswerText()
+			: answer.getTicketOptionChoice() != null
+			? answer.getTicketOptionChoice().getName()
+			: null;
+
+		return PurchaserAnswerDetailResponseDTO.builder()
+			.optionName(answer.getTicketOption().getName())
+			.answer(response)
 			.build();
 	}
 }
