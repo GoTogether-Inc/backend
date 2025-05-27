@@ -46,6 +46,7 @@ public class TicketOptionAnswerConverter {
 		return PurchaserAnswerResponseDTO.builder()
 			.optionId(ticketOption.getId())
 			.optionName(ticketOption.getName())
+			.optionType(ticketOption.getType().name())
 			.answers(response)
 			.build();
 	}

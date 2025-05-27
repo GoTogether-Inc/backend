@@ -13,5 +13,7 @@ public class PurchaserAnswerResponseDTO {
 
 	private String optionName;
 
+	private String optionType;
+
 	private List<TicketOptionAnswerResponseDTO> answers;
 }
