@@ -2,11 +2,13 @@ package com.gotogether.domain.ticketoptionanswer.service;
 
 import java.util.List;
 
+import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerDetailResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
+import com.gotogether.domain.user.entity.User;
 
 public interface TicketOptionAnswerService {
 
@@ -17,4 +19,6 @@ public interface TicketOptionAnswerService {
 	List<PurchaserAnswerDetailResponseDTO> getAnswersByUserAndTicket(Long userId, Long ticketId);
 
 	List<PurchaserAnswerResponseDTO> getPurchaserAnswers(Long ticketId);
+
+	void createTicketOptionAnswers(User user, List<TicketOptionAnswerRequestDTO> requests, Order order);
 }

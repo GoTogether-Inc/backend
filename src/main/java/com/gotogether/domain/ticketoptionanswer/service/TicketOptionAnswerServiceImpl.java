@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gotogether.domain.order.repository.OrderRepository;
+import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
@@ -38,6 +38,7 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
 	private final UserRepository userRepository;
 
+	// 미사용
 	@Override
 	@Transactional
 	public void createTicketOptionAnswer(Long userId, TicketOptionAnswerRequestDTO request) {
@@ -117,5 +118,48 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 			.toList();
 
 		return ticketOptionAnswerRepository.findByTicketOptionIdInAndOrderIsNull(ticketOptionIds);
+	}
+
+	@Override
+	@Transactional
+	public void createTicketOptionAnswers(User user, List<TicketOptionAnswerRequestDTO> requests, Order order) {
+		if (requests == null || requests.isEmpty())
+			return;
+
+		for (TicketOptionAnswerRequestDTO request : requests) {
+			TicketOption ticketOption = ticketOptionRepository.findById(request.getTicketOptionId())
+				.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
+
+			if (request.getTicketOptionChoiceId() != null) {
+				createSingleChoiceAnswer(user, order, ticketOption, request.getTicketOptionChoiceId());
+			} else if (request.getTicketOptionChoiceIds() != null && !request.getTicketOptionChoiceIds().isEmpty()) {
+				createMultipleChoiceAnswers(user, order, ticketOption, request.getTicketOptionChoiceIds());
+			} else if (request.getAnswerText() != null && !request.getAnswerText().isBlank()) {
+				createTextAnswer(user, order, ticketOption, request.getAnswerText());
+			}
+		}
+	}
+
+	private void createSingleChoiceAnswer(User user, Order order, TicketOption ticketOption, Long choiceId) {
+		TicketOptionChoice choice = ticketOptionChoiceRepository.findById(choiceId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_CHOICE_NOT_FOUND));
+
+		TicketOptionAnswer answer = TicketOptionAnswerConverter.of(user, order, ticketOption, choice, null);
+		ticketOptionAnswerRepository.save(answer);
+	}
+
+	private void createMultipleChoiceAnswers(User user, Order order, TicketOption ticketOption, List<Long> choiceIds) {
+		for (Long choiceId : choiceIds) {
+			TicketOptionChoice choice = ticketOptionChoiceRepository.findById(choiceId)
+				.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_CHOICE_NOT_FOUND));
+
+			TicketOptionAnswer answer = TicketOptionAnswerConverter.of(user, order, ticketOption, choice, null);
+			ticketOptionAnswerRepository.save(answer);
+		}
+	}
+
+	private void createTextAnswer(User user, Order order, TicketOption ticketOption, String text) {
+		TicketOptionAnswer answer = TicketOptionAnswerConverter.of(user, order, ticketOption, null, text);
+		ticketOptionAnswerRepository.save(answer);
 	}
 }
