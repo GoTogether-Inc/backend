@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class PurchaserAnswerDetailResponseDTO {
-	private Long userId;
-	private List<PurchaserOrderAnswerResponseDTO> orders;
+public class PurchaserOrderAnswerResponseDTO {
+	private Long orderId;
+	private List<TicketOptionAnswerDetailResponseDTO> optionAnswers;
 }

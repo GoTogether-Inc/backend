@@ -16,7 +16,7 @@ public interface TicketOptionAnswerService {
 
 	List<TicketOptionAnswer> getPendingAnswersByTicket(Ticket ticket);
 
-	List<PurchaserAnswerDetailResponseDTO> getAnswersByUserAndTicket(Long userId, Long ticketId);
+	List<PurchaserAnswerDetailResponseDTO> getAnswersByTicket(Long ticketId);
 
 	List<PurchaserAnswerResponseDTO> getPurchaserAnswers(Long ticketId);
 

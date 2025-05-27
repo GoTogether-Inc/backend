@@ -17,6 +17,8 @@ import com.gotogether.domain.ticketoptionanswer.converter.TicketOptionAnswerConv
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerDetailResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerResponseDTO;
+import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserOrderAnswerResponseDTO;
+import com.gotogether.domain.ticketoptionanswer.dto.response.TicketOptionAnswerDetailResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
 import com.gotogether.domain.ticketoptionanswer.repository.TicketOptionAnswerRepository;
 import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
@@ -73,11 +75,41 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<PurchaserAnswerDetailResponseDTO> getAnswersByUserAndTicket(Long userId, Long ticketId) {
-		List<TicketOptionAnswer> answers = ticketOptionAnswerRepository.findByUserIdAndTicketId(userId, ticketId);
+	public List<PurchaserAnswerDetailResponseDTO> getAnswersByTicket(Long ticketId) {
+		List<TicketOptionAnswer> answers = ticketOptionAnswerRepository.findByTicketId(ticketId);
 
-		return answers.stream()
-			.map(TicketOptionAnswerConverter::toPurchaserAnswerDetailResponseDTO)
+		Map<Long, List<TicketOptionAnswer>> answersByUser = answers.stream()
+			.collect(Collectors.groupingBy(a -> a.getUser().getId()));
+
+		return answersByUser.entrySet().stream()
+			.map(userEntry -> {
+				Long userId = userEntry.getKey();
+				List<TicketOptionAnswer> userAnswers = userEntry.getValue();
+
+				Map<Long, List<TicketOptionAnswer>> answersByOrder = userAnswers.stream()
+					.collect(Collectors.groupingBy(a -> a.getOrder().getId()));
+
+				List<PurchaserOrderAnswerResponseDTO> orders = answersByOrder.entrySet().stream()
+					.map(orderEntry -> {
+						Long orderId = orderEntry.getKey();
+						List<TicketOptionAnswer> orderAnswers = orderEntry.getValue();
+
+						List<TicketOptionAnswerDetailResponseDTO> optionAnswers = orderAnswers.stream()
+							.map(TicketOptionAnswerConverter::toPurchaserAnswerDetailResponseDTO)
+							.toList();
+
+						return PurchaserOrderAnswerResponseDTO.builder()
+							.orderId(orderId)
+							.optionAnswers(optionAnswers)
+							.build();
+					})
+					.toList();
+
+				return PurchaserAnswerDetailResponseDTO.builder()
+					.userId(userId)
+					.orders(orders)
+					.build();
+			})
 			.toList();
 	}
 

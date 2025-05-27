@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
-import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerDetailResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerResponseDTO;
+import com.gotogether.domain.ticketoptionanswer.dto.response.TicketOptionAnswerDetailResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.TicketOptionAnswerResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
 import com.gotogether.domain.user.entity.User;
@@ -50,15 +50,16 @@ public class TicketOptionAnswerConverter {
 			.build();
 	}
 
-	public static PurchaserAnswerDetailResponseDTO toPurchaserAnswerDetailResponseDTO(TicketOptionAnswer answer) {
+	public static TicketOptionAnswerDetailResponseDTO toPurchaserAnswerDetailResponseDTO(TicketOptionAnswer answer) {
 		String response = answer.getAnswerText() != null
 			? answer.getAnswerText()
 			: answer.getTicketOptionChoice() != null
 			? answer.getTicketOptionChoice().getName()
 			: null;
 
-		return PurchaserAnswerDetailResponseDTO.builder()
+		return TicketOptionAnswerDetailResponseDTO.builder()
 			.optionName(answer.getTicketOption().getName())
+			.optionType(answer.getTicketOption().getType().name())
 			.answer(response)
 			.build();
 	}
