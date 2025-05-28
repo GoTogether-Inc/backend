@@ -1,14 +1,12 @@
 package com.gotogether.domain.ticketoptionanswer.dto.request;
 
-import lombok.AllArgsConstructor;
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class TicketOptionAnswerRequestDTO {
 
 	private Long ticketOptionId;
@@ -16,4 +14,6 @@ public class TicketOptionAnswerRequestDTO {
 	private String answerText;
 
 	private Long ticketOptionChoiceId;
+
+	private List<Long> ticketOptionChoiceIds;
 }

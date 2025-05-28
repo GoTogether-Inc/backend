@@ -30,7 +30,7 @@ public class TicketOptionController {
 	public ApiResponse<?> createTicketOption(
 		@RequestBody TicketOptionRequestDTO request) {
 		TicketOption ticketOption = ticketOptionService.createTicketOption(request);
-		return ApiResponse.onSuccessCreated("ticketOptionId: " + ticketOption.getId());
+		return ApiResponse.onSuccessCreated(ticketOption.getId());
 	}
 
 	@GetMapping("/events/{eventId}")
@@ -59,7 +59,7 @@ public class TicketOptionController {
 		@PathVariable Long ticketOptionId,
 		@RequestBody TicketOptionRequestDTO request) {
 		TicketOption updatedOption = ticketOptionService.updateTicketOption(ticketOptionId, request);
-		return ApiResponse.onSuccess("ticketOptionId: " + updatedOption.getId());
+		return ApiResponse.onSuccess(updatedOption.getId());
 	}
 
 	@DeleteMapping("/{ticketOptionId}")

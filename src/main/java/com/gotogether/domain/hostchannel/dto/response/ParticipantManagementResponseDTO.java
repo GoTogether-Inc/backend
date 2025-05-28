@@ -7,7 +7,8 @@ import lombok.Getter;
 @Builder
 public class ParticipantManagementResponseDTO {
 	private Long id;
-	private Long orderNumber;
+	private Long ticketId;
+	private Long orderId;
 	private String participant;
 	private String email;
 	private String phoneNumber;

@@ -35,9 +35,8 @@ public class TicketOptionAnswerController {
 
 	@GetMapping
 	public ApiResponse<List<PurchaserAnswerDetailResponseDTO>> getAnswersByUserAndTicket(
-		@AuthUser Long userId,
 		@RequestParam Long ticketId) {
-		List<PurchaserAnswerDetailResponseDTO> answers = ticketOptionAnswerService.getAnswersByUserAndTicket(userId, ticketId);
+		List<PurchaserAnswerDetailResponseDTO> answers = ticketOptionAnswerService.getAnswersByTicket(ticketId);
 		return ApiResponse.onSuccess(answers);
 	}
 

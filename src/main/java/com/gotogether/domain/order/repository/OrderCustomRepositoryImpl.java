@@ -1,6 +1,5 @@
 package com.gotogether.domain.order.repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -51,7 +50,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 			.selectFrom(order)
 			.join(order.user, user).fetchJoin()
 			.join(order.ticket, ticket).fetchJoin()
-			.join(order.ticketQrCode, ticketQrCode).fetchJoin()
+			.leftJoin(order.ticketQrCode, ticketQrCode).fetchJoin()
 			.where(baseCondition)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -85,12 +84,11 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 			.join(order.ticket, ticket).fetchJoin()
 			.join(ticket.event, event).fetchJoin()
 			.join(event.hostChannel, hostChannel).fetchJoin()
-			.join(order.ticketQrCode, ticketQrCode).fetchJoin()
+			.leftJoin(order.ticketQrCode, ticketQrCode).fetchJoin()
 			.leftJoin(event.eventHashtags, eventHashtag).fetchJoin()
 			.leftJoin(eventHashtag.hashtag, hashtag).fetchJoin()
 			.where(
 				order.user.eq(user),
-				event.startDate.goe(LocalDateTime.now()),
 				order.status.ne(OrderStatus.CANCELED)
 			)
 			.offset(pageable.getOffset())
@@ -105,7 +103,6 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 			.join(ticket.event, event)
 			.where(
 				order.user.eq(user),
-				event.startDate.goe(LocalDateTime.now()),
 				order.status.ne(OrderStatus.CANCELED)
 			)
 			.fetchOne();

@@ -20,12 +20,11 @@ public interface TicketOptionAnswerRepository extends JpaRepository<TicketOption
 
 	@Query("""
 			SELECT e FROM TicketOptionAnswer e
-			WHERE e.user.id = :userId
-			AND e.ticketOption.id IN (
+			WHERE e.ticketOption.id IN (
 				SELECT assignment.ticketOption.id
 				FROM TicketOptionAssignment assignment
 				WHERE assignment.ticket.id = :ticketId
 			)
 		""")
-	List<TicketOptionAnswer> findByUserIdAndTicketId(@Param("userId") Long userId, @Param("ticketId") Long ticketId);
+	List<TicketOptionAnswer> findByTicketId(@Param("ticketId") Long ticketId);
 }

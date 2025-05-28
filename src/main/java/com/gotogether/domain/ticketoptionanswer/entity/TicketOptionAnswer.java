@@ -31,7 +31,7 @@ public class TicketOptionAnswer extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "order_id")
+	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -50,7 +50,8 @@ public class TicketOptionAnswer extends BaseEntity {
 	private String answerText;
 
 	@Builder
-	public TicketOptionAnswer(User user, Order order, TicketOption ticketOption, TicketOptionChoice ticketOptionChoice, String answerText) {
+	public TicketOptionAnswer(User user, Order order, TicketOption ticketOption, TicketOptionChoice ticketOptionChoice,
+		String answerText) {
 		this.user = user;
 		this.order = order;
 		this.ticketOption = ticketOption;

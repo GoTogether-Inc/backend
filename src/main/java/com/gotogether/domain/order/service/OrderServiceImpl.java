@@ -1,8 +1,8 @@
 package com.gotogether.domain.order.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +24,7 @@ import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
-import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
+import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
 import com.gotogether.domain.ticketoptionanswer.service.TicketOptionAnswerService;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
@@ -54,16 +54,21 @@ public class OrderServiceImpl implements OrderService {
 		checkTicketAvailableQuantity(ticket, ticketCnt);
 		checkTicketStatus(ticket);
 
-		List<TicketOptionAnswer> answers = ticketOptionAnswerService.getPendingAnswersByTicket(ticket);
+		List<Order> orders = new ArrayList<>();
 
-		return IntStream.range(0, ticketCnt)
-			.mapToObj(i -> {
-				Order order = createTicketOrder(user, ticket);
-				TicketOptionAnswer answer = answers.get(i);
-				answer.assignOrder(order);
-				return order;
-			})
-			.collect(Collectors.toList());
+		for (int i = 0; i < ticketCnt; i++) {
+			Order order = createTicketOrder(user, ticket);
+			orders.add(order);
+
+			List<TicketOptionAnswerRequestDTO> answers =
+				(request.getTicketOptionAnswers() != null && i < request.getTicketOptionAnswers().size())
+					? request.getTicketOptionAnswers().get(i)
+					: Collections.emptyList();
+
+			ticketOptionAnswerService.createTicketOptionAnswers(user, answers, order);
+		}
+
+		return orders;
 	}
 
 	//TODO 정렬 리펙토링 (HHH90003004)
