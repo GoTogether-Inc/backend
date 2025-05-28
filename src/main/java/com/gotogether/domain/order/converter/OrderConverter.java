@@ -37,10 +37,10 @@ public class OrderConverter {
 		return OrderedTicketResponseDTO.builder()
 			.id(order.getId())
 			.event(eventListDTO)
-			.ticketQrCode(ticketQrCode.getQrCodeImageUrl())
+			.ticketQrCode(ticketQrCode != null ? ticketQrCode.getQrCodeImageUrl() : null)
 			.ticketName(ticket.getName())
 			.orderStatus(order.getStatus().name())
-			.isCheckIn(ticketQrCode.getStatus().isCheckIn())
+			.isCheckIn(ticketQrCode != null && ticketQrCode.getStatus().isCheckIn())
 			.build();
 	}
 
