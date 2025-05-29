@@ -13,6 +13,7 @@ import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.entity.OnlineType;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.order.converter.OrderConverter;
+import com.gotogether.domain.order.dto.request.OrderCancelRequestDTO;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
@@ -93,25 +94,24 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional
-	public void cancelOrder(Long userId, Long orderId) {
+	public void cancelOrder(OrderCancelRequestDTO request, Long userId) {
 		User user = eventFacade.getUserById(userId);
 
-		Order order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
+		for (Long orderId : request.getOrderIds()) {
+			Order order = orderRepository.findById(orderId)
+				.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
 
-		Ticket ticket = eventFacade.getTicketById(order.getTicket().getId());
+			if (!order.getUser().equals(user)) {
+				throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
+			}
 
-		if (!order.getUser().equals(user)) {
-			throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
+			Ticket ticket = eventFacade.getTicketById(order.getTicket().getId());
+
+			order.cancelOrder();
+			ticket.increaseAvailableQuantity();
+			ticketQrCodeService.deleteQrCode(orderId);
+			orderRepository.save(order);
 		}
-
-		order.cancelOrder();
-
-		ticket.increaseAvailableQuantity();
-
-		ticketQrCodeService.deleteQrCode(orderId);
-
-		orderRepository.save(order);
 	}
 
 	@Override

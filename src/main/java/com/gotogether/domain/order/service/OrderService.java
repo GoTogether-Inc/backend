@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.gotogether.domain.order.dto.request.OrderCancelRequestDTO;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
@@ -18,7 +19,7 @@ public interface OrderService {
 
 	OrderInfoResponseDTO getPurchaseConfirmation(Long orderId);
 
-	void cancelOrder(Long userId, Long orderId);
+	void cancelOrder(OrderCancelRequestDTO request, Long userId);
 
 	TicketPurchaserEmailResponseDTO getPurchaserEmails(Long eventId, Long ticketId);
 }
