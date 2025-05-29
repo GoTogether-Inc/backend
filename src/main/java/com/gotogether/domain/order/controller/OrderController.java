@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gotogether.domain.order.dto.request.OrderCancelRequestDTO;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
@@ -61,11 +62,11 @@ public class OrderController {
 		return ApiResponse.onSuccess(orderService.getPurchaseConfirmation(orderId));
 	}
 
-	@PostMapping("/{orderId}/cancel")
+	@PostMapping("/cancel")
 	public ApiResponse<?> cancelOrder(
 		@AuthUser Long userId,
-		@PathVariable("orderId") Long orderId) {
-		orderService.cancelOrder(userId, orderId);
+		@RequestBody OrderCancelRequestDTO request) {
+		orderService.cancelOrder(request, userId);
 		return ApiResponse.onSuccess("주문 취소 성공");
 	}
 

@@ -22,6 +22,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 		""")
 	Page<Event> findEventsByFilter(@Param("keyword") String keyword, Pageable pageable);
 
+	@Query("""
+			SELECT e FROM Event e
+			WHERE e.category = :category
+				AND e.endDate >= CURRENT_TIMESTAMP
+				AND e.status != 'DELETED'
+			ORDER BY e.createdAt DESC
+		""")
 	Page<Event> findByCategory(Category category, Pageable pageable);
 
 	long countByHostChannel(HostChannel hostChannel);

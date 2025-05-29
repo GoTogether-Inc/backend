@@ -105,7 +105,7 @@ public class EventServiceImpl implements EventService {
 		hashtagService.deleteHashtagsByEvent(event);
 
 		eventScheduler.deleteScheduledEventJob(eventId);
-		eventRepository.delete(event);
+		event.updateStatus(EventStatus.DELETED);
 	}
 
 	@Override

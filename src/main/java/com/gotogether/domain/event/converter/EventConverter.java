@@ -77,6 +77,7 @@ public class EventConverter {
 			.title(event.getTitle())
 			.hostChannelName(event.getHostChannel().getName())
 			.startDate(String.valueOf(event.getStartDate()))
+			.endDate(String.valueOf(event.getEndDate()))
 			.address(event.getAddress())
 			.onlineType(String.valueOf(event.getOnlineType()))
 			.hashtags(event.getHashtags().stream()

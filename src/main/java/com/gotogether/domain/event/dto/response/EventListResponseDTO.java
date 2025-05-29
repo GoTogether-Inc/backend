@@ -13,6 +13,7 @@ public class EventListResponseDTO {
 	private String title;
 	private String hostChannelName;
 	private String startDate;
+	private String endDate;
 	private String address;
 	private String onlineType;
 	private List<String> hashtags;
