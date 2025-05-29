@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.event.entity.EventStatus;
 import com.gotogether.domain.event.entity.QEvent;
 import com.gotogether.domain.eventhashtag.entity.QEventHashtag;
 import com.gotogether.domain.hashtag.entity.QHashtag;
@@ -37,7 +38,8 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 		QEventHashtag eventHashtag = QEventHashtag.eventHashtag;
 		QHashtag hashtag = QHashtag.hashtag;
 
-		BooleanExpression baseCondition = event.endDate.goe(LocalDateTime.now());
+		BooleanExpression baseCondition = event.endDate.goe(LocalDateTime.now())
+			.and(event.status.ne(EventStatus.DELETED));
 
 		List<Long> eventIds = queryFactory
 			.select(event.id)
