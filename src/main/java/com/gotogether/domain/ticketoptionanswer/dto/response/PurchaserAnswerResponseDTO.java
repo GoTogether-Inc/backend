@@ -15,5 +15,5 @@ public class PurchaserAnswerResponseDTO {
 
 	private String optionType;
 
-	private List<TicketOptionAnswerResponseDTO> answers;
+	private List<TicketOptionAnswerResponseDTO> ticketOptionAnswers;
 }

@@ -47,7 +47,7 @@ public class TicketOptionAnswerConverter {
 			.optionId(ticketOption.getId())
 			.optionName(ticketOption.getName())
 			.optionType(ticketOption.getType().name())
-			.answers(response)
+			.ticketOptionAnswers(response)
 			.build();
 	}
 

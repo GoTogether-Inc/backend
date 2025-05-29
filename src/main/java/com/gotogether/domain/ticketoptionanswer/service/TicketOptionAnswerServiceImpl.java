@@ -16,6 +16,7 @@ import com.gotogether.domain.ticketoption.repository.TicketOptionRepository;
 import com.gotogether.domain.ticketoptionanswer.converter.TicketOptionAnswerConverter;
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerDetailResponseDTO;
+import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerListResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserOrderAnswerResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.TicketOptionAnswerDetailResponseDTO;
@@ -115,7 +116,7 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<PurchaserAnswerResponseDTO> getPurchaserAnswers(Long ticketId) {
+	public PurchaserAnswerListResponseDTO getPurchaserAnswers(Long ticketId) {
 		Ticket ticket = ticketOptionAssignmentRepository.findAllByTicketId(ticketId).stream()
 			.findFirst()
 			.map(TicketOptionAssignment::getTicket)
@@ -127,18 +128,29 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 			.map(a -> a.getTicketOption().getId())
 			.toList();
 
+		List<TicketOptionAnswer> allAnswers = ticketOptionAnswerRepository.findByTicketOptionIdIn(ticketOptionIds);
+
 		Map<Long, List<TicketOptionAnswer>> answersByOptionId =
-			ticketOptionAnswerRepository.findByTicketOptionIdIn(ticketOptionIds)
-				.stream()
+			allAnswers.stream()
 				.collect(Collectors.groupingBy(a -> a.getTicketOption().getId()));
 
-		return assignments.stream()
+		List<PurchaserAnswerResponseDTO> responses = assignments.stream()
 			.map(assignment -> {
 				TicketOption option = assignment.getTicketOption();
 				List<TicketOptionAnswer> answers = answersByOptionId.getOrDefault(option.getId(), List.of());
 				return TicketOptionAnswerConverter.toPurchaserAnswerResponseDTO(option, answers);
 			})
 			.toList();
+
+		int orderCount = (int)allAnswers.stream()
+			.map(a -> a.getOrder().getId())
+			.distinct()
+			.count();
+
+		return PurchaserAnswerListResponseDTO.builder()
+			.orderCount(orderCount)
+			.ticketOptions(responses)
+			.build();
 	}
 
 	@Override
