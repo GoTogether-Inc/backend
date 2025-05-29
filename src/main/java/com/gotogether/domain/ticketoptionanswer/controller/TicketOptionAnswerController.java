@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerDetailResponseDTO;
-import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerResponseDTO;
+import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerListResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.service.TicketOptionAnswerService;
 import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
@@ -41,9 +41,9 @@ public class TicketOptionAnswerController {
 	}
 
 	@GetMapping("/purchaser-answer")
-	public ApiResponse<List<PurchaserAnswerResponseDTO>> getPurchaserAnswers(
+	public ApiResponse<PurchaserAnswerListResponseDTO> getPurchaserAnswers(
 		@RequestParam Long ticketId) {
-		List<PurchaserAnswerResponseDTO> answers = ticketOptionAnswerService.getPurchaserAnswers(ticketId);
+		PurchaserAnswerListResponseDTO answers = ticketOptionAnswerService.getPurchaserAnswers(ticketId);
 		return ApiResponse.onSuccess(answers);
 	}
 }

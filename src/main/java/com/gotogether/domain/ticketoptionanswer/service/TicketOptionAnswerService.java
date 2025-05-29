@@ -6,7 +6,7 @@ import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
 import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerDetailResponseDTO;
-import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerResponseDTO;
+import com.gotogether.domain.ticketoptionanswer.dto.response.PurchaserAnswerListResponseDTO;
 import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
 import com.gotogether.domain.user.entity.User;
 
@@ -18,7 +18,7 @@ public interface TicketOptionAnswerService {
 
 	List<PurchaserAnswerDetailResponseDTO> getAnswersByTicket(Long ticketId);
 
-	List<PurchaserAnswerResponseDTO> getPurchaserAnswers(Long ticketId);
+	PurchaserAnswerListResponseDTO getPurchaserAnswers(Long ticketId);
 
 	void createTicketOptionAnswers(User user, List<TicketOptionAnswerRequestDTO> requests, Order order);
 }
