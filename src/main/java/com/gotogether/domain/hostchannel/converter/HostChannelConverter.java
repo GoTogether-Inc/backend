@@ -80,6 +80,7 @@ public class HostChannelConverter {
 			.phoneNumber(order.getUser().getPhoneNumber())
 			.purchaseDate(String.valueOf(order.getCreatedAt()))
 			.ticketName(order.getTicket().getName())
+			.ticketType(order.getTicket().getType().name())
 			.isCheckedIn(order.getTicketQrCode() != null && order.getTicketQrCode().getStatus().isCheckIn())
 			.isApproved(order.getStatus() == OrderStatus.COMPLETED)
 			.build();
