@@ -51,8 +51,6 @@ public class TicketOptionAssignmentServiceImpl implements TicketOptionAssignment
 			.findByTicketIdAndTicketOptionId(ticketId, ticketOptionId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_ASSIGNMENT_NOT_FOUND));
 
-		TicketOption ticketOption = assignment.getTicketOption();
-
 		ticketOptionAssignmentRepository.delete(assignment);
 	}
 }
