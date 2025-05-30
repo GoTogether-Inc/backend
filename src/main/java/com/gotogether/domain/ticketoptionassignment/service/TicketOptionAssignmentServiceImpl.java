@@ -54,11 +54,5 @@ public class TicketOptionAssignmentServiceImpl implements TicketOptionAssignment
 		TicketOption ticketOption = assignment.getTicketOption();
 
 		ticketOptionAssignmentRepository.delete(assignment);
-
-		boolean stillAssigned = ticketOptionAssignmentRepository.existsByTicketOption(ticketOption);
-
-		if (!stillAssigned) {
-			ticketOptionRepository.delete(ticketOption);
-		}
 	}
 }
