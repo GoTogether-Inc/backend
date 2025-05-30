@@ -32,6 +32,13 @@ public class TicketOptionAssignmentServiceImpl implements TicketOptionAssignment
 		TicketOption ticketOption = ticketOptionRepository.findById(ticketOptionId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
 
+		boolean alreadyAssigned = ticketOptionAssignmentRepository
+			.existsByTicketIdAndTicketOptionId(ticketId, ticketOptionId);
+
+		if (alreadyAssigned) {
+			throw new GeneralException(ErrorStatus._TICKET_OPTION_ALREADY_ASSIGNED);
+		}
+
 		if (ticketOption.getStatus() == TicketOptionStatus.CREATED) {
 			ticketOption.markAsAssigned();
 		}
