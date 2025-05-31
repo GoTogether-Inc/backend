@@ -89,10 +89,13 @@ public class HostChannelConverter {
 	public static HostDashboardResponseDTO toHostDashboardResponseDTO(Event event, Long totalTicketCnt,
 		Long totalPrice) {
 
+		boolean hasTicketOption = event.getTickets().stream()
+			.anyMatch(ticket -> !ticket.getTicketOptionAssignments().isEmpty());
+
 		return HostDashboardResponseDTO.builder()
 			.eventName(event.getTitle())
 			.isTicket(!event.getTickets().isEmpty())
-			.isTicketOption(false) //TODO 옵션 데이터 추가
+			.isTicketOption(hasTicketOption)
 			.eventStartDate(String.valueOf(event.getStartDate()))
 			.eventEndDate(String.valueOf(event.getEndDate()))
 			.totalTicketCnt(totalTicketCnt)

@@ -1,10 +1,14 @@
 package com.gotogether.domain.ticket.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.gotogether.domain.event.entity.Event;
+import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
 import com.gotogether.global.common.entity.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +19,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -60,6 +65,9 @@ public class Ticket extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private TicketStatus status;
+
+	@OneToMany(mappedBy = "ticket", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	private List<TicketOptionAssignment> ticketOptionAssignments = new ArrayList<>();
 
 	@Builder
 	public Ticket(Event event, String name, int price, String description, int availableQuantity,
