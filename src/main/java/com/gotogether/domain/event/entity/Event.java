@@ -132,6 +132,7 @@ public class Event extends BaseEntity {
 		this.endDate = request.getEndDate();
 		this.bannerImageUrl = request.getBannerImageUrl();
 		this.address = request.getAddress();
+		this.detailAddress = request.getDetailAddress();
 		this.locationLat = request.getLocationLat();
 		this.locationLng = request.getLocationLng();
 		this.onlineType = request.getOnlineType();
