@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoptionanswer.entity.TicketOptionAnswer;
 
 @Repository
@@ -27,4 +28,6 @@ public interface TicketOptionAnswerRepository extends JpaRepository<TicketOption
 			)
 		""")
 	List<TicketOptionAnswer> findByTicketId(@Param("ticketId") Long ticketId);
+
+	boolean existsByTicketOption(TicketOption ticketOption);
 }

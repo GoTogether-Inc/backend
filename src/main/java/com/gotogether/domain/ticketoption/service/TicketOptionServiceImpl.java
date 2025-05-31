@@ -15,6 +15,7 @@ import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
 import com.gotogether.domain.ticketoption.entity.TicketOptionStatus;
 import com.gotogether.domain.ticketoption.repository.TicketOptionChoiceRepository;
 import com.gotogether.domain.ticketoption.repository.TicketOptionRepository;
+import com.gotogether.domain.ticketoptionanswer.repository.TicketOptionAnswerRepository;
 import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
 import com.gotogether.domain.ticketoptionassignment.repository.TicketOptionAssignmentRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -30,6 +31,7 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 	private final TicketOptionChoiceRepository ticketOptionChoiceRepository;
 	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
 	private final TicketRepository ticketRepository;
+	private final TicketOptionAnswerRepository ticketOptionAnswerRepository;
 
 	@Override
 	@Transactional
@@ -118,12 +120,18 @@ public class TicketOptionServiceImpl implements TicketOptionService {
 		TicketOption ticketOption = ticketOptionRepository.findById(ticketOptionId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_OPTION_NOT_FOUND));
 
-		boolean isAssigned = ticketOptionAssignmentRepository.existsByTicketOption(ticketOption);
+		boolean hasAnswer = ticketOptionAnswerRepository.existsByTicketOption(ticketOption);
 
-		if (isAssigned) {
-			ticketOption.markAsDeleted();
-		} else {
-			ticketOptionRepository.delete(ticketOption);
+		if (hasAnswer) {
+			throw new GeneralException(ErrorStatus._TICKET_OPTION_ALREADY_ANSWERED);
 		}
+
+		List<TicketOptionAssignment> assignments = ticketOptionAssignmentRepository.findAllByTicketOption(ticketOption);
+
+		if (!assignments.isEmpty()) {
+			ticketOptionAssignmentRepository.deleteAll(assignments);
+		}
+
+		ticketOptionRepository.delete(ticketOption);
 	}
 }
