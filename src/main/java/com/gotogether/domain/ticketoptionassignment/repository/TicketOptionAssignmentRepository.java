@@ -15,7 +15,7 @@ public interface TicketOptionAssignmentRepository extends JpaRepository<TicketOp
 
 	Optional<TicketOptionAssignment> findByTicketIdAndTicketOptionId(Long ticketId, Long ticketOptionId);
 
-	boolean existsByTicketOption(TicketOption ticketOption);
+	List<TicketOptionAssignment> findAllByTicketOption(TicketOption ticketOption);
 
 	List<TicketOptionAssignment> findAllByTicketId(Long ticketId);
 
