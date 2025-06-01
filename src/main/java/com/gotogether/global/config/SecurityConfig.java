@@ -1,6 +1,5 @@
 package com.gotogether.global.config;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -61,16 +60,18 @@ public class SecurityConfig {
 
 				@Override
 				public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
 					CorsConfiguration configuration = new CorsConfiguration();
 
-					configuration.setAllowedOrigins(Collections.singletonList(allowedOrigins));
-					configuration.setAllowedMethods(Collections.singletonList("*"));
-					configuration.setAllowCredentials(true);
-					configuration.setAllowedHeaders(Collections.singletonList("*"));
-					configuration.setMaxAge(3600L);
+					List<String> origins = List.of(allowedOrigins.split(","));
+					configuration.setAllowedOrigins(origins);
 
-					configuration.setExposedHeaders(List.of("Set-Cookie", "Authorization"));
+					configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+					configuration.setAllowCredentials(true);
+
+					configuration.setAllowedHeaders(List.of("*"));
+					
+					configuration.setMaxAge(3600L);
+					configuration.setExposedHeaders(List.of("Set-Cookie"));
 
 					return configuration;
 				}
