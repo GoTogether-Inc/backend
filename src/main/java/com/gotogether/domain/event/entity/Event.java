@@ -24,6 +24,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -45,6 +46,7 @@ public class Event extends BaseEntity {
 	@Column(name = "title", nullable = false)
 	private String title;
 
+	@Lob
 	@Column(name = "description", nullable = false)
 	private String description;
 
@@ -54,7 +56,7 @@ public class Event extends BaseEntity {
 	@Column(name = "end_date", nullable = false)
 	private LocalDateTime endDate;
 
-	@Column(name = "banner_image_url", nullable = false)
+	@Column(name = "banner_image_url", length = 512 , nullable = false)
 	private String bannerImageUrl;
 
 	@Column(name = "address")
