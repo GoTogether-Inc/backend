@@ -16,9 +16,8 @@ public final class Constants {
 		"/swagger-ui/**",
 		"/api/v1/events",
 		"/api/v1/events/{eventId}",
-		"/api/v1/events/search",
 		"/api/v1/events/categories",
-		"/api/v1/host-channels/search",
+		"/api/v1/host-channels",
 		"/api/v1/host-channels/{hostChannelId}/info"
 	);
 }
