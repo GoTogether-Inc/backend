@@ -46,7 +46,7 @@ public class Ticket extends BaseEntity {
 	@Column(name = "price", nullable = false)
 	private int price;
 
-	@Column(name = "description", nullable = false)
+	@Column(name = "description")
 	private String description;
 
 	@Column(name = "available_quantity", nullable = false)

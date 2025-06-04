@@ -1,5 +1,7 @@
 package com.gotogether.global.config;
 
+import static org.springframework.http.HttpMethod.*;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -105,7 +107,7 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests(registry ->
 				registry
-					.requestMatchers(Constants.NO_NEED_FILTER_URLS.toArray(String[]::new)).permitAll()
+					.requestMatchers(GET, Constants.NO_NEED_FILTER_URLS.toArray(String[]::new)).permitAll()
 					.anyRequest().authenticated()
 			);
 
