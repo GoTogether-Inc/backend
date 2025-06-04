@@ -19,6 +19,7 @@ public final class Constants {
 		"/api/v1/events/search",
 		"/api/v1/events/categories",
 		"/api/v1/host-channels/search",
-		"/api/v1/host-channels/{hostChannelId}/info"
+		"/api/v1/host-channels/{hostChannelId}/info",
+		"/api/v1/tickets"
 	);
 }
