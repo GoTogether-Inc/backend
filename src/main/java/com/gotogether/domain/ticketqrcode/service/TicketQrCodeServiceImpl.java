@@ -1,16 +1,19 @@
 package com.gotogether.domain.ticketqrcode.service;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.gotogether.domain.event.facade.EventFacade;
@@ -75,12 +78,14 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 			String signature = hmacSHA256(orderData, qrSecretKey);
 			String qrCodePayload = orderData + "&sig=" + signature;
 
-			BitMatrix encode = new MultiFormatWriter()
+			BitMatrix bitMatrix = new MultiFormatWriter()
 				.encode(qrCodePayload, BarcodeFormat.QR_CODE, width, height);
 
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			BufferedImage image = MatrixToImageWriter.toBufferedImage(bitMatrix,
+				new MatrixToImageConfig(0xFF000000, 0x00FFFFFF));
 
-			MatrixToImageWriter.writeToStream(encode, "PNG", out);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ImageIO.write(image, "PNG", out);
 
 			return Base64.getEncoder().encodeToString(out.toByteArray());
 
