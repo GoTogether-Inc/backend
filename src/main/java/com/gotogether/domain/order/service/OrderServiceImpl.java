@@ -1,8 +1,11 @@
 package com.gotogether.domain.order.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +25,7 @@ import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
+import com.gotogether.domain.order.util.OrderCodeGenerator;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
@@ -44,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
 	private final TicketQrCodeService ticketQrCodeService;
 	private final OrderCustomRepository orderCustomRepository;
 	private final TicketOptionAnswerService ticketOptionAnswerService;
+	private final OrderCodeGenerator orderCodeGenerator;
 
 	@Override
 	@Transactional
@@ -143,11 +148,13 @@ public class OrderServiceImpl implements OrderService {
 	private Order createTicketOrder(User user, Ticket ticket) {
 		Event event = ticket.getEvent();
 
+		String orderCode = orderCodeGenerator.generateTodayOrderCode();
+
 		OrderStatus status = (ticket.getType() == TicketType.FIRST_COME)
 			? OrderStatus.COMPLETED
 			: OrderStatus.PENDING;
 
-		Order order = OrderConverter.of(user, ticket, status);
+		Order order = OrderConverter.of(user, ticket, orderCode, status);
 		orderRepository.save(order);
 
 		if (ticket.getType() == TicketType.FIRST_COME && event.getOnlineType() == OnlineType.OFFLINE) {
