@@ -1,11 +1,8 @@
 package com.gotogether.domain.order.service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +45,6 @@ public class OrderServiceImpl implements OrderService {
 	private final TicketQrCodeService ticketQrCodeService;
 	private final OrderCustomRepository orderCustomRepository;
 	private final TicketOptionAnswerService ticketOptionAnswerService;
-	private final OrderCodeGenerator orderCodeGenerator;
 
 	@Override
 	@Transactional
@@ -148,7 +144,7 @@ public class OrderServiceImpl implements OrderService {
 	private Order createTicketOrder(User user, Ticket ticket) {
 		Event event = ticket.getEvent();
 
-		String orderCode = orderCodeGenerator.generateTodayOrderCode();
+		String orderCode = OrderCodeGenerator.generate();
 
 		OrderStatus status = (ticket.getType() == TicketType.FIRST_COME)
 			? OrderStatus.COMPLETED

@@ -1,10 +1,7 @@
 package com.gotogether.domain.order.util;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.Duration;
+import java.security.SecureRandom;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -13,17 +10,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderCodeGenerator {
 
-	private final RedisTemplate<String, String> redisTemplate;
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd");
+	private static final String BASE36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static final int LENGTH = 6;
+	private static final SecureRandom random = new SecureRandom();
 
-	public String generateTodayOrderCode() {
-		String today = LocalDate.now().format(DATE_FORMATTER);
-		String redisKey = "order:seq:" + today;
-
-		Long sequence = redisTemplate.opsForValue().increment(redisKey);
-		redisTemplate.expire(redisKey, Duration.ofDays(1));
-
-		String paddedSeq = String.format("%06d", sequence);
-		return today + paddedSeq;
+	public static String generate() {
+		StringBuilder sb = new StringBuilder(LENGTH);
+		for (int i = 0; i < LENGTH; i++) {
+			int index = random.nextInt(BASE36.length());
+			sb.append(BASE36.charAt(index));
+		}
+		return sb.toString();
 	}
 }
