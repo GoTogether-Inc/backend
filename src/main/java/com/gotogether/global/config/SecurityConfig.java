@@ -1,7 +1,5 @@
 package com.gotogether.global.config;
 
-import static org.springframework.http.HttpMethod.*;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -67,11 +65,11 @@ public class SecurityConfig {
 					List<String> origins = List.of(allowedOrigins.split(","));
 					configuration.setAllowedOrigins(origins);
 
-					configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+					configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS"));
 					configuration.setAllowCredentials(true);
 
 					configuration.setAllowedHeaders(List.of("*"));
-					
+
 					configuration.setMaxAge(3600L);
 					configuration.setExposedHeaders(List.of("Set-Cookie"));
 
@@ -107,7 +105,7 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests(registry ->
 				registry
-					.requestMatchers(GET, Constants.NO_NEED_FILTER_URLS.toArray(String[]::new)).permitAll()
+					.requestMatchers(Constants.NO_NEED_FILTER_URLS.toArray(String[]::new)).permitAll()
 					.anyRequest().authenticated()
 			);
 
