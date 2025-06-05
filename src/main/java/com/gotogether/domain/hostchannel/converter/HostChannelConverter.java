@@ -73,7 +73,7 @@ public class HostChannelConverter {
 	public static ParticipantManagementResponseDTO toParticipantManagementResponseDTO(Order order) {
 		return ParticipantManagementResponseDTO.builder()
 			.id(order.getId())
-			.orderId(order.getId()) //TODO 주문 고유 번호로 수정
+			.orderId(order.getOrderCode())
 			.ticketId(order.getTicket().getId())
 			.participant(order.getUser().getName())
 			.email(order.getUser().getEmail())
