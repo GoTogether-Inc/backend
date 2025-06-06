@@ -144,7 +144,7 @@ public class OrderServiceImpl implements OrderService {
 	private Order createTicketOrder(User user, Ticket ticket) {
 		Event event = ticket.getEvent();
 
-		String orderCode = OrderCodeGenerator.generate();
+		String orderCode = generateOrderCode();
 
 		OrderStatus status = (ticket.getType() == TicketType.FIRST_COME)
 			? OrderStatus.COMPLETED
@@ -162,5 +162,13 @@ public class OrderServiceImpl implements OrderService {
 
 		ticket.decreaseAvailableQuantity();
 		return order;
+	}
+
+	private String generateOrderCode() {
+		String orderCode;
+		do {
+			orderCode = OrderCodeGenerator.generate();
+		} while (orderRepository.existsByOrderCode(orderCode));
+		return orderCode;
 	}
 }
