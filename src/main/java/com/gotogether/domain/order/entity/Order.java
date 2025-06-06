@@ -32,6 +32,9 @@ public class Order extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(name = "order_code", nullable = false, unique = true, length = 50)
+	private String orderCode;
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private OrderStatus status;
@@ -48,7 +51,8 @@ public class Order extends BaseEntity {
 	private TicketQrCode ticketQrCode;
 
 	@Builder
-	public Order(OrderStatus status, User user, Ticket ticket) {
+	public Order(String orderCode, OrderStatus status, User user, Ticket ticket) {
+		this.orderCode = orderCode;
 		this.status = status;
 		this.user = user;
 		this.ticket = ticket;
