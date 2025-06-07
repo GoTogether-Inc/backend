@@ -1,5 +1,6 @@
 package com.gotogether.domain.order.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +55,10 @@ public class OrderServiceImpl implements OrderService {
 
 		int ticketCnt = request.getTicketCnt();
 		checkTicketAvailableQuantity(ticket, ticketCnt);
+
 		checkTicketStatus(ticket);
+
+		checkTicketStartDateOrEndDate(ticket);
 
 		List<Order> orders = new ArrayList<>();
 
@@ -138,6 +142,12 @@ public class OrderServiceImpl implements OrderService {
 	private void checkTicketStatus(Ticket ticket) {
 		if (ticket.getStatus() == TicketStatus.CLOSE) {
 			throw new GeneralException(ErrorStatus._TICKET_ALREADY_CLOSED);
+		}
+	}
+
+	private void checkTicketStartDateOrEndDate(Ticket ticket) {
+		if (ticket.getStartDate().isAfter(LocalDateTime.now()) || ticket.getEndDate().isBefore(LocalDateTime.now())) {
+			throw new GeneralException(ErrorStatus._TICKET_SALE_UNAVAILABLE);
 		}
 	}
 
