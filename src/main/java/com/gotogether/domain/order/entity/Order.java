@@ -32,7 +32,7 @@ public class Order extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "order_code", nullable = false, unique = true, length = 50)
+	@Column(name = "order_code", nullable = false, unique = true)
 	private String orderCode;
 
 	@Enumerated(EnumType.STRING)
