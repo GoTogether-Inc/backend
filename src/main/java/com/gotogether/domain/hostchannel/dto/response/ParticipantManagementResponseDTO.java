@@ -8,7 +8,7 @@ import lombok.Getter;
 public class ParticipantManagementResponseDTO {
 	private Long id;
 	private Long ticketId;
-	private String orderId;
+	private String orderCode;
 	private String participant;
 	private String email;
 	private String phoneNumber;

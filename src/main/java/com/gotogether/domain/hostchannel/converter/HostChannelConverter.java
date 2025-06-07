@@ -73,8 +73,8 @@ public class HostChannelConverter {
 	public static ParticipantManagementResponseDTO toParticipantManagementResponseDTO(Order order) {
 		return ParticipantManagementResponseDTO.builder()
 			.id(order.getId())
-			.orderId(order.getOrderCode())
 			.ticketId(order.getTicket().getId())
+			.orderCode(order.getOrderCode())
 			.participant(order.getUser().getName())
 			.email(order.getUser().getEmail())
 			.phoneNumber(order.getUser().getPhoneNumber())
