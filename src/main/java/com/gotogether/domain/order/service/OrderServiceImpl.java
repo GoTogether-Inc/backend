@@ -121,15 +121,8 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public TicketPurchaserEmailResponseDTO getPurchaserEmails(Long eventId, Long ticketId) {
-		List<String> purchaserEmails;
-
-		if (ticketId != null) {
-			purchaserEmails = orderRepository.findPurchaserEmailsByTicketId(ticketId);
-		} else {
-			purchaserEmails = orderRepository.findPurchaserEmailsByEventId(eventId);
-		}
-
+	public TicketPurchaserEmailResponseDTO getPurchaserEmails(Long ticketId) {
+		List<String> purchaserEmails = orderRepository.findPurchaserEmailsByTicketId(ticketId);
 		return OrderConverter.toPurchaserEmailResponseDTO(purchaserEmails);
 	}
 

@@ -43,14 +43,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	List<String> findPurchaserEmailsByTicketId(@Param("ticketId") Long ticketId);
 
 	@Query("""
-			SELECT DISTINCT o.user.email
-			FROM Order o
-			WHERE o.ticket.event.id = :eventId
-			AND o.status = 'COMPLETED'
-		""")
-	List<String> findPurchaserEmailsByEventId(@Param("eventId") Long eventId);
-
-	@Query("""
 		SELECT o
 		FROM Order o
 		JOIN FETCH o.ticket t
