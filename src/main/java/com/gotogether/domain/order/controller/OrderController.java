@@ -72,9 +72,8 @@ public class OrderController {
 
 	@GetMapping("/purchaser-emails")
 	public ApiResponse<TicketPurchaserEmailResponseDTO> getPurchaserEmails(
-		@RequestParam("eventId") Long eventId,
 		@RequestParam(value = "ticketId", required = false) Long ticketId) {
-		TicketPurchaserEmailResponseDTO purchaserEmails = orderService.getPurchaserEmails(eventId, ticketId);
+		TicketPurchaserEmailResponseDTO purchaserEmails = orderService.getPurchaserEmails(ticketId);
 		return ApiResponse.onSuccess(purchaserEmails);
 	}
 }
