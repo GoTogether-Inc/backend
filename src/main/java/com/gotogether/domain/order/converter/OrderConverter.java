@@ -36,7 +36,7 @@ public class OrderConverter {
 		EventListResponseDTO eventListDTO = EventConverter.toEventListResponseDTO(event);
 
 		return OrderedTicketResponseDTO.builder()
-			.id(order.getId())
+			.orderId(order.getId())
 			.event(eventListDTO)
 			.ticketQrCode(ticketQrCode != null ? ticketQrCode.getQrCodeImageUrl() : null)
 			.ticketName(ticket.getName())
