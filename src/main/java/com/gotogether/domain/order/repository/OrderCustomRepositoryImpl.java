@@ -1,5 +1,6 @@
 package com.gotogether.domain.order.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import com.gotogether.domain.ticketqrcode.entity.QTicketQrCode;
 import com.gotogether.domain.user.entity.QUser;
 import com.gotogether.domain.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -67,7 +69,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 	}
 
 	@Override
-	public Page<Order> findByUser(User user, Pageable pageable) {
+	public List<Order> findByUser(User user) {
 		QOrder order = QOrder.order;
 		QTicket ticket = QTicket.ticket;
 		QTicketQrCode ticketQrCode = QTicketQrCode.ticketQrCode;
@@ -77,7 +79,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 		QEventHashtag eventHashtag = QEventHashtag.eventHashtag;
 		QHashtag hashtag = QHashtag.hashtag;
 
-		List<Order> orders = queryFactory
+		return queryFactory
 			.selectDistinct(order)
 			.from(order)
 			.join(order.user, qUser)
@@ -91,22 +93,13 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 				order.user.eq(user),
 				order.status.ne(OrderStatus.CANCELED)
 			)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.orderBy(order.createdAt.desc())
-			.fetch();
-
-		long totalCount = queryFactory
-			.select(order.countDistinct())
-			.from(order)
-			.join(order.ticket, ticket)
-			.join(ticket.event, event)
-			.where(
-				order.user.eq(user),
-				order.status.ne(OrderStatus.CANCELED)
+			.orderBy(
+				new CaseBuilder()
+					.when(event.endDate.after(LocalDateTime.now())).then(1)
+					.otherwise(0)
+					.desc(),
+				order.createdAt.desc()
 			)
-			.fetchOne();
-
-		return new PageImpl<>(orders, pageable, totalCount);
+			.fetch();
 	}
 }

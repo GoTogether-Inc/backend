@@ -2,9 +2,6 @@ package com.gotogether.domain.order.controller;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,12 +45,9 @@ public class OrderController {
 
 	@GetMapping
 	public ApiResponse<List<OrderedTicketResponseDTO>> getPurchasedTickets(
-		@AuthUser Long userId,
-		@RequestParam(value = "page", defaultValue = "0") int page,
-		@RequestParam(value = "size", defaultValue = "10") int size) {
-		Pageable pageable = PageRequest.of(page, size);
-		Page<OrderedTicketResponseDTO> purchasedTickets = orderService.getPurchasedTickets(userId, pageable);
-		return ApiResponse.onSuccess(purchasedTickets.getContent());
+		@AuthUser Long userId) {
+		List<OrderedTicketResponseDTO> purchasedTickets = orderService.getPurchasedTickets(userId);
+		return ApiResponse.onSuccess(purchasedTickets);
 	}
 
 	@GetMapping("/{orderId}/purchase-confirmation")
