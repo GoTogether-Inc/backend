@@ -12,5 +12,5 @@ public interface OrderCustomRepository {
 
 	Page<Order> findByTicketIdsAndStatus(List<Long> ticketIds, String tag, Pageable pageable);
 
-	Page<Order> findByUser(User user, Pageable pageable);
+	List<Order> findByUser(User user);
 }

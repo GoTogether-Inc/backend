@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,15 +75,16 @@ public class OrderServiceImpl implements OrderService {
 		return orders;
 	}
 
-	//TODO 정렬 리펙토링 (HHH90003004)
 	@Override
 	@Transactional(readOnly = true)
-	public Page<OrderedTicketResponseDTO> getPurchasedTickets(Long userId, Pageable pageable) {
+	public List<OrderedTicketResponseDTO> getPurchasedTickets(Long userId) {
 		User user = eventFacade.getUserById(userId);
 
-		Page<Order> orders = orderCustomRepository.findByUser(user, pageable);
+		List<Order> orders = orderCustomRepository.findByUser(user);
 
-		return orders.map(OrderConverter::toOrderedTicketResponseDTO);
+		return orders.stream()
+			.map(OrderConverter::toOrderedTicketResponseDTO)
+			.toList();
 	}
 
 	@Override
