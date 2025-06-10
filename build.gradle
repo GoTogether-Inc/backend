@@ -125,7 +125,7 @@ jacocoTestCoverageVerification {
 
 jib {
     from {
-        image = 'openjdk:17-alpine'
+        image = 'openjdk:17'
         platforms {
             platform {
                 architecture = 'amd64'
@@ -135,5 +135,9 @@ jib {
     }
     to {
         image = 'zmflspa123/gotogether:latest'
+    }
+    container {
+        environment = [ 'TZ': 'Asia/Seoul' ]
+        jvmFlags = ['-Duser.timezone=Asia/Seoul']
     }
 }
