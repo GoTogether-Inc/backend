@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class OrderedTicketResponseDTO {
-	private Long id;
+	private Long orderId;
 	private EventListResponseDTO event;
 	private String ticketQrCode;
 	private String ticketName;
