@@ -36,8 +36,8 @@ public class HostChannelConverter {
 			.build();
 	}
 
-	public static HostChannelDetailResponseDTO toHostChannelDetailResponseDTO(HostChannel hostChannel) {
-		List<EventListResponseDTO> eventListResponseDTOList = hostChannel.getEvents().stream()
+	public static HostChannelDetailResponseDTO toHostChannelDetailResponseDTO(HostChannel hostChannel, List<Event> events) {
+		List<EventListResponseDTO> eventListResponseDTOList = events.stream()
 			.map(EventConverter::toEventListResponseDTO)
 			.toList();
 
