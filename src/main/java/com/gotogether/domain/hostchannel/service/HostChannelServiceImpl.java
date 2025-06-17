@@ -38,6 +38,7 @@ import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.common.service.S3UploadService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -54,6 +55,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final EventRepository eventRepository;
 	private final EventFacade eventFacade;
 	private final TicketQrCodeService ticketQrCodeService;
+	private final S3UploadService s3UploadService;
 
 	@Override
 	@Transactional
@@ -78,6 +80,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 		ChannelOrganizer channelOrganizer = createChannelOrganizer(user, newHostChannel);
 		channelOrganizerRepository.save(channelOrganizer);
+
+		updateProfileImageToFinal(newHostChannel, request.getProfileImageUrl());
 
 		return newHostChannel;
 	}
@@ -256,5 +260,18 @@ public class HostChannelServiceImpl implements HostChannelService {
 		if (status == OrderStatus.CANCELED) {
 			throw new GeneralException(ErrorStatus._ORDER_ALREADY_CANCELED);
 		}
+	}
+
+	private void updateProfileImageToFinal(HostChannel hostChannel, String imageUrl) {
+		if (imageUrl == null || !imageUrl.contains("temp/"))
+			return;
+
+		String tempKey = s3UploadService.extractKeyFromUrl(imageUrl);
+		String finalKey = tempKey.replace("temp/", "final/");
+		String finalUrl = imageUrl.replace("temp/", "final/");
+
+		s3UploadService.moveFileToFinal(tempKey, finalKey);
+
+		hostChannel.updateProfileImageUrl(finalUrl);
 	}
 }
