@@ -53,6 +53,13 @@ public class S3UploadService {
 		return finalUrl;
 	}
 
+	public void deleteFile(String imageUrl) {
+		String key = extractKeyFromUrl(imageUrl);
+
+		DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucketName, key);
+		amazonS3.deleteObject(deleteObjectRequest);
+	}
+
 	private String extractKeyFromUrl(String url) {
 		String encodedKey = url.substring(url.indexOf(".com/") + 5);
 		return URLDecoder.decode(encodedKey, StandardCharsets.UTF_8);

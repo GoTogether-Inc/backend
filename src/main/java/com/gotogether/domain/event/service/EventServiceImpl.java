@@ -85,6 +85,9 @@ public class EventServiceImpl implements EventService {
 	@Transactional
 	public Event updateEvent(Long eventId, EventRequestDTO request) {
 		Event event = eventFacade.getEventById(eventId);
+
+		s3UploadService.deleteFile(event.getBannerImageUrl());
+
 		event.update(request);
 
 		eventRepository.save(event);
@@ -98,6 +101,8 @@ public class EventServiceImpl implements EventService {
 			hashtagService.deleteHashtagsByRequest(event, request.getHashtags());
 			hashtagService.createHashtags(event, request.getHashtags());
 		}
+
+		updateBannerImageToFinal(event, request.getBannerImageUrl());
 
 		return event;
 	}
