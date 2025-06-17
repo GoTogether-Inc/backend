@@ -136,7 +136,12 @@ public class HostChannelServiceImpl implements HostChannelService {
 	@Transactional
 	public HostChannel updateHostChannel(Long hostChannelId, HostChannelRequestDTO request) {
 		HostChannel hostChannel = eventFacade.getHostChannelById(hostChannelId);
+
+		s3UploadService.deleteFile(hostChannel.getProfileImageUrl());
+
 		hostChannel.update(request);
+
+		updateProfileImageToFinal(hostChannel, request.getProfileImageUrl());
 
 		return hostChannelRepository.save(hostChannel);
 	}
