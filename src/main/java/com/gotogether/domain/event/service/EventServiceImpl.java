@@ -95,6 +95,9 @@ public class EventServiceImpl implements EventService {
 			hashtagService.createHashtags(event, request.getHashtags());
 		}
 
+		eventScheduler.deleteScheduledEventJob(eventId);
+		eventScheduler.scheduleUpdateEventStatus(event.getId(), event.getEndDate());
+
 		return event;
 	}
 
