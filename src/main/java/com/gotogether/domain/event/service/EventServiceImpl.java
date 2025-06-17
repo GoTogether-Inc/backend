@@ -23,6 +23,7 @@ import com.gotogether.domain.referencelink.service.ReferenceLinkService;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.common.service.S3UploadService;
 import com.gotogether.global.scheduler.EventScheduler;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class EventServiceImpl implements EventService {
 	private final BookmarkRepository bookmarkRepository;
 	private final HashtagService hashtagService;
 	private final ReferenceLinkService referenceLinkService;
+	private final S3UploadService s3UploadService;
 	private final EventScheduler eventScheduler;
 
 	@Override
@@ -54,6 +56,8 @@ public class EventServiceImpl implements EventService {
 		if (!request.getHashtags().isEmpty()) {
 			hashtagService.createHashtags(event, request.getHashtags());
 		}
+
+		updateBannerImageToFinal(event, request.getBannerImageUrl());
 
 		eventScheduler.scheduleUpdateEventStatus(event.getId(), event.getEndDate());
 		return event;
@@ -134,5 +138,17 @@ public class EventServiceImpl implements EventService {
 	public void updateEventStatusToCompleted(Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
 		event.updateStatus(EventStatus.COMPLETED);
+	}
+
+	private void updateBannerImageToFinal(Event event, String imageUrl) {
+		if (imageUrl == null || !imageUrl.contains("temp/")) return;
+
+		String tempKey = s3UploadService.extractKeyFromUrl(imageUrl);
+		String finalKey = tempKey.replace("temp/", "final/");
+		String finalUrl = imageUrl.replace("temp/", "final/");
+
+		s3UploadService.moveFileToFinal(tempKey, finalKey);
+
+		event.updateBannerImageUrl(finalUrl);
 	}
 }

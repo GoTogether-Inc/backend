@@ -152,4 +152,8 @@ public class Event extends BaseEntity {
 	public void updateStatus(EventStatus status) {
 		this.status = status;
 	}
+
+	public void updateBannerImageUrl(String bannerImageUrl) {
+		this.bannerImageUrl = bannerImageUrl;
+	}
 }
