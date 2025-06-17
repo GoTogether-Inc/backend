@@ -141,14 +141,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	private void updateBannerImageToFinal(Event event, String imageUrl) {
-		if (imageUrl == null || !imageUrl.contains("temp/")) return;
-
-		String tempKey = s3UploadService.extractKeyFromUrl(imageUrl);
-		String finalKey = tempKey.replace("temp/", "final/");
-		String finalUrl = imageUrl.replace("temp/", "final/");
-
-		s3UploadService.moveFileToFinal(tempKey, finalKey);
-
+		String finalUrl = s3UploadService.moveTempImageToFinal(imageUrl);
 		event.updateBannerImageUrl(finalUrl);
 	}
 }

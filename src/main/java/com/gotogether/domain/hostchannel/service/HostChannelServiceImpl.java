@@ -263,15 +263,7 @@ public class HostChannelServiceImpl implements HostChannelService {
 	}
 
 	private void updateProfileImageToFinal(HostChannel hostChannel, String imageUrl) {
-		if (imageUrl == null || !imageUrl.contains("temp/"))
-			return;
-
-		String tempKey = s3UploadService.extractKeyFromUrl(imageUrl);
-		String finalKey = tempKey.replace("temp/", "final/");
-		String finalUrl = imageUrl.replace("temp/", "final/");
-
-		s3UploadService.moveFileToFinal(tempKey, finalKey);
-
+		String finalUrl = s3UploadService.moveTempImageToFinal(imageUrl);
 		hostChannel.updateProfileImageUrl(finalUrl);
 	}
 }
