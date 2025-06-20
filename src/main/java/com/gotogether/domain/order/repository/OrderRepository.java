@@ -52,4 +52,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	List<Order> findCompletedOrdersByUserId(@Param("userId") Long userId);
 
 	boolean existsByOrderCode(String orderCode);
+
+	@Query("""
+		SELECT COUNT(o)
+		FROM Order o
+		WHERE o.ticket.event.id = :eventId
+		AND o.status <> 'CANCELED'
+		""")
+	Long countByEventId(@Param("eventId") Long eventId);
 }

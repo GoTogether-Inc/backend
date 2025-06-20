@@ -34,7 +34,7 @@ public class EventConverter {
 			.build();
 	}
 
-	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, Long bookmarkId) {
+	public static EventDetailResponseDTO toEventDetailResponseDTO(Event event, Long participantCount, Long bookmarkId) {
 		List<ReferenceLinkDTO> links = event.getReferenceLinks().stream()
 			.map(link -> ReferenceLinkDTO.builder()
 				.title(link.getName())
@@ -46,7 +46,7 @@ public class EventConverter {
 			.id(event.getId())
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
-			.participantCount(event.getTickets().size())
+			.participantCount(participantCount)
 			.startDate(String.valueOf(event.getStartDate()))
 			.endDate(String.valueOf(event.getEndDate()))
 			.address(event.getAddress())
@@ -62,9 +62,6 @@ public class EventConverter {
 			.category(String.valueOf(event.getCategory()))
 			.onlineType(String.valueOf(event.getOnlineType()))
 			.status(String.valueOf(event.getStatus()))
-			.hashtags(event.getHashtags().stream()
-				.map(Hashtag::getName)
-				.collect(Collectors.toList()))
 			.bookmarkId(bookmarkId)
 			.isBookmarked(bookmarkId != null)
 			.build();
