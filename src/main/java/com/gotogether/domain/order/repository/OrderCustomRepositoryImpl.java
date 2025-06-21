@@ -9,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.gotogether.domain.event.entity.QEvent;
-import com.gotogether.domain.eventhashtag.entity.QEventHashtag;
-import com.gotogether.domain.hashtag.entity.QHashtag;
 import com.gotogether.domain.hostchannel.entity.QHostChannel;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
@@ -76,8 +74,6 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 		QUser qUser = QUser.user;
 		QEvent event = QEvent.event;
 		QHostChannel hostChannel = QHostChannel.hostChannel;
-		QEventHashtag eventHashtag = QEventHashtag.eventHashtag;
-		QHashtag hashtag = QHashtag.hashtag;
 
 		return queryFactory
 			.selectDistinct(order)
@@ -87,8 +83,6 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 			.join(ticket.event, event).fetchJoin()
 			.join(event.hostChannel, hostChannel).fetchJoin()
 			.leftJoin(order.ticketQrCode, ticketQrCode).fetchJoin()
-			.leftJoin(event.eventHashtags, eventHashtag).fetchJoin()
-			.leftJoin(eventHashtag.hashtag, hashtag).fetchJoin()
 			.where(
 				order.user.eq(user),
 				order.status.ne(OrderStatus.CANCELED)
