@@ -36,7 +36,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 	long countByHostChannel(HostChannel hostChannel);
 
 	@Query("""
-		SELECT e FROM Event e
+		SELECT DISTINCT e FROM Event e
+		LEFT JOIN FETCH e.eventHashtags eh
+		LEFT JOIN FETCH eh.hashtag
 		WHERE e.hostChannel.id = :hostChannelId
 		AND e.status != 'DELETED'
 		ORDER BY e.createdAt DESC

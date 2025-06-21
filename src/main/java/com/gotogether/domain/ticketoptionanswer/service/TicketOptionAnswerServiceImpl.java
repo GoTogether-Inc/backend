@@ -154,17 +154,6 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public List<TicketOptionAnswer> getPendingAnswersByTicket(Ticket ticket) {
-		List<TicketOptionAssignment> assignments = ticketOptionAssignmentRepository.findAllByTicket(ticket);
-		List<Long> ticketOptionIds = assignments.stream()
-			.map(a -> a.getTicketOption().getId())
-			.toList();
-
-		return ticketOptionAnswerRepository.findByTicketOptionIdInAndOrderIsNull(ticketOptionIds);
-	}
-
-	@Override
 	@Transactional
 	public void createTicketOptionAnswers(User user, List<TicketOptionAnswerRequestDTO> requests, Order order) {
 		if (requests == null || requests.isEmpty())
