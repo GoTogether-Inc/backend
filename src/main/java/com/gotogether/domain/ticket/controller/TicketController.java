@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tickets")
-public class TicketController {
+public class TicketController implements TicketApi {
 
 	private final TicketService ticketService;
 
