@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class FileUploadController {
+public class FileUploadController implements FileUploadAPI {
 
 	private final FileUploadService fileUploadService;
 
