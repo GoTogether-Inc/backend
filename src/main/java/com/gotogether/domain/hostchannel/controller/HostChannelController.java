@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/host-channels")
-public class HostChannelController {
+public class HostChannelController implements HostChannelApi {
 
 	private final HostChannelService hostChannelService;
 

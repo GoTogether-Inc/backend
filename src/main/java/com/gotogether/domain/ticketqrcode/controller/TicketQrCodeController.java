@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/ticket-qr-codes")
-public class TicketQrCodeController {
+public class TicketQrCodeController implements TicketQrCodeApi {
 
 	private final TicketQrCodeService ticketQrCodeService;
 

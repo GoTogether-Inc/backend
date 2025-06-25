@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/ticket-option-assignments")
-public class TicketOptionAssignmentController {
+public class TicketOptionAssignmentController implements TicketOptionAssignmentApi {
 
 	private final TicketOptionAssignmentService ticketOptionAssignmentService;
 
