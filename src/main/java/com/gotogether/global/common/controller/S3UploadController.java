@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class S3UploadController {
+public class S3UploadController implements S3UploadAPI {
 
 	private final S3UploadService s3UploadService;
 

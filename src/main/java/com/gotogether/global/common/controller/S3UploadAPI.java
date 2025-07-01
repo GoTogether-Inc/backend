@@ -3,6 +3,7 @@ package com.gotogether.global.common.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.gotogether.global.annotation.AuthUser;
 import com.gotogether.global.apipayload.ApiResponse;
 import com.gotogether.global.common.dto.S3UrlResponseDTO;
 
@@ -14,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "FileUpload", description = "파일 업로드 API")
-public interface FileUploadAPI {
+public interface S3UploadAPI {
 
 	@Operation(
 		summary = "S3 Pre-signed URL 생성",
@@ -29,6 +30,7 @@ public interface FileUploadAPI {
 	})
 	@GetMapping("/generate-presigned-url")
 	ApiResponse<S3UrlResponseDTO> generatePresignedUrl(
+		@Parameter(description = "사용자 ID", required = true) @AuthUser Long userId,
 		@Parameter(description = "업로드할 파일명", required = true) @RequestParam String fileName
 	);
 } 
