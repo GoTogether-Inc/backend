@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/events/{eventId}/bookmark")
-public class BookmarkController {
+public class BookmarkController implements BookmarkApi {
 
 	private final BookmarkService bookmarkService;
 

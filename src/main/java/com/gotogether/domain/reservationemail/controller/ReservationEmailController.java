@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/reservation-emails")
-public class ReservationEmailController {
+public class ReservationEmailController implements ReservationEmailApi {
 
 	private final ReservationEmailService reservationEmailService;
 
