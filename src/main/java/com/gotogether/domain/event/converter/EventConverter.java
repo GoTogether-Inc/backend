@@ -85,6 +85,7 @@ public class EventConverter {
 			.remainDays(DateUtil.getDdayStatus(
 				LocalDate.from(event.getStartDate()),
 				LocalDate.from(event.getEndDate())))
+			.status(String.valueOf(event.getStatus()))
 			.build();
 	}
 }
