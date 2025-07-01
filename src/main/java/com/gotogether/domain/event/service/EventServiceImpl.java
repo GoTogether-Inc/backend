@@ -19,6 +19,7 @@ import com.gotogether.domain.event.repository.EventCustomRepository;
 import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.hashtag.service.HashtagService;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
+import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.referencelink.service.ReferenceLinkService;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -36,6 +37,7 @@ public class EventServiceImpl implements EventService {
 	private final EventRepository eventRepository;
 	private final EventCustomRepository eventCustomRepository;
 	private final BookmarkRepository bookmarkRepository;
+	private final OrderRepository orderRepository;
 	private final HashtagService hashtagService;
 	private final ReferenceLinkService referenceLinkService;
 	private final S3UploadService s3UploadService;
@@ -69,6 +71,8 @@ public class EventServiceImpl implements EventService {
 		Event event = eventCustomRepository.findEventWithDetails(eventId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._EVENT_NOT_FOUND));
 
+		Long participantCount = orderRepository.countByEventId(eventId);
+
 		Long bookmarkId = null;
 		if (userId != null) {
 			User user = eventFacade.getUserById(userId);
@@ -78,7 +82,7 @@ public class EventServiceImpl implements EventService {
 				.orElse(null);
 		}
 
-		return EventConverter.toEventDetailResponseDTO(event, bookmarkId);
+		return EventConverter.toEventDetailResponseDTO(event, participantCount, bookmarkId);
 	}
 
 	@Override
@@ -103,6 +107,9 @@ public class EventServiceImpl implements EventService {
 		}
 
 		updateBannerImageToFinal(event, request.getBannerImageUrl());
+
+		eventScheduler.deleteScheduledEventJob(eventId);
+		eventScheduler.scheduleUpdateEventStatus(event.getId(), event.getEndDate());
 
 		return event;
 	}

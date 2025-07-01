@@ -1,5 +1,7 @@
 package com.gotogether.domain.event.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +34,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 	Page<Event> findByCategory(Category category, Pageable pageable);
 
 	long countByHostChannel(HostChannel hostChannel);
+
+	@Query("""
+		SELECT DISTINCT e FROM Event e
+		LEFT JOIN FETCH e.eventHashtags eh
+		LEFT JOIN FETCH eh.hashtag
+		WHERE e.hostChannel.id = :hostChannelId
+		AND e.status != 'DELETED'
+		ORDER BY e.createdAt DESC
+		""")
+	List<Event> findAllByHostChannelId(@Param("hostChannelId") Long hostChannelId);
 }

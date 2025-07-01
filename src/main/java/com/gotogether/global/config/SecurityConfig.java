@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -53,6 +54,25 @@ public class SecurityConfig {
 	}
 
 	@Bean
+	@Order(1)
+	public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
+
+		http.
+			securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**");
+		http
+			.csrf(csrf -> csrf.disable());
+		http
+			.httpBasic(httpBasic -> httpBasic.realmName("Swagger API Documentation"));
+		http
+			.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
+		http
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+		return http.build();
+	}
+
+	@Bean
+	@Order(2)
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 		http
@@ -64,12 +84,9 @@ public class SecurityConfig {
 
 					List<String> origins = List.of(allowedOrigins.split(","));
 					configuration.setAllowedOrigins(origins);
-
-					configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS"));
+					configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 					configuration.setAllowCredentials(true);
-
 					configuration.setAllowedHeaders(List.of("*"));
-
 					configuration.setMaxAge(3600L);
 					configuration.setExposedHeaders(List.of("Set-Cookie"));
 

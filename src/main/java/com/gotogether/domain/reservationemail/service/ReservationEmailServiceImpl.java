@@ -77,6 +77,9 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 		reservationEmail.update(event, request);
 		reservationEmailRepository.save(reservationEmail);
 
+		eventScheduler.deleteScheduledEmailJob(reservationEmail.getId());
+		eventScheduler.scheduleEmail(reservationEmail.getId(), reservationEmail.getReservationDate());
+
 		return reservationEmail;
 	}
 

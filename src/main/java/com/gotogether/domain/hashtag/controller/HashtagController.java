@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/hashtags")
-public class HashtagController {
+public class HashtagController implements HashtagApi {
 
 	private final HashtagService hashtagService;
 

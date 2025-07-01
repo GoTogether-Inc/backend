@@ -42,14 +42,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 		""")
 	List<String> findPurchaserEmailsByTicketId(@Param("ticketId") Long ticketId);
 
-	@Query("""
-		SELECT o
-		FROM Order o
-		JOIN FETCH o.ticket t
-		WHERE o.user.id = :userId
-		AND o.status = 'COMPLETED'
-		""")
-	List<Order> findCompletedOrdersByUserId(@Param("userId") Long userId);
-
 	boolean existsByOrderCode(String orderCode);
+
+	@Query("""
+		SELECT COUNT(o)
+		FROM Order o
+		WHERE o.ticket.event.id = :eventId
+		AND o.status <> 'CANCELED'
+		""")
+	Long countByEventId(@Param("eventId") Long eventId);
 }

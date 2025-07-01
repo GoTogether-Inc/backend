@@ -101,9 +101,12 @@ public class HostChannelServiceImpl implements HostChannelService {
 	@Override
 	@Transactional(readOnly = true)
 	public HostChannelDetailResponseDTO getDetailHostChannel(Long hostChannelId) {
-		HostChannel hostChannel = eventFacade.getHostChannelById(hostChannelId);
+		HostChannel hostChannel = hostChannelRepository.findById(hostChannelId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._HOST_CHANNEL_NOT_FOUND));
 
-		return HostChannelConverter.toHostChannelDetailResponseDTO(hostChannel);
+		List<Event> events = eventRepository.findAllByHostChannelId(hostChannelId);
+
+		return HostChannelConverter.toHostChannelDetailResponseDTO(hostChannel, events);
 	}
 
 	@Override

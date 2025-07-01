@@ -13,7 +13,7 @@ public class EventDetailResponseDTO {
 	private Long id;
 	private String bannerImageUrl;
 	private String title;
-	private int participantCount;
+	private Long participantCount;
 	private String startDate;
 	private String endDate;
 	private String address;
@@ -29,7 +29,6 @@ public class EventDetailResponseDTO {
 	private String category;
 	private String onlineType;
 	private String status;
-	private List<String> hashtags;
 	private Long bookmarkId;
 	private boolean isBookmarked;
 }

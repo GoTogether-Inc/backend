@@ -15,7 +15,6 @@ import com.gotogether.domain.event.entity.QEvent;
 import com.gotogether.domain.eventhashtag.entity.QEventHashtag;
 import com.gotogether.domain.hashtag.entity.QHashtag;
 import com.gotogether.domain.hostchannel.entity.QHostChannel;
-import com.gotogether.domain.referencelink.entity.QReferenceLink;
 import com.gotogether.domain.ticket.entity.QTicket;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -72,20 +71,15 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 	public Optional<Event> findEventWithDetails(Long eventId) {
 		QEvent event = QEvent.event;
 		QHostChannel hostChannel = QHostChannel.hostChannel;
-		QTicket ticket = QTicket.ticket;
-		QReferenceLink referenceLink = QReferenceLink.referenceLink;
 		QEventHashtag eventHashtag = QEventHashtag.eventHashtag;
 		QHashtag hashtag = QHashtag.hashtag;
 
 		Event result = queryFactory
-			.selectFrom(event)
+			.selectFrom(event).distinct()
 			.leftJoin(event.hostChannel, hostChannel).fetchJoin()
-			.leftJoin(event.tickets, ticket)
-			.leftJoin(event.referenceLinks, referenceLink)
-			.leftJoin(event.eventHashtags, eventHashtag)
-			.leftJoin(eventHashtag.hashtag, hashtag)
+			.leftJoin(event.eventHashtags, eventHashtag).fetchJoin()
+			.leftJoin(eventHashtag.hashtag, hashtag).fetchJoin()
 			.where(event.id.eq(eventId))
-			.distinct()
 			.fetchOne();
 
 		return Optional.ofNullable(result);

@@ -18,4 +18,5 @@ public class EventListResponseDTO {
 	private String onlineType;
 	private List<String> hashtags;
 	private String remainDays;
+	private String status;
 }
