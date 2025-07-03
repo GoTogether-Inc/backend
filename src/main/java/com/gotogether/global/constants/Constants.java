@@ -8,6 +8,7 @@ public final class Constants {
 	}
 
 	public static List<String> NO_NEED_FILTER_URLS = List.of(
+		"/actuator/**",
 		"/oauth2/authorization/kakao",
 		"/oauth2/authorization/google",
 		"/api/v1/events",
