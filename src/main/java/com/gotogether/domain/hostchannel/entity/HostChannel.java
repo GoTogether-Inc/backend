@@ -73,4 +73,8 @@ public class HostChannel extends BaseEntity {
 		this.description = request.getChannelDescription();
 		this.profileImageUrl = request.getProfileImageUrl();
 	}
+
+	public void updateProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
 }

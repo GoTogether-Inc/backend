@@ -24,6 +24,7 @@ import com.gotogether.domain.referencelink.service.ReferenceLinkService;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.common.service.S3UploadService;
 import com.gotogether.global.scheduler.EventScheduler;
 
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class EventServiceImpl implements EventService {
 	private final OrderRepository orderRepository;
 	private final HashtagService hashtagService;
 	private final ReferenceLinkService referenceLinkService;
+	private final S3UploadService s3UploadService;
 	private final EventScheduler eventScheduler;
 
 	@Override
@@ -56,6 +58,8 @@ public class EventServiceImpl implements EventService {
 		if (!request.getHashtags().isEmpty()) {
 			hashtagService.createHashtags(event, request.getHashtags());
 		}
+
+		updateBannerImageToFinal(event, request.getBannerImageUrl());
 
 		eventScheduler.scheduleUpdateEventStatus(event.getId(), event.getEndDate());
 		return event;
@@ -85,6 +89,9 @@ public class EventServiceImpl implements EventService {
 	@Transactional
 	public Event updateEvent(Long eventId, EventRequestDTO request) {
 		Event event = eventFacade.getEventById(eventId);
+
+		s3UploadService.deleteFile(event.getBannerImageUrl());
+
 		event.update(request);
 
 		eventRepository.save(event);
@@ -98,6 +105,8 @@ public class EventServiceImpl implements EventService {
 			hashtagService.deleteHashtagsByRequest(event, request.getHashtags());
 			hashtagService.createHashtags(event, request.getHashtags());
 		}
+
+		updateBannerImageToFinal(event, request.getBannerImageUrl());
 
 		eventScheduler.deleteScheduledEventJob(eventId);
 		eventScheduler.scheduleUpdateEventStatus(event.getId(), event.getEndDate());
@@ -141,5 +150,10 @@ public class EventServiceImpl implements EventService {
 	public void updateEventStatusToCompleted(Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
 		event.updateStatus(EventStatus.COMPLETED);
+	}
+
+	private void updateBannerImageToFinal(Event event, String imageUrl) {
+		String finalUrl = s3UploadService.moveTempImageToFinal(imageUrl);
+		event.updateBannerImageUrl(finalUrl);
 	}
 }
