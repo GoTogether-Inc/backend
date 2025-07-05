@@ -1,5 +1,7 @@
 package com.gotogether.domain.ticket.dto.response;
 
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,4 +17,8 @@ public class TicketListResponseDTO {
 	private int ticketPrice;
 
 	private int availableQuantity;
+
+	private LocalDateTime startDate;
+
+	private LocalDateTime endDate;
 }
