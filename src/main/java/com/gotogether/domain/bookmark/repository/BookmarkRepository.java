@@ -24,6 +24,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 		    LEFT JOIN FETCH e.eventHashtags eh
 		    LEFT JOIN FETCH eh.hashtag h
 		    WHERE b.user.id = :userId
+			ORDER BY b.createdAt DESC
 		""")
 	List<Bookmark> findByUserId(@Param("userId") Long userId);
 
