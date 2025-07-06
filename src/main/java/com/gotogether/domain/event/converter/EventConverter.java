@@ -44,6 +44,7 @@ public class EventConverter {
 
 		return EventDetailResponseDTO.builder()
 			.id(event.getId())
+			.hostChannelId(event.getHostChannel().getId())
 			.bannerImageUrl(event.getBannerImageUrl())
 			.title(event.getTitle())
 			.participantCount(participantCount)
