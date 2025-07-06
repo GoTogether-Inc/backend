@@ -62,6 +62,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 		if (existData.isEmpty()) {
 
+			Optional<User> duplicateEmail = userRepository.findByEmail(oAuth2Response.getEmail());
+			if (duplicateEmail.isPresent()) {
+				throw new GeneralException(ErrorStatus._USER_EMAIL_ALREADY_EXISTS);
+			}
+
 			User userEntity = User.builder()
 				.name(oAuth2Response.getName())
 				.email(oAuth2Response.getEmail())
