@@ -29,6 +29,8 @@ public class TicketConverter {
 			.ticketDescription(ticket.getDescription())
 			.ticketPrice(ticket.getPrice())
 			.availableQuantity(ticket.getAvailableQuantity())
+			.startDate(ticket.getStartDate())
+			.endDate(ticket.getEndDate())
 			.build();
 	}
 }

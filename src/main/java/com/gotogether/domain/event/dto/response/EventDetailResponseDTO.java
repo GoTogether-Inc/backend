@@ -26,6 +26,7 @@ public class EventDetailResponseDTO {
 	private String organizerEmail;
 	private String organizerPhoneNumber;
 	private List<ReferenceLinkDTO> referenceLinks;
+	private List<String> hashtags;
 	private String category;
 	private String onlineType;
 	private String status;
