@@ -118,6 +118,12 @@ public class EventServiceImpl implements EventService {
 	@Transactional
 	public void deleteEvent(Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
+		
+		Long orderCount = orderRepository.countByEventId(eventId);
+		if (orderCount > 0) {
+			throw new GeneralException(ErrorStatus._EVENT_DELETE_FAILED_ORDERS_EXIST);
+		}
+		
 		hashtagService.deleteHashtagsByEvent(event);
 
 		eventScheduler.deleteScheduledEventJob(eventId);

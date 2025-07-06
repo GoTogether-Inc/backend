@@ -21,6 +21,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	_USER_PHONE_NUMBER_DUPLICATE(HttpStatus.BAD_REQUEST, "USER4002", "이미 등록된 전화번호입니다."),
 
 	_EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "EVENT4001", "이벤트가 없습니다."),
+	_EVENT_DELETE_FAILED_ORDERS_EXIST(HttpStatus.BAD_REQUEST, "EVENT4002", "구매자가 있는 이벤트는 삭제할 수 없습니다."),
 
 	_HASHTAG_NOT_FOUND(HttpStatus.NOT_FOUND, "HASHTAG4001", "해시태그가 없습니다."),
 	_HASHTAG_EXIST(HttpStatus.BAD_REQUEST, "HASHTAG4002", "해시태그가 이미 존재합니다."),
