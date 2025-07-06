@@ -19,6 +19,7 @@ import com.gotogether.global.oauth.dto.GoogleResponseDTO;
 import com.gotogether.global.oauth.dto.KakaoResponseDTO;
 import com.gotogether.global.oauth.dto.OAuth2Response;
 import com.gotogether.global.oauth.dto.TokenDTO;
+import com.gotogether.global.oauth.exception.DuplicatedEmailException;
 import com.gotogether.global.oauth.util.JWTUtil;
 import com.gotogether.global.util.CookieUtil;
 
@@ -64,7 +65,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 			Optional<User> duplicateEmail = userRepository.findByEmail(oAuth2Response.getEmail());
 			if (duplicateEmail.isPresent()) {
-				throw new GeneralException(ErrorStatus._USER_EMAIL_ALREADY_EXISTS);
+				throw new DuplicatedEmailException("이미 가입된 이메일입니다.");
 			}
 
 			User userEntity = User.builder()
