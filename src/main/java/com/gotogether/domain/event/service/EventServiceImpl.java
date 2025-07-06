@@ -90,8 +90,6 @@ public class EventServiceImpl implements EventService {
 	public Event updateEvent(Long eventId, EventRequestDTO request) {
 		Event event = eventFacade.getEventById(eventId);
 
-		s3UploadService.deleteFile(event.getBannerImageUrl());
-
 		event.update(request);
 
 		eventRepository.save(event);
@@ -105,8 +103,6 @@ public class EventServiceImpl implements EventService {
 			hashtagService.deleteHashtagsByRequest(event, request.getHashtags());
 			hashtagService.createHashtags(event, request.getHashtags());
 		}
-
-		updateBannerImageToFinal(event, request.getBannerImageUrl());
 
 		eventScheduler.deleteScheduledEventJob(eventId);
 		eventScheduler.scheduleUpdateEventStatus(event.getId(), event.getEndDate());
