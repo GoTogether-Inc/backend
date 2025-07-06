@@ -11,6 +11,7 @@ import lombok.Getter;
 @Builder
 public class EventDetailResponseDTO {
 	private Long id;
+	private Long hostChannelId;
 	private String bannerImageUrl;
 	private String title;
 	private Long participantCount;
