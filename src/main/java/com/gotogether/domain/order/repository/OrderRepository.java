@@ -18,7 +18,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 		    SELECT o
 		    FROM Order o
 		    JOIN FETCH o.ticket t
-			JOIN FETCH o.ticketQrCode
 		    WHERE t.event.id = :eventId AND o.status = :status
 		""")
 	List<Order> findCompletedOrdersByEventId(@Param("eventId") Long eventId, @Param("status") OrderStatus status);
