@@ -39,4 +39,8 @@ public interface HostChannelService {
 	HostDashboardResponseDTO getHostDashboard(Long eventId);
 
 	void approveOrderStatus(Long orderId);
+
+	byte[] generateParticipantManagementExcel(Long eventId);
+	
+	String generateParticipantManagementExcelFileName(Long eventId);
 }

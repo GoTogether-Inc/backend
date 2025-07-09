@@ -2,7 +2,9 @@ package com.gotogether.domain.hostchannel.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.LinkedHashSet;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +41,10 @@ import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.common.service.S3UploadService;
+import com.gotogether.global.util.ExcelGenerator;
+import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
+import com.gotogether.domain.ticketoptionassignment.repository.TicketOptionAssignmentRepository;
+import com.gotogether.domain.ticketoptionanswer.repository.TicketOptionAnswerRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -56,6 +62,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final EventFacade eventFacade;
 	private final TicketQrCodeService ticketQrCodeService;
 	private final S3UploadService s3UploadService;
+	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
+	private final TicketOptionAnswerRepository ticketOptionAnswerRepository;
 
 	@Override
 	@Transactional
@@ -224,6 +232,37 @@ public class HostChannelServiceImpl implements HostChannelService {
 		order.approveOrder();
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public byte[] generateParticipantManagementExcel(Long eventId) {
+		List<Ticket> tickets = ticketRepository.findByEventId(eventId);
+		List<Order> orders = orderRepository.findCompletedOrdersByEventId(eventId, OrderStatus.COMPLETED);
+		
+		Set<String> optionNames = extractOptionNames(tickets);
+		
+		try {
+			return ExcelGenerator.generateParticipantExcel(orders, optionNames, 
+				orderId -> ticketOptionAnswerRepository.findByOrderId(orderId));
+		} catch (RuntimeException e) {
+			throw new GeneralException(ErrorStatus._EXCEL_GENERATION_FAILED);
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public String generateParticipantManagementExcelFileName(Long eventId) {
+		Event event = eventRepository.findById(eventId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._EVENT_NOT_FOUND));
+		
+		String eventName = event.getTitle()
+			.replaceAll("[\\/:*?\"<>|]", "") 
+			.replaceAll("\\s+", "_");
+		
+		String currentDate = java.time.LocalDate.now().toString();
+		
+		return String.format("%s_구매참가자목록_%s.xlsx", eventName, currentDate);
+	}
+
 	private User getUser(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
@@ -273,5 +312,24 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private void updateProfileImageToFinal(HostChannel hostChannel, String imageUrl) {
 		String finalUrl = s3UploadService.moveTempImageToFinal(imageUrl);
 		hostChannel.updateProfileImageUrl(finalUrl);
+	}
+
+	private Set<String> extractOptionNames(List<Ticket> tickets) {
+		Set<String> optionNames = new LinkedHashSet<>();
+		
+		for (Ticket ticket : tickets) {
+			List<TicketOptionAssignment> assignments = ticketOptionAssignmentRepository.findAllByTicket(ticket);
+			
+			for (TicketOptionAssignment assignment : assignments) {
+				if (assignment != null && assignment.getTicketOption() != null) {
+					String optionName = assignment.getTicketOption().getName();
+					if (optionName != null && !optionName.trim().isEmpty()) {
+						optionNames.add(optionName);
+					}
+				}
+			}
+		}
+		
+		return optionNames;
 	}
 }
