@@ -295,4 +295,25 @@ public interface HostChannelApi {
 		@Parameter(description = "주문 상태 변경 요청 데이터", required = true)
 		@RequestBody @Valid OrderStatusRequestDTO request
 	);
+
+	@Operation(
+		summary = "구매/참가자 관리 목록 엑셀 다운로드",
+		description = "구매/참가자 관리 목록을 엑셀 형식으로 다운로드합니다."
+	)
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "200",
+			description = "구매/참가자 관리 목록 엑셀 다운로드 성공",
+			content = @Content(schema = @Schema(implementation = org.springframework.core.io.Resource.class))
+		),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "404",
+			description = "EVENT4001: 이벤트가 없습니다."
+		)
+	})
+	@GetMapping("/dashboard/participant-management/excel")
+	org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> exportParticipantManagementExcel(
+		@Parameter(description = "이벤트 ID", required = true) 
+		@RequestParam Long eventId
+	);
 } 
