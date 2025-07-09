@@ -66,7 +66,11 @@ public enum ErrorStatus implements BaseErrorCode {
 	// 미사용
 	_TICKET_OPTION_ANSWER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "TICKET_OPTION_ANSWER4002", "해당 티켓 옵션에 대한 응답이 이미 존재합니다."),
 
-	_TERM_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "TERM4001", "이미 약관에 동의한 사용자입니다.");
+	_TERM_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "TERM4001", "이미 약관에 동의한 사용자입니다."),
+
+	_SMS_ALREADY_SEND(HttpStatus.BAD_REQUEST, "SMS4001", "이미 인증 코드가 발송되었습니다."),
+	_SMS_CERTIFICATION_EXPIRED(HttpStatus.BAD_REQUEST, "SMS4002", "인증 코드가 만료되었습니다."),
+	_SMS_CERTIFICATION_MISMATCH(HttpStatus.BAD_REQUEST, "SMS4003", "인증 코드가 일치하지 않습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
