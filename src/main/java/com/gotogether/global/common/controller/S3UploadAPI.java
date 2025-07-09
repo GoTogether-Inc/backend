@@ -14,8 +14,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "FileUpload", description = "파일 업로드 API")
-public interface S3UploadAPI {
+@Tag(name = "S3Upload", description = "S3 파일 업로드 API")
+public interface S3UploadApi {
 
 	@Operation(
 		summary = "S3 Pre-signed URL 생성",
