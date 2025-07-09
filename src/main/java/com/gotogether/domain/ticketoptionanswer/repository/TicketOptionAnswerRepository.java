@@ -30,4 +30,6 @@ public interface TicketOptionAnswerRepository extends JpaRepository<TicketOption
 	List<TicketOptionAnswer> findByTicketId(@Param("ticketId") Long ticketId);
 
 	boolean existsByTicketOption(TicketOption ticketOption);
+
+	List<TicketOptionAnswer> findByOrderId(Long orderId);
 }

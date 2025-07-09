@@ -33,6 +33,9 @@ import com.gotogether.global.apipayload.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/host-channels")
@@ -131,5 +134,21 @@ public class HostChannelController implements HostChannelApi {
 		@RequestBody @Valid OrderStatusRequestDTO request) {
 		hostChannelService.approveOrderStatus(request.getOrderId());
 		return ApiResponse.onSuccess("주문 승인 완료");
+	}
+
+	@Override
+	public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> exportParticipantManagementExcel(
+	    @RequestParam Long eventId
+	) {
+	    byte[] excelData = hostChannelService.generateParticipantManagementExcel(eventId);
+	    String fileName = hostChannelService.generateParticipantManagementExcelFileName(eventId);
+	    String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+	        .replaceAll("\\+", "%20"); 
+
+	    return org.springframework.http.ResponseEntity.ok()
+	        .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+	            "attachment; filename*=UTF-8''" + encodedFileName)
+	        .contentType(org.springframework.http.MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+	        .body(new org.springframework.core.io.ByteArrayResource(excelData));
 	}
 }
