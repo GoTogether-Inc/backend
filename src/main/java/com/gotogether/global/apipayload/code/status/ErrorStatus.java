@@ -68,7 +68,11 @@ public enum ErrorStatus implements BaseErrorCode {
 
 	_TERM_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "TERM4001", "이미 약관에 동의한 사용자입니다."),
 
-	_EXCEL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "EXCEL5001", "엑셀 파일 생성에 실패했습니다.");
+	_EXCEL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "EXCEL5001", "엑셀 파일 생성에 실패했습니다."),
+
+	_SMS_ALREADY_SEND(HttpStatus.BAD_REQUEST, "SMS4001", "이미 인증 코드가 발송되었습니다."),
+	_SMS_CERTIFICATION_EXPIRED(HttpStatus.BAD_REQUEST, "SMS4002", "인증 코드가 만료되었습니다."),
+	_SMS_CERTIFICATION_MISMATCH(HttpStatus.BAD_REQUEST, "SMS4003", "인증 코드가 일치하지 않습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
