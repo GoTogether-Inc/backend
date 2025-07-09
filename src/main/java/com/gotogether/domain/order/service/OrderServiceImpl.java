@@ -25,6 +25,7 @@ import com.gotogether.domain.order.util.OrderCodeGenerator;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
+import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
 import com.gotogether.domain.ticketoptionanswer.service.TicketOptionAnswerService;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
@@ -40,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderServiceImpl implements OrderService {
 
 	private final OrderRepository orderRepository;
+	private final TicketRepository ticketRepository;
 	private final EventFacade eventFacade;
 	private final TicketQrCodeService ticketQrCodeService;
 	private final OrderCustomRepository orderCustomRepository;
@@ -49,7 +51,8 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional
 	public List<Order> createOrder(OrderRequestDTO request, Long userId) {
 		User user = eventFacade.getUserById(userId);
-		Ticket ticket = eventFacade.getTicketById(request.getTicketId());
+		Ticket ticket = ticketRepository.findByIdWithPessimisticLock(request.getTicketId())
+			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 
 		int ticketCnt = request.getTicketCnt();
 		checkTicketAvailableQuantity(ticket, ticketCnt);
