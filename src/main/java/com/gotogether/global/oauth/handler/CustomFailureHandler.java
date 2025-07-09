@@ -2,13 +2,12 @@ package com.gotogether.global.oauth.handler;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.oauth.exception.DuplicatedEmailException;
-import com.gotogether.global.oauth.util.ErrorResponseUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,14 +15,23 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class CustomFailureHandler implements AuthenticationFailureHandler {
 
+	@Value("${app.redirect-url}")
+	String redirectUrl;
+
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException exception) throws IOException {
 
+		String status;
+
 		if (exception instanceof DuplicatedEmailException) {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._USER_EMAIL_ALREADY_EXISTS);
+			status = "duplicatedEmail";
 		} else {
-			ErrorResponseUtil.sendErrorResponse(response, ErrorStatus._INTERNAL_SERVER_ERROR);
+			status = "serverError";
 		}
+
+		String targetUrl = redirectUrl + status;
+
+		response.sendRedirect(targetUrl);
 	}
 }
