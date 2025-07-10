@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
@@ -31,7 +30,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private final UserRepository userRepository;
 	private final JWTUtil jwtUtil;
 	private final String redirectUrl;
-	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public CustomSuccessHandler(UserRepository userRepository, JWTUtil jwtUtil,
 		@Value("${app.redirect-url}") String redirectUrl) {
