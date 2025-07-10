@@ -23,6 +23,7 @@ import com.gotogether.global.oauth.service.CustomOAuth2UserService;
 import com.gotogether.global.oauth.service.TokenBlacklistService;
 import com.gotogether.global.oauth.util.JWTFilter;
 import com.gotogether.global.oauth.util.JWTUtil;
+import com.gotogether.global.filter.CachingRequestResponseFilter;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -36,13 +37,15 @@ public class SecurityConfig {
 	private final JWTUtil jwtUtil;
 	private final UserRepository userRepository;
 	private final TokenBlacklistService tokenBlacklistService;
+	private final CachingRequestResponseFilter cachingRequestResponseFilter;
 
 	@Value("${app.cors.allowed-origins}")
 	private String allowedOrigins;
 
 	public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler,
 		CustomFailureHandler customFailureHandler,
-		JWTUtil jwtUtil, UserRepository userRepository, TokenBlacklistService tokenBlacklistService
+		JWTUtil jwtUtil, UserRepository userRepository, TokenBlacklistService tokenBlacklistService,
+		CachingRequestResponseFilter cachingRequestResponseFilter
 	) {
 
 		this.customOAuth2UserService = customOAuth2UserService;
@@ -51,6 +54,7 @@ public class SecurityConfig {
 		this.jwtUtil = jwtUtil;
 		this.userRepository = userRepository;
 		this.tokenBlacklistService = tokenBlacklistService;
+		this.cachingRequestResponseFilter = cachingRequestResponseFilter;
 	}
 
 	@Bean
@@ -104,6 +108,7 @@ public class SecurityConfig {
 			.httpBasic((auth) -> auth.disable());
 
 		http
+			.addFilterBefore(cachingRequestResponseFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new JWTFilter(jwtUtil, userRepository, tokenBlacklistService),
 				UsernamePasswordAuthenticationFilter.class);
 
