@@ -2,6 +2,8 @@ package com.gotogether.global.oauth.handler;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -24,6 +26,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+	private static final Logger logger = LoggerFactory.getLogger(CustomSuccessHandler.class);
+
 	private final UserRepository userRepository;
 	private final JWTUtil jwtUtil;
 	private final String redirectUrl;
@@ -40,12 +44,19 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException, ServletException {
 
+		logger.info("OAuth 로그인 성공");
+		logger.info("요청 URI: {}", request.getRequestURI());
+		logger.info("요청 메서드: {}", request.getMethod());
+		logger.info("사용자: {}", authentication.getPrincipal());
+
 		CustomOAuth2User customUser = (CustomOAuth2User)authentication.getPrincipal();
 		User user = findUserByProviderId(customUser.getProviderId());
 
 		if (isFirstLogin(user)) {
+			logger.info("신규 사용자 로그인: {}", user.getEmail());
 			handleFirstLogin(response, user);
 		} else {
+			logger.info("기존 사용자 로그인: {}", user.getEmail());
 			handleSuccessLogin(response, user);
 		}
 	}
