@@ -3,10 +3,8 @@ package com.gotogether.domain.ticketoption.converter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketoption.dto.request.TicketOptionRequestDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionChoiceResponseDTO;
-import com.gotogether.domain.ticketoption.dto.response.TicketOptionPerTicketResponseDTO;
 import com.gotogether.domain.ticketoption.dto.response.TicketOptionDetailResponseDTO;
 import com.gotogether.domain.ticketoption.entity.TicketOption;
 import com.gotogether.domain.ticketoption.entity.TicketOptionChoice;
@@ -31,16 +29,6 @@ public class TicketOptionConverter {
 				.name(name)
 				.build())
 			.collect(Collectors.toList());
-	}
-
-	public static TicketOptionPerTicketResponseDTO toTicketOptionPerTicketResponseDTO(Ticket ticket, List<TicketOption> ticketOptions) {
-		return TicketOptionPerTicketResponseDTO.builder()
-			.ticketId(ticket.getId())
-			.ticketName(ticket.getName())
-			.options(ticketOptions.stream()
-				.map(TicketOptionConverter::toTicketOptionDetailResponseDTO)
-				.collect(Collectors.toList()))
-			.build();
 	}
 
 	public static TicketOptionDetailResponseDTO toTicketOptionDetailResponseDTO(TicketOption ticketOption) {
