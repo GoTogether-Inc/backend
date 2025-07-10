@@ -19,8 +19,6 @@ import lombok.RequiredArgsConstructor;
 public class WebMVCConfig implements WebMvcConfigurer {
 
 	private final AuthUserArgumentResolver authUserArgumentResolver;
-	private final LoggingInterceptor loggingInterceptor;
-
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -31,25 +29,12 @@ public class WebMVCConfig implements WebMvcConfigurer {
 	public void addInterceptors(final InterceptorRegistry registry) {
 		registry.addInterceptor(new JWTInterceptor())
 			.addPathPatterns("/api/v1/**")
-			.excludePathPatterns(Constants.NO_NEED_FILTER_URLS);
+			.excludePathPatterns(Constants.NO_NEED_FILTER_URLS)
+			.order(1);
 
-		// TODO: OAuth 로깅 확인하기
-		registry.addInterceptor(loggingInterceptor)
-            .addPathPatterns(
-				"/oauth/authorization/**",
-				"/api/v1/users/**",
-				"/api/v1/hostchannels/**",
-				"/api/v1/events/**",
-				"/api/v1/hashtags/**",
-				"/api/v1/reference-links/**",
-				"/api/v1/orders/**",
-				"/api/v1/bookmarks/**",
-                "/api/v1/tickets/**",
-				"/api/v1/ticketQrCodes/**",
-				"/api/v1/ticket-options/**",
-				"/api/v1/ticket-option-assignments/**",
-				"/api/v1/ticket-answers/**",
-                "/api/v1/reservationEmails/**"
-            );
+		registry.addInterceptor(new LoggingInterceptor())
+			.addPathPatterns("/**")
+			.excludePathPatterns("/actuator/**")
+			.order(2);
 	}
 }
