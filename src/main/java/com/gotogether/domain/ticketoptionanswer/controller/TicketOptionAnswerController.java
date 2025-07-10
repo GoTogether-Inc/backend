@@ -34,7 +34,7 @@ public class TicketOptionAnswerController implements TicketOptionAnswerApi {
 	}
 
 	@GetMapping
-	public ApiResponse<List<PurchaserAnswerDetailResponseDTO>> getAnswersByUserAndTicket(
+	public ApiResponse<List<PurchaserAnswerDetailResponseDTO>> getAnswersByTicket(
 		@RequestParam Long ticketId) {
 		List<PurchaserAnswerDetailResponseDTO> answers = ticketOptionAnswerService.getAnswersByTicket(ticketId);
 		return ApiResponse.onSuccess(answers);
