@@ -2,29 +2,24 @@ package com.gotogether.global.interceptor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Component
 public class LoggingInterceptor implements HandlerInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingInterceptor.class);
-
     private static final String START_TIME = "startTime";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        logRequestHeaders(request);
-        logRequestBody(request);
-
         request.setAttribute(START_TIME, System.currentTimeMillis());
-
-        logger.info("[Request] {} {}", request.getMethod(), request.getRequestURI());
+        
+        logger.info("로깅 인터셉터 시작");
+        logger.info("[요청] {} {}", request.getMethod(), request.getRequestURI());
+        logRequestHeaders(request);
         
         return true;
     }
@@ -34,41 +29,38 @@ public class LoggingInterceptor implements HandlerInterceptor {
         Long startTime = (Long) request.getAttribute(START_TIME);
         long duration = (startTime != null) ? (System.currentTimeMillis() - startTime) : -1;
 
-        logger.info("[Response] {} {} (Status: {}, Time: {}ms)", request.getMethod(), request.getRequestURI(), response.getStatus(), duration);
-
+        logger.info("[응답] {} {} (상태: {}, 시간: {}ms)", 
+            request.getMethod(), request.getRequestURI(), response.getStatus(), duration);
         logResponseHeaders(response);
         logResponseBody(response);
     }
 
     private void logRequestHeaders(HttpServletRequest request) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Request Headers: ");
         request.getHeaderNames().asIterator().forEachRemaining(
             name -> sb.append(name).append("=").append(request.getHeader(name)).append("; ")
         );
-        logger.info(sb.toString());
-    }
-
-    private void logRequestBody(HttpServletRequest request) {
-        if (request instanceof ContentCachingRequestWrapper wrapper) {
-            String body = new String(wrapper.getContentAsByteArray());
-            logger.info("Request Body: {}", body);
+        if (sb.length() > 0) {
+            logger.info("요청 헤더: {}", sb.toString());
         }
     }
 
     private void logResponseHeaders(HttpServletResponse response) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Response Headers: ");
         response.getHeaderNames().forEach(
             name -> sb.append(name).append("=").append(response.getHeader(name)).append("; ")
         );
-        logger.info(sb.toString());
+        if (sb.length() > 0) {
+            logger.info("응답 헤더: {}", sb.toString());
+        }
     }
 
     private void logResponseBody(HttpServletResponse response) {
         if (response instanceof ContentCachingResponseWrapper wrapper) {
             String body = new String(wrapper.getContentAsByteArray());
-            logger.info("Response Body: {}", body);
+            if (!body.isEmpty()) {
+                logger.info("응답 바디: {}", body);
+            }
         }
     }
 }
