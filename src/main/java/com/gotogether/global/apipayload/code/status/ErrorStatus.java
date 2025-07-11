@@ -57,6 +57,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	_BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK4002", "북마크를 찾을 수 없습니다."),
 
 	_RESERVATION_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_EMAIL4001", "예약 메일이 없습니다."),
+	_RESERVATION_SEND_EMAIL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "RESERVATION_EMAIL5001", "예약 메일 전송에 실패했습니다."),
 
 	_TICKET_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET_OPTION4001", "티켓 옵션이 존재하지 않습니다."),
 	_TICKET_OPTION_ASSIGNMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET_OPTION_ASSIGN4001", "해당 티켓에 부착된 옵션이 없습니다."),
@@ -72,7 +73,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
 	_SMS_ALREADY_SEND(HttpStatus.BAD_REQUEST, "SMS4001", "이미 인증 코드가 발송되었습니다."),
 	_SMS_CERTIFICATION_EXPIRED(HttpStatus.BAD_REQUEST, "SMS4002", "인증 코드가 만료되었습니다."),
-	_SMS_CERTIFICATION_MISMATCH(HttpStatus.BAD_REQUEST, "SMS4003", "인증 코드가 일치하지 않습니다.");
+	_SMS_CERTIFICATION_MISMATCH(HttpStatus.BAD_REQUEST, "SMS4003", "인증 코드가 일치하지 않습니다."),
+	_SMS_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "SMS5001", "SMS 전송에 실패했습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
