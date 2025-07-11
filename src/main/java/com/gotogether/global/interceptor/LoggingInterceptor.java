@@ -17,8 +17,8 @@ public class LoggingInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         request.setAttribute(START_TIME, System.currentTimeMillis());
-        
-        logger.info("로깅 인터셉터 시작");
+
+        logger.info("===================== [로깅 인터셉터 시작] =====================");
         logger.info("[요청] {} {}", request.getMethod(), request.getRequestURI());
         logRequestHeaders(request);
         
@@ -31,12 +31,14 @@ public class LoggingInterceptor implements HandlerInterceptor {
         long duration = (startTime != null) ? (System.currentTimeMillis() - startTime) : -1;
 
         logRequestBody(request);
-        
-        logger.info("[응답] {} {} (상태: {}, 시간: {}ms)", 
+
+        logger.info("-----------------------------------------------------------");
+        logger.info("[응답] {} {} (상태: {}, 시간: {}ms)",
             request.getMethod(), request.getRequestURI(), response.getStatus(), duration);
 
         logResponseHeaders(response);
         logResponseBody(response);
+        logger.info("===========================================================\n");
     }
 
     private void logRequestHeaders(HttpServletRequest request) {
