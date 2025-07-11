@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.gotogether.global.constants.Constants;
+import com.gotogether.global.interceptor.LoggingInterceptor;
 import com.gotogether.global.interceptor.pre.AuthUserArgumentResolver;
 import com.gotogether.global.interceptor.pre.JWTInterceptor;
 
@@ -28,6 +29,12 @@ public class WebMVCConfig implements WebMvcConfigurer {
 	public void addInterceptors(final InterceptorRegistry registry) {
 		registry.addInterceptor(new JWTInterceptor())
 			.addPathPatterns("/api/v1/**")
-			.excludePathPatterns(Constants.NO_NEED_FILTER_URLS);
+			.excludePathPatterns(Constants.NO_NEED_FILTER_URLS)
+			.order(1);
+
+		registry.addInterceptor(new LoggingInterceptor())
+			.addPathPatterns("/**")
+			.excludePathPatterns("/actuator/**")
+			.order(2);
 	}
 }
