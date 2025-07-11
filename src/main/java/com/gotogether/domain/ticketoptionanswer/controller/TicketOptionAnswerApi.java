@@ -60,7 +60,7 @@ public interface TicketOptionAnswerApi {
 		)
 	})
 	@GetMapping
-	ApiResponse<List<PurchaserAnswerDetailResponseDTO>> getAnswersByUserAndTicket(
+	ApiResponse<List<PurchaserAnswerDetailResponseDTO>> getAnswersByTicket(
 		@Parameter(description = "티켓 ID", required = true) @RequestParam Long ticketId
 	);
 
