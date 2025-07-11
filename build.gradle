@@ -69,11 +69,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
-    // CoolSMS
-    implementation 'net.nurigo:sdk:4.3.0'
-
     // POI
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+    // CoolSMS
+    implementation 'net.nurigo:sdk:4.3.0'
 }
 
 tasks.named('test') {
