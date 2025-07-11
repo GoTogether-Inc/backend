@@ -3,6 +3,7 @@ package com.gotogether.global.interceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,8 +30,11 @@ public class LoggingInterceptor implements HandlerInterceptor {
         Long startTime = (Long) request.getAttribute(START_TIME);
         long duration = (startTime != null) ? (System.currentTimeMillis() - startTime) : -1;
 
+        logRequestBody(request);
+        
         logger.info("[응답] {} {} (상태: {}, 시간: {}ms)", 
             request.getMethod(), request.getRequestURI(), response.getStatus(), duration);
+
         logResponseHeaders(response);
         logResponseBody(response);
     }
@@ -42,6 +46,15 @@ public class LoggingInterceptor implements HandlerInterceptor {
         );
         if (sb.length() > 0) {
             logger.info("요청 헤더: {}", sb.toString());
+        }
+    }
+
+    private void logRequestBody(HttpServletRequest request) {
+        if (request instanceof ContentCachingRequestWrapper wrapper) {
+            String body = new String(wrapper.getContentAsByteArray());
+            if (!body.isEmpty()) {
+                logger.info("요청 바디: {}", body);
+            }
         }
     }
 
