@@ -33,6 +33,7 @@ import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.service.MetricService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
 	private final TicketQrCodeService ticketQrCodeService;
 	private final OrderCustomRepository orderCustomRepository;
 	private final TicketOptionAnswerService ticketOptionAnswerService;
+	private final MetricService metricService;
 
 	@Override
 	@Transactional
@@ -74,6 +76,9 @@ public class OrderServiceImpl implements OrderService {
 
 			ticketOptionAnswerService.createTicketOptionAnswers(user, answers, order);
 		}
+
+		double totalAmount = ticket.getPrice() * ticketCnt;
+		metricService.recordTicketPurchase(ticket.getEvent().getId(), ticket.getId(), ticketCnt, totalAmount);
 
 		return orders;
 	}
@@ -113,6 +118,8 @@ public class OrderServiceImpl implements OrderService {
 			}
 
 			Ticket ticket = eventFacade.getTicketById(order.getTicket().getId());
+
+			metricService.recordOrderCancellation(ticket.getEvent().getId(), ticket.getPrice());
 
 			order.cancelOrder();
 			ticket.increaseAvailableQuantity();

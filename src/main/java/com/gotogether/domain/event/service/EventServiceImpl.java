@@ -26,6 +26,7 @@ import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.common.service.S3UploadService;
 import com.gotogether.global.scheduler.EventScheduler;
+import com.gotogether.global.service.MetricService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,6 +43,7 @@ public class EventServiceImpl implements EventService {
 	private final ReferenceLinkService referenceLinkService;
 	private final S3UploadService s3UploadService;
 	private final EventScheduler eventScheduler;
+	private final MetricService metricService;
 
 	@Override
 	@Transactional
@@ -62,6 +64,9 @@ public class EventServiceImpl implements EventService {
 		updateBannerImageToFinal(event, request.getBannerImageUrl());
 
 		eventScheduler.scheduleUpdateEventStatus(event.getId(), event.getEndDate());
+
+		metricService.recordEventCreation(event.getId(), event.getCategory().name());
+
 		return event;
 	}
 
