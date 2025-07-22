@@ -13,8 +13,10 @@ import com.gotogether.global.common.dto.SmsVerifyRequestDTO;
 import com.gotogether.global.util.SmsCertificationUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class SmsService {
 
@@ -35,7 +37,15 @@ public class SmsService {
 		}
 
 		redisTemplate.opsForValue().set(key, code, TTL);
-		smsCertificationUtil.sendSMS(request.getPhoneNumber(), code);
+
+		try {
+			smsCertificationUtil.sendSMS(request.getPhoneNumber(), code);
+			log.info("[SMS] 전송 성공: 전화번호={}, 코드={}", phoneNumber, code);
+		} catch (Exception e) {
+			log.error("[SMS] 전송 실패: 전화번호={}, 에러={}", phoneNumber, e.getMessage(), e);
+			redisTemplate.delete(key);
+			throw new GeneralException(ErrorStatus._SMS_SEND_FAIL);
+		}
 	}
 
 	public void verifyCertificationCode(SmsVerifyRequestDTO request) {
@@ -52,6 +62,7 @@ public class SmsService {
 		}
 
 		redisTemplate.delete(key);
+		log.info("[SMS] 인증 완료: 전화번호 {} ", phoneNumber);
 	}
 
 	private String generate() {

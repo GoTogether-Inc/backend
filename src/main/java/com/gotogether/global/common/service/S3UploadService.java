@@ -17,8 +17,10 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.gotogether.global.common.dto.S3UrlResponseDTO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class S3UploadService {
 
@@ -41,6 +43,8 @@ public class S3UploadService {
 
 		String url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
 
+		log.info("[S3] Pre-signed URL 생성 완료 (userId: {})", userId);
+
 		return S3UrlResponseDTO.builder()
 			.preSignedUrl(url)
 			.build();
@@ -48,6 +52,7 @@ public class S3UploadService {
 
 	public String moveTempImageToFinal(String imageUrl) {
 		if (imageUrl == null || !imageUrl.contains("temp/")) {
+			log.warn("[S3] 이미지 URL이 null이거나 임시 경로가 아님: {}", imageUrl);
 			return imageUrl;
 		}
 
@@ -56,6 +61,8 @@ public class S3UploadService {
 		String finalUrl = imageUrl.replace("temp/", "final/");
 
 		moveFile(tempKey, finalKey);
+		log.info("[S3] 이미지를 임시 경로에서 최종 경로로 이동 완료: {} -> {}", tempKey, finalKey);
+
 		return finalUrl;
 	}
 
@@ -63,7 +70,9 @@ public class S3UploadService {
 		String key = extractKeyFromUrl(imageUrl);
 
 		DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucketName, key);
+
 		amazonS3.deleteObject(deleteObjectRequest);
+		log.info("[S3] 파일 삭제 완료: {}", key);
 	}
 
 	private String extractKeyFromUrl(String url) {

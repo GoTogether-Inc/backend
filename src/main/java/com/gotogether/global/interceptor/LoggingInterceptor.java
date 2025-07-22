@@ -2,6 +2,7 @@ package com.gotogether.global.interceptor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -17,8 +18,11 @@ public class LoggingInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         request.setAttribute(START_TIME, System.currentTimeMillis());
-        
-        logger.info("로깅 인터셉터 시작");
+
+        String traceId = java.util.UUID.randomUUID().toString();
+        MDC.put("traceId", traceId);
+
+        logger.info("===================== [로깅 인터셉터 시작] =====================");
         logger.info("[요청] {} {}", request.getMethod(), request.getRequestURI());
         logRequestHeaders(request);
         
@@ -31,12 +35,16 @@ public class LoggingInterceptor implements HandlerInterceptor {
         long duration = (startTime != null) ? (System.currentTimeMillis() - startTime) : -1;
 
         logRequestBody(request);
-        
-        logger.info("[응답] {} {} (상태: {}, 시간: {}ms)", 
+
+        logger.info("-----------------------------------------------------------");
+        logger.info("[응답] {} {} (상태: {}, 시간: {}ms)",
             request.getMethod(), request.getRequestURI(), response.getStatus(), duration);
 
         logResponseHeaders(response);
         logResponseBody(response);
+        logger.info("===========================================================\n");
+
+        MDC.clear();
     }
 
     private void logRequestHeaders(HttpServletRequest request) {
