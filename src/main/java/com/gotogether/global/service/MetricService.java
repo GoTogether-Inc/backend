@@ -147,25 +147,25 @@ public class MetricService {
                     .register(meterRegistry)
                     .increment();
 
-            log.info("예약 이메일 생성 메트릭 기록: reservationEmailId={}", reservationEmailId);
+            log.info("예약 메일 생성 메트릭 기록: reservationEmailId={}", reservationEmailId);
         } catch (Exception e) {
-            log.warn("예약 이메일 생성 메트릭 기록 실패: {}", e.getMessage());
+            log.warn("예약 메일 생성 메트릭 기록 실패: {}", e.getMessage());
         }
     }
 
     /**
      * 예약 메일 발송 메트릭
      */
-    public void recordReservationEmailSend(Long reservationEmailId) {
+    public void recordReservationEmailDispatch(Long reservationEmailId) {
         try {
             Counter.builder("business.reservation_email.sent")
                     .tag("reservation_email_id", String.valueOf(reservationEmailId))
                     .register(meterRegistry)
                     .increment();
 
-            log.info("예약 이메일 전송 메트릭 기록: reservationEmailId={}", reservationEmailId);
+            log.info("예약 메일 발송 메트릭 기록: reservationEmailId={}", reservationEmailId);
         } catch (Exception e) {
-            log.warn("예약 이메일 전송 메트릭 기록 실패: {}", e.getMessage());
+            log.warn("예약 메일 발송 메트릭 기록 실패: {}", e.getMessage());
         }
     }
 
@@ -206,7 +206,7 @@ public class MetricService {
      */
     public void recordTicketOptionAssignment(Long ticketOptionId, Long ticketId) {
         try {
-            Counter.builder("business.ticket_option_assignment")
+            Counter.builder("business.ticket_option.assigned")
                     .tag("ticket_option_id", String.valueOf(ticketOptionId))
                     .tag("ticket_id", String.valueOf(ticketId))
                     .register(meterRegistry)
@@ -215,6 +215,38 @@ public class MetricService {
             log.info("티켓 옵션 할당 메트릭 기록: ticketOptionId={}, ticketId={}", ticketOptionId, ticketId);
         } catch (Exception e) {
             log.warn("티켓 옵션 할당 메트릭 기록 실패: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * SMS 발송 결과 메트릭
+     */
+    public void recordSmsDispatch(boolean isSuccess) {
+        try {
+            Counter.builder("business.sms.sent")
+                .tag("result", String.valueOf(isSuccess))
+                .register(meterRegistry)
+                .increment();
+
+            log.info("SMS 발송 메트릭 기록: result={}", isSuccess);
+        } catch (Exception e) {
+            log.warn("SMS 발송 메트릭 기록 실패: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * S3 Pre-signed URL 생성 메트릭
+     */
+    public void recordPresignedUrlGeneration(boolean isSuccess) {
+        try {
+            Counter.builder("business.pre_signed_url.generated")
+                    .tag("result", String.valueOf(isSuccess))
+                    .register(meterRegistry)
+                    .increment();
+
+            log.info("S3 Pre-signed URL 생성 메트릭 기록: result={}", isSuccess);
+        } catch (Exception e) {
+            log.warn("S3 Pre-signed URL 생성 메트릭 기록 실패: {}", e.getMessage());
         }
     }
 }

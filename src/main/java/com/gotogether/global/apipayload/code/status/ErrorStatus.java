@@ -64,6 +64,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	_TICKET_OPTION_ALREADY_ASSIGNED(HttpStatus.BAD_REQUEST, "TICKET_OPTION_ASSIGN4002", "이미 해당 티켓 옵션이 부착되어 있습니다."),
 	_TICKET_OPTION_CHOICE_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET_OPTION_CHOICE4001", "선택지를 찾을 수 없습니다."),
 	_TICKET_OPTION_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "TICKET_OPTION_ANSWER4001", "이미 응답된 티켓 옵션입니다."),
+
 	// 미사용
 	_TICKET_OPTION_ANSWER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "TICKET_OPTION_ANSWER4002", "해당 티켓 옵션에 대한 응답이 이미 존재합니다."),
 
@@ -74,7 +75,9 @@ public enum ErrorStatus implements BaseErrorCode {
 	_SMS_ALREADY_SEND(HttpStatus.BAD_REQUEST, "SMS4001", "이미 인증 코드가 발송되었습니다."),
 	_SMS_CERTIFICATION_EXPIRED(HttpStatus.BAD_REQUEST, "SMS4002", "인증 코드가 만료되었습니다."),
 	_SMS_CERTIFICATION_MISMATCH(HttpStatus.BAD_REQUEST, "SMS4003", "인증 코드가 일치하지 않습니다."),
-	_SMS_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "SMS5001", "SMS 전송에 실패했습니다.");
+	_SMS_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "SMS5001", "SMS 전송에 실패했습니다."),
+
+	_S3_URL_GENERATION_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S35001", "S3 Pre-signed URL 생성에 실패했습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

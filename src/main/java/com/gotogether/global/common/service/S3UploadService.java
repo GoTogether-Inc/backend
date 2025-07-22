@@ -14,7 +14,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.common.dto.S3UrlResponseDTO;
+import com.gotogether.global.service.MetricService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +31,7 @@ public class S3UploadService {
 	private String bucketName;
 
 	private final AmazonS3 amazonS3;
+	private final MetricService metricService;
 
 	public S3UrlResponseDTO generatePreSignUrl(Long userId, String fileName, HttpMethod httpMethod) {
 		String filePath = "temp/" + userId + "/" + UUID.randomUUID() + "_" + fileName;
@@ -41,13 +45,22 @@ public class S3UploadService {
 			.withExpiration(calendar.getTime())
 			.withContentType("image/webp");
 
-		String url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
+		try {
+			String url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
 
-		log.info("[S3] Pre-signed URL 생성 완료 (userId: {})", userId);
+			log.info("[S3] Pre-signed URL 생성 완료 (userId: {})", userId);
+			metricService.recordPresignedUrlGeneration(true);
 
-		return S3UrlResponseDTO.builder()
-			.preSignedUrl(url)
-			.build();
+			return S3UrlResponseDTO.builder()
+				.preSignedUrl(url)
+				.build();
+
+		} catch (Exception e) {
+			log.error("[S3] Pre-signed URL 생성 실패", e);
+			metricService.recordPresignedUrlGeneration(false);
+
+			throw new GeneralException(ErrorStatus._S3_URL_GENERATION_FAIL);
+		}
 	}
 
 	public String moveTempImageToFinal(String imageUrl) {

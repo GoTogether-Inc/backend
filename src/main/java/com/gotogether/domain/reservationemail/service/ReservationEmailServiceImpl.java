@@ -112,7 +112,7 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 
 		reservationEmail.markAsSent();
 
-		metricService.recordReservationEmailSend(reservationEmail.getId());
+		metricService.recordReservationEmailDispatch(reservationEmail.getId());
 
 		reservationEmailRepository.save(reservationEmail);
 	}
