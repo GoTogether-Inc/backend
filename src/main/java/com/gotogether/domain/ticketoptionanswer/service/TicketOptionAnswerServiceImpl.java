@@ -28,6 +28,7 @@ import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.service.MetricService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,6 +41,8 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 	private final TicketOptionAnswerRepository ticketOptionAnswerRepository;
 	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
 	private final UserRepository userRepository;
+
+	private final MetricService metricService;
 
 	// 미사용
 	@Override
@@ -70,6 +73,8 @@ public class TicketOptionAnswerServiceImpl implements TicketOptionAnswerService 
 			.ticketOptionChoice(choice)
 			.answerText(request.getAnswerText())
 			.build();
+
+		metricService.recordTicketOptionAnswerCreation(answer.getId());
 
 		ticketOptionAnswerRepository.save(answer);
 	}

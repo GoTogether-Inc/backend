@@ -120,4 +120,101 @@ public class MetricService {
             log.warn("북마크 생성 메트릭 기록 실패: {}", e.getMessage());
         }
     }
-} 
+
+    /**
+     * 호스트 채널 생성 메트릭
+     */
+    public void recordHostChannelCreation(Long hostChannelId) {
+        try {
+            Counter.builder("business.host_channel.created")
+                    .tag("host_channel_id", String.valueOf(hostChannelId))
+                    .register(meterRegistry)
+                    .increment();
+
+            log.info("호스트 채널 생성 메트릭 기록: hostChannelId={}", hostChannelId);
+        } catch (Exception e) {
+            log.warn("호스트 채널 생성 메트릭 기록 실패: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 예약 메일 생성 메트릭
+     */
+    public void recordReservationEmailCreation(Long reservationEmailId) {
+        try {
+            Counter.builder("business.reservation_email.created")
+                    .tag("reservation_email_id", String.valueOf(reservationEmailId))
+                    .register(meterRegistry)
+                    .increment();
+
+            log.info("예약 이메일 생성 메트릭 기록: reservationEmailId={}", reservationEmailId);
+        } catch (Exception e) {
+            log.warn("예약 이메일 생성 메트릭 기록 실패: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 예약 메일 발송 메트릭
+     */
+    public void recordReservationEmailSend(Long reservationEmailId) {
+        try {
+            Counter.builder("business.reservation_email.sent")
+                    .tag("reservation_email_id", String.valueOf(reservationEmailId))
+                    .register(meterRegistry)
+                    .increment();
+
+            log.info("예약 이메일 전송 메트릭 기록: reservationEmailId={}", reservationEmailId);
+        } catch (Exception e) {
+            log.warn("예약 이메일 전송 메트릭 기록 실패: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 티켓 옵션 생성 메트릭
+     */
+    public void recordTicketOptionCreation(Long ticketOptionId) {
+        try {
+            Counter.builder("business.ticket_option.created")
+                    .tag("ticket_option_id", String.valueOf(ticketOptionId))
+                    .register(meterRegistry)
+                    .increment();
+
+            log.info("티켓 옵션 생성 메트릭 기록: ticketOptionId={}", ticketOptionId);
+        } catch (Exception e) {
+            log.warn("티켓 옵션 생성 메트릭 기록 실패: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 티켓 옵션 응답 생성 메트릭
+     */
+    public void recordTicketOptionAnswerCreation(Long ticketOptionAnswerId) {
+        try {
+            Counter.builder("business.ticket_option_answer.created")
+                    .tag("ticket_option_answer_id", String.valueOf(ticketOptionAnswerId))
+                    .register(meterRegistry)
+                    .increment();
+
+            log.info("티켓 옵션 응답 생성 메트릭 기록: ticketOptionAnswerId={}", ticketOptionAnswerId);
+        } catch (Exception e) {
+            log.warn("티켓 옵션 응답 생성 메트릭 기록 실패: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 티켓 옵션 할당 메트릭
+     */
+    public void recordTicketOptionAssignment(Long ticketOptionId, Long ticketId) {
+        try {
+            Counter.builder("business.ticket_option_assignment")
+                    .tag("ticket_option_id", String.valueOf(ticketOptionId))
+                    .tag("ticket_id", String.valueOf(ticketId))
+                    .register(meterRegistry)
+                    .increment();
+
+            log.info("티켓 옵션 할당 메트릭 기록: ticketOptionId={}, ticketId={}", ticketOptionId, ticketId);
+        } catch (Exception e) {
+            log.warn("티켓 옵션 할당 메트릭 기록 실패: {}", e.getMessage());
+        }
+    }
+}

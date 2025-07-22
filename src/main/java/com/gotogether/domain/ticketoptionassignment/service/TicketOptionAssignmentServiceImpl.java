@@ -12,6 +12,7 @@ import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignmen
 import com.gotogether.domain.ticketoptionassignment.repository.TicketOptionAssignmentRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.service.MetricService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ public class TicketOptionAssignmentServiceImpl implements TicketOptionAssignment
 	private final TicketRepository ticketRepository;
 	private final TicketOptionRepository ticketOptionRepository;
 	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
+	private final MetricService metricService;
 
 	@Override
 	@Transactional
@@ -47,6 +49,8 @@ public class TicketOptionAssignmentServiceImpl implements TicketOptionAssignment
 			.ticket(ticket)
 			.ticketOption(ticketOption)
 			.build();
+
+		metricService.recordTicketOptionAssignment(ticketOptionId, ticketId);
 
 		ticketOptionAssignmentRepository.save(assignment);
 	}
