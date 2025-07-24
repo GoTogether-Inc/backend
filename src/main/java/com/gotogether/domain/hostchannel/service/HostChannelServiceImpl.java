@@ -1,10 +1,10 @@
 package com.gotogether.domain.hostchannel.service;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.LinkedHashSet;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +34,9 @@ import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.repository.TicketRepository;
+import com.gotogether.domain.ticketoptionanswer.repository.TicketOptionAnswerRepository;
+import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
+import com.gotogether.domain.ticketoptionassignment.repository.TicketOptionAssignmentRepository;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
 import com.gotogether.domain.user.entity.User;
@@ -41,10 +44,8 @@ import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.common.service.S3UploadService;
+import com.gotogether.global.service.MetricService;
 import com.gotogether.global.util.ExcelGenerator;
-import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
-import com.gotogether.domain.ticketoptionassignment.repository.TicketOptionAssignmentRepository;
-import com.gotogether.domain.ticketoptionanswer.repository.TicketOptionAnswerRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -59,11 +60,14 @@ public class HostChannelServiceImpl implements HostChannelService {
 	private final OrderCustomRepository orderCustomRepository;
 	private final TicketRepository ticketRepository;
 	private final EventRepository eventRepository;
-	private final EventFacade eventFacade;
-	private final TicketQrCodeService ticketQrCodeService;
-	private final S3UploadService s3UploadService;
 	private final TicketOptionAssignmentRepository ticketOptionAssignmentRepository;
 	private final TicketOptionAnswerRepository ticketOptionAnswerRepository;
+
+	private final TicketQrCodeService ticketQrCodeService;
+	private final S3UploadService s3UploadService;
+	private final MetricService metricService;
+
+	private final EventFacade eventFacade;
 
 	@Override
 	@Transactional
@@ -90,6 +94,8 @@ public class HostChannelServiceImpl implements HostChannelService {
 		channelOrganizerRepository.save(channelOrganizer);
 
 		updateProfileImageToFinal(newHostChannel, request.getProfileImageUrl());
+
+		metricService.recordHostChannelCreation(newHostChannel.getId());
 
 		return newHostChannel;
 	}

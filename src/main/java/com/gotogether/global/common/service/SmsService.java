@@ -10,6 +10,7 @@ import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.common.dto.SmsRequestDTO;
 import com.gotogether.global.common.dto.SmsVerifyRequestDTO;
+import com.gotogether.global.service.MetricService;
 import com.gotogether.global.util.SmsCertificationUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class SmsService {
 
 	private final SmsCertificationUtil smsCertificationUtil;
 	private final StringRedisTemplate redisTemplate;
+	private final MetricService metricService;
 
 	public void sendCertificationCode(SmsRequestDTO request) {
 		String code = generate();
@@ -40,10 +42,16 @@ public class SmsService {
 
 		try {
 			smsCertificationUtil.sendSMS(request.getPhoneNumber(), code);
+
 			log.info("[SMS] 전송 성공: 전화번호={}, 코드={}", phoneNumber, code);
+			metricService.recordSmsDispatch(true);
+
 		} catch (Exception e) {
-			log.error("[SMS] 전송 실패: 전화번호={}, 에러={}", phoneNumber, e.getMessage(), e);
 			redisTemplate.delete(key);
+
+			log.error("[SMS] 전송 실패", e);
+			metricService.recordSmsDispatch(false);
+
 			throw new GeneralException(ErrorStatus._SMS_SEND_FAIL);
 		}
 	}

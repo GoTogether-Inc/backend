@@ -20,6 +20,7 @@ import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.scheduler.EventScheduler;
+import com.gotogether.global.service.MetricService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,9 +29,13 @@ import lombok.RequiredArgsConstructor;
 public class ReservationEmailServiceImpl implements ReservationEmailService {
 
 	private final ReservationEmailRepository reservationEmailRepository;
-	private final ReservationEmailFacade reservationEmailFacade;
-	private final EventFacade eventFacade;
+
 	private final EmailService mailService;
+	private final MetricService metricService;
+
+	private final EventFacade eventFacade;
+	private final ReservationEmailFacade reservationEmailFacade;
+
 	private final EventScheduler eventScheduler;
 
 	@Override
@@ -47,6 +52,8 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 		reservationEmailRepository.save(reservationEmail);
 
 		eventScheduler.scheduleEmail(reservationEmail.getId(), reservationEmail.getReservationDate());
+
+		metricService.recordReservationEmailCreation(reservationEmail.getId());
 
 		return reservationEmail;
 	}
@@ -104,6 +111,9 @@ public class ReservationEmailServiceImpl implements ReservationEmailService {
 		);
 
 		reservationEmail.markAsSent();
+
+		metricService.recordReservationEmailDispatch(reservationEmail.getId());
+
 		reservationEmailRepository.save(reservationEmail);
 	}
 

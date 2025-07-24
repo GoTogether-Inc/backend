@@ -24,6 +24,7 @@ import com.gotogether.global.oauth.dto.TokenDTO;
 import com.gotogether.global.oauth.exception.DuplicatedEmailException;
 import com.gotogether.global.oauth.util.JWTUtil;
 import com.gotogether.global.util.CookieUtil;
+import com.gotogether.global.service.MetricService;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -34,10 +35,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
 	private final JWTUtil jwtUtil;
+	private final MetricService metricService;
 
-	public CustomOAuth2UserService(UserRepository userRepository, JWTUtil jwtUtil) {
+	public CustomOAuth2UserService(UserRepository userRepository, JWTUtil jwtUtil, MetricService metricService) {
 		this.userRepository = userRepository;
 		this.jwtUtil = jwtUtil;
+		this.metricService = metricService;
 	}
 
 	@Override
@@ -87,6 +90,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 			userRepository.save(userEntity);
 			logger.info("새 사용자 생성 완료, ID: {}", userEntity.getId());
+
+			metricService.recordUserRegistration(oAuth2Response.getProvider());
 
 			UserDTO userDTO = UserDTO.builder()
 				.id(userEntity.getId())

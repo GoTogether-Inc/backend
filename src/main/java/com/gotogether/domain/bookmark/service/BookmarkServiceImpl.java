@@ -16,6 +16,7 @@ import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.service.MetricService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 	private final BookmarkRepository bookmarkRepository;
 	private final EventFacade eventFacade;
+	private final MetricService metricService;
 
 	@Override
 	@Transactional
@@ -38,6 +40,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 		Bookmark bookmark = BookmarkConverter.of(user, event);
 		bookmarkRepository.save(bookmark);
+
+		metricService.recordBookmarkCreation(eventId);
 
 		return bookmark;
 	}

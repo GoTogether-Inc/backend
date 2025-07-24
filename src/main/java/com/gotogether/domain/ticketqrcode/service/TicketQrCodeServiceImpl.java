@@ -23,6 +23,7 @@ import com.gotogether.domain.ticketqrcode.entity.TicketQrCodeStatus;
 import com.gotogether.domain.ticketqrcode.repository.TicketQrCodeRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
+import com.gotogether.global.service.MetricService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 
 	private final TicketQrCodeRepository ticketQrCodeRepository;
 	private final EventFacade eventFacade;
+	private final MetricService metricService;
 
 	@Value("${qr.secret-key}")
 	private String qrSecretKey;
@@ -67,6 +69,8 @@ public class TicketQrCodeServiceImpl implements TicketQrCodeService {
 
 		TicketQrCode qrCode = getAvailableQrCode(order);
 		qrCode.updateStatus(TicketQrCodeStatus.USED);
+
+		metricService.recordTicketUsage(orderId, order.getTicket().getEvent().getId());
 	}
 
 	private String generateSignedQrCodeImage(Order order) {
