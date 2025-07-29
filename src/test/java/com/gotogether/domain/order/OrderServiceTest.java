@@ -15,30 +15,32 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.entity.OnlineType;
 import com.gotogether.domain.event.facade.EventFacade;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
+import com.gotogether.domain.order.dto.request.OrderCancelRequestDTO;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
 import com.gotogether.domain.order.entity.OrderStatus;
+import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.order.service.OrderServiceImpl;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
+import com.gotogether.domain.ticket.repository.TicketRepository;
+import com.gotogether.domain.ticketoptionanswer.service.TicketOptionAnswerService;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
+import com.gotogether.domain.ticketqrcode.entity.TicketQrCodeStatus;
 import com.gotogether.domain.ticketqrcode.service.TicketQrCodeService;
 import com.gotogether.domain.user.entity.User;
+import com.gotogether.global.service.MetricService;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -54,6 +56,18 @@ class OrderServiceTest {
 
 	@Mock
 	private TicketQrCodeService ticketQrCodeService;
+
+	@Mock
+	private OrderCustomRepository orderCustomRepository;
+
+	@Mock
+	private TicketRepository ticketRepository;
+
+	@Mock
+	private TicketOptionAnswerService ticketOptionAnswerService;
+
+	@Mock
+	private MetricService metricService;
 
 	private User user;
 	private Event event;
@@ -94,6 +108,9 @@ class OrderServiceTest {
 			.status(TicketStatus.OPEN)
 			.availableQuantity(10)
 			.name("Test Ticket")
+			.price(10000)
+			.startDate(LocalDateTime.now())
+			.endDate(LocalDateTime.now().plusDays(1))
 			.build();
 
 		order = Order.builder()
@@ -105,7 +122,7 @@ class OrderServiceTest {
 		ticketQrCode = TicketQrCode.builder()
 			.order(order)
 			.qrCodeImageUrl("https://example.com/qr-code.png")
-			.status(com.gotogether.domain.ticketqrcode.entity.TicketStatus.AVAILABLE)
+			.status(TicketQrCodeStatus.AVAILABLE)
 			.build();
 
 		order.updateTicketQrCode(ticketQrCode);
@@ -122,8 +139,9 @@ class OrderServiceTest {
 			.build();
 
 		when(eventFacade.getUserById(any())).thenReturn(user);
-		when(eventFacade.getTicketById(any())).thenReturn(ticket);
+		when(ticketRepository.findByIdWithPessimisticLock(any())).thenReturn(Optional.of(ticket));
 		when(orderRepository.save(any())).thenReturn(order);
+		when(orderRepository.existsByOrderCode(anyString())).thenReturn(false);
 		when(ticketQrCodeService.createQrCode(any())).thenReturn(ticketQrCode);
 
 		// WHEN
@@ -138,53 +156,50 @@ class OrderServiceTest {
 	@DisplayName("구매한 티켓 목록 조회")
 	void getPurchasedTickets() {
 		// GIVEN
-		Pageable pageable = PageRequest.of(0, 10);
-		Page<Order> orderPage = new PageImpl<>(List.of(order));
-
 		when(eventFacade.getUserById(any())).thenReturn(user);
-		when(orderRepository.findOrdersByUser(any(), any())).thenReturn(orderPage);
+		when(orderCustomRepository.findByUser(any())).thenReturn(List.of(order));
 
 		// WHEN
-		Page<OrderedTicketResponseDTO> result = orderService.getPurchasedTickets(1L, pageable);
+		List<OrderedTicketResponseDTO> result = orderService.getPurchasedTickets(1L);
 
 		// THEN
-		assertThat(result.getContent()).hasSize(1);
-		verify(orderRepository).findOrdersByUser(user, pageable);
+		assertThat(result).hasSize(1);
+		verify(orderCustomRepository).findByUser(user);
 	}
 
 	@Test
 	@DisplayName("티켓 구매 확인 정보 조회")
 	void getPurchaseConfirmation() {
 		// GIVEN
-		Long userId = 1L;
-		Long ticketId = 1L;
-		Long eventId = 1L;
+		Long orderId = 1L;
 
-		when(eventFacade.getUserById(userId)).thenReturn(user);
-		when(eventFacade.getTicketById(ticketId)).thenReturn(ticket);
-		when(eventFacade.getEventById(eventId)).thenReturn(event);
-		when(orderRepository.findOrderByUserAndTicket(user, ticket)).thenReturn(List.of(order));
+		when(orderRepository.findOrderWithTicketAndEventAndHostById(orderId)).thenReturn(Optional.of(order));
 
 		// WHEN
-		OrderInfoResponseDTO result = orderService.getPurchaseConfirmation(userId, ticketId, eventId);
+		OrderInfoResponseDTO result = orderService.getPurchaseConfirmation(orderId);
 
 		// THEN
 		assertThat(result).isNotNull();
 		assertThat(result.getTitle()).isEqualTo(event.getTitle());
 		assertThat(result.getTicketName()).isEqualTo(ticket.getName());
-		verify(orderRepository).findOrderByUserAndTicket(user, ticket);
+		verify(orderRepository).findOrderWithTicketAndEventAndHostById(orderId);
 	}
 
 	@Test
 	@DisplayName("주문 취소")
 	void cancelOrder() {
 		// GIVEN
+		Long userId = 1L;
+		OrderCancelRequestDTO request = OrderCancelRequestDTO.builder()
+			.orderIds(List.of(1L))
+			.build();
+
 		when(eventFacade.getUserById(any())).thenReturn(user);
 		when(orderRepository.findById(any())).thenReturn(Optional.of(order));
 		when(eventFacade.getTicketById(any())).thenReturn(ticket);
 
 		// WHEN
-		orderService.cancelOrder(1L, 1L);
+		orderService.cancelOrder(request, userId);
 
 		// THEN
 		assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELED);
@@ -195,15 +210,16 @@ class OrderServiceTest {
 	@DisplayName("구매자 이메일 목록 조회")
 	void getPurchaserEmails() {
 		// GIVEN
+		Long ticketId = 1L;
 		List<String> emails = List.of("test1@example.com", "test2@example.com");
 
-		when(orderRepository.findPurchaserEmailsByTicketId(any())).thenReturn(emails);
+		when(orderRepository.findPurchaserEmailsByTicketId(ticketId)).thenReturn(emails);
 
 		// WHEN
-		TicketPurchaserEmailResponseDTO result = orderService.getPurchaserEmails(1L, 1L);
+		TicketPurchaserEmailResponseDTO result = orderService.getPurchaserEmails(ticketId);
 
 		// THEN
 		assertThat(result.getEmail()).hasSize(2);
-		verify(orderRepository).findPurchaserEmailsByTicketId(1L);
+		verify(orderRepository).findPurchaserEmailsByTicketId(ticketId);
 	}
 } 
