@@ -2,6 +2,7 @@ package com.gotogether.global.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
@@ -30,6 +31,9 @@ public class TestUserUtil {
 				.build()));
 
 		user = userRepository.save(user);
+		
+		ReflectionTestUtils.setField(user, "id", 1L);
+
 		TokenDTO tokenDTO = jwtUtil.generateTokens(user.getProviderId());
 
 		Cookie accessTokenCookie = new Cookie("accessToken", tokenDTO.getAccessToken());
