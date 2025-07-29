@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -74,10 +73,8 @@ class TicketServiceTest {
 			.ticketDescription("This is a test ticket.")
 			.ticketPrice(10000)
 			.availableQuantity(100)
-			.startDate(LocalDate.now())
-			.endDate(LocalDate.now().plusDays(1))
-			.startTime("09:00")
-			.endTime("18:00")
+			.startDate(LocalDateTime.now())
+			.endDate(LocalDateTime.now().plusDays(1))
 			.build();
 
 		ticket = Ticket.builder()
