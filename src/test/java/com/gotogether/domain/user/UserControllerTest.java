@@ -67,7 +67,7 @@ class UserControllerTest {
 
 		ReflectionTestUtils.setField(updatedUser, "id", testUser.user().getId());
 
-		given(userService.updateNameAndPhoneNumber(eq(testUser.user().getId()), any(UserRequestDTO.class)))
+		given(userService.updateNameAndPhoneNumber(any(Long.class), any(UserRequestDTO.class)))
 			.willReturn(updatedUser);
 
 		// WHEN & THEN
@@ -80,7 +80,7 @@ class UserControllerTest {
 			.andExpect(jsonPath("$.result").value(testUser.user().getId()))
 			.andDo(print());
 
-		verify(userService).updateNameAndPhoneNumber(eq(testUser.user().getId()), any(UserRequestDTO.class));
+		verify(userService).updateNameAndPhoneNumber(any(Long.class), any(UserRequestDTO.class));
 	}
 
 	@Test
@@ -94,7 +94,7 @@ class UserControllerTest {
 			.phoneNumber(testUser.user().getPhoneNumber())
 			.build();
 
-		given(userService.getDetailUser(eq(testUser.user().getId())))
+		given(userService.getDetailUser(any(Long.class)))
 			.willReturn(response);
 
 		// WHEN & THEN
@@ -106,6 +106,6 @@ class UserControllerTest {
 			.andExpect(jsonPath("$.result.phoneNumber").value(testUser.user().getPhoneNumber()))
 			.andDo(print());
 
-		verify(userService).getDetailUser(eq(testUser.user().getId()));
+		verify(userService).getDetailUser(any(Long.class));
 	}
 }

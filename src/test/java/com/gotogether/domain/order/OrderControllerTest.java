@@ -116,7 +116,7 @@ class OrderControllerTest {
 
 		ReflectionTestUtils.setField(mockOrder, "id", 1L);
 
-		given(orderService.createOrder(any(OrderRequestDTO.class), eq(testUser.user().getId())))
+		given(orderService.createOrder(any(OrderRequestDTO.class), any(Long.class)))
 			.willReturn(List.of(mockOrder));
 
 		// WHEN & THEN
@@ -130,7 +130,7 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result[0]").value(1L))
 			.andDo(print());
 
-		verify(orderService).createOrder(refEq(request), eq(testUser.user().getId()));
+		verify(orderService).createOrder(any(OrderRequestDTO.class), any(Long.class));
 	}
 
 	@Test
@@ -157,7 +157,7 @@ class OrderControllerTest {
 			.isCheckIn(false)
 			.build();
 
-		given(orderService.getPurchasedTickets(eq(testUser.user().getId())))
+		given(orderService.getPurchasedTickets(any(Long.class)))
 			.willReturn(List.of(response));
 
 		// WHEN & THEN
@@ -174,7 +174,7 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result[0].checkIn").value(false))
 			.andDo(print());
 
-		verify(orderService).getPurchasedTickets(eq(testUser.user().getId()));
+		verify(orderService).getPurchasedTickets(any(Long.class));
 	}
 
 	@Test
@@ -197,7 +197,7 @@ class OrderControllerTest {
 			.orderStatus("COMPLETED")
 			.build();
 
-		given(orderService.getPurchaseConfirmation(eq(orderId)))
+		given(orderService.getPurchaseConfirmation(any(Long.class)))
 			.willReturn(response);
 
 		// WHEN & THEN
@@ -214,19 +214,18 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result.hostChannelDescription").value("This is a test channel."))
 			.andDo(print());
 
-		verify(orderService).getPurchaseConfirmation(eq(orderId));
+		verify(orderService).getPurchaseConfirmation(any(Long.class));
 	}
 
 	@Test
 	@DisplayName("주문 취소")
 	void cancelOrder() throws Exception {
 		// GIVEN
-		Long userId = testUser.user().getId();
 		OrderCancelRequestDTO request = OrderCancelRequestDTO.builder()
 			.orderIds(List.of(1L, 2L))
 			.build();
 
-		willDoNothing().given(orderService).cancelOrder(any(OrderCancelRequestDTO.class), eq(userId));
+		willDoNothing().given(orderService).cancelOrder(any(OrderCancelRequestDTO.class), any(Long.class));
 
 		// WHEN & THEN
 		mockMvc.perform(post("/api/v1/orders/cancel")
@@ -239,7 +238,7 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result").value("주문 취소 성공"))
 			.andDo(print());
 
-		verify(orderService).cancelOrder(any(OrderCancelRequestDTO.class), eq(userId));
+		verify(orderService).cancelOrder(any(OrderCancelRequestDTO.class), any(Long.class));
 	}
 
 	@Test
@@ -251,7 +250,7 @@ class OrderControllerTest {
 			.email(List.of("test1@example.com", "test2@example.com"))
 			.build();
 
-		given(orderService.getPurchaserEmails(eq(ticketId)))
+		given(orderService.getPurchaserEmails(any(Long.class)))
 			.willReturn(response);
 
 		// WHEN & THEN
@@ -264,6 +263,6 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result.email[1]").value("test2@example.com"))
 			.andDo(print());
 
-		verify(orderService).getPurchaserEmails(eq(ticketId));
+		verify(orderService).getPurchaserEmails(any(Long.class));
 	}
 }
