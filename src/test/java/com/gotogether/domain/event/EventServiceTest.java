@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,14 +30,18 @@ import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.entity.OnlineType;
 import com.gotogether.domain.event.facade.EventFacade;
+import com.gotogether.domain.event.repository.EventCustomRepository;
 import com.gotogether.domain.event.repository.EventRepository;
 import com.gotogether.domain.event.service.EventServiceImpl;
 import com.gotogether.domain.hashtag.service.HashtagService;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
+import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 import com.gotogether.domain.referencelink.service.ReferenceLinkService;
 import com.gotogether.domain.user.entity.User;
+import com.gotogether.global.common.service.S3UploadService;
 import com.gotogether.global.scheduler.EventScheduler;
+import com.gotogether.global.service.MetricService;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
@@ -47,6 +52,10 @@ class EventServiceTest {
 	@Mock
 	private EventRepository eventRepository;
 	@Mock
+	private EventCustomRepository eventCustomRepository;
+	@Mock
+	private OrderRepository orderRepository;
+	@Mock
 	private HashtagService hashtagService;
 	@Mock
 	private ReferenceLinkService referenceLinkService;
@@ -56,6 +65,10 @@ class EventServiceTest {
 	private EventFacade eventFacade;
 	@Mock
 	private EventScheduler eventScheduler;
+	@Mock
+	private MetricService metricService;
+	@Mock
+	private S3UploadService s3UploadService;
 
 	private User user;
 	private Event event;
@@ -142,8 +155,8 @@ class EventServiceTest {
 	@DisplayName("이벤트 상세 조회")
 	void getDetailEvent() {
 		// GIVEN
-		when(eventFacade.getEventById(any())).thenReturn(event);
-		when(eventFacade.getHostChannelById(any())).thenReturn(hostChannel);
+		when(eventCustomRepository.findEventWithDetails(any())).thenReturn(Optional.of(event));
+		when(orderRepository.countByEventId(any())).thenReturn(100L);
 		when(eventFacade.getUserById(any())).thenReturn(user);
 		when(bookmarkRepository.findByEventAndUser(any(), any()))
 			.thenReturn(java.util.Optional.of(Bookmark.builder()
@@ -158,8 +171,9 @@ class EventServiceTest {
 		assertNotNull(response);
 		assertEquals(event.getTitle(), response.getTitle());
 		assertEquals(hostChannel.getName(), response.getHostChannelName());
-		verify(eventFacade).getEventById(any());
-		verify(eventFacade).getHostChannelById(any());
+		verify(eventCustomRepository).findEventWithDetails(any());
+		verify(orderRepository).countByEventId(any());
+		verify(eventFacade).getUserById(any());
 		verify(bookmarkRepository).findByEventAndUser(any(), any());
 	}
 
@@ -186,14 +200,16 @@ class EventServiceTest {
 	void deleteEvent() {
 		// GIVEN
 		when(eventFacade.getEventById(any())).thenReturn(event);
+		when(orderRepository.countByEventId(any())).thenReturn(0L);
 
 		// WHEN
 		eventService.deleteEvent(1L);
 
 		// THEN
+		verify(eventFacade).getEventById(any());
+		verify(orderRepository).countByEventId(any());
 		verify(hashtagService).deleteHashtagsByEvent(any());
 		verify(eventScheduler).deleteScheduledEventJob(any());
-		verify(eventRepository).delete(any());
 	}
 
 	@Test

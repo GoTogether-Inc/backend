@@ -16,6 +16,7 @@ import com.gotogether.domain.user.dto.response.UserDetailResponseDTO;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.domain.user.repository.UserRepository;
 import com.gotogether.domain.user.service.UserServiceImpl;
+import com.gotogether.global.apipayload.exception.GeneralException;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -51,7 +52,7 @@ class UserServiceTest {
 			.build();
 
 		when(eventFacade.getUserById(userId)).thenReturn(user);
-		when(userRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(false);
+		when(userRepository.existsByPhoneNumberAndIdNot(newPhoneNumber, userId)).thenReturn(false);
 		when(userRepository.save(any(User.class))).thenReturn(user);
 
 		// WHEN
@@ -60,6 +61,42 @@ class UserServiceTest {
 		// THEN
 		assertThat(updatedUser.getName()).isEqualTo(newName);
 		assertThat(updatedUser.getPhoneNumber()).isEqualTo(newPhoneNumber);
+		
+		verify(eventFacade).getUserById(userId);
+		verify(userRepository).existsByPhoneNumberAndIdNot(newPhoneNumber, userId);
+		verify(userRepository).save(user);
+	}
+
+	@Test
+	@DisplayName("중복 전화번호로 업데이트 시 예외 발생")
+	void updateNameAndPhoneNumberWithDuplicatePhoneNumber() {
+		// GIVEN
+		Long userId = 1L;
+		String duplicatePhoneNumber = "010-1111-1111";
+
+		UserRequestDTO request = UserRequestDTO.builder()
+			.name("Updated User")
+			.phoneNumber(duplicatePhoneNumber)
+			.build();
+
+		User user = User.builder()
+			.name("test user")
+			.phoneNumber("010-0000-0000")
+			.email("test@example.com")
+			.provider("google")
+			.providerId("12345")
+			.build();
+
+		when(eventFacade.getUserById(userId)).thenReturn(user);
+		when(userRepository.existsByPhoneNumberAndIdNot(duplicatePhoneNumber, userId)).thenReturn(true);
+
+		// WHEN & THEN
+		assertThatThrownBy(() -> userService.updateNameAndPhoneNumber(userId, request))
+			.isInstanceOf(GeneralException.class);
+
+		verify(eventFacade).getUserById(userId);
+		verify(userRepository).existsByPhoneNumberAndIdNot(duplicatePhoneNumber, userId);
+		verify(userRepository, never()).save(any(User.class));
 	}
 
 	@Test
@@ -84,5 +121,7 @@ class UserServiceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.getName()).isEqualTo(user.getName());
 		assertThat(response.getPhoneNumber()).isEqualTo(user.getPhoneNumber());
+		
+		verify(eventFacade).getUserById(userId);
 	}
 } 

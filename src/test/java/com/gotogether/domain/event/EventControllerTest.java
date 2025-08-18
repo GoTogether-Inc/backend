@@ -149,7 +149,7 @@ class EventControllerTest {
 			.id(eventId)
 			.bannerImageUrl("https://example.com/banner.jpg")
 			.title("Test Event")
-			.participantCount(100)
+			.participantCount(100L)
 			.startDate(String.valueOf(LocalDate.now()))
 			.endDate(String.valueOf(LocalDate.now().plusDays(1)))
 			.address("Test Location")

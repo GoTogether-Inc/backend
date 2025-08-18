@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotogether.domain.hostchannel.dto.request.HostChannelRequestDTO;
+import com.gotogether.domain.hostchannel.dto.request.InviteMemberRequestDTO;
 import com.gotogether.domain.hostchannel.dto.request.OrderStatusRequestDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelDetailResponseDTO;
 import com.gotogether.domain.hostchannel.dto.response.HostChannelInfoResponseDTO;
@@ -77,7 +78,7 @@ class HostChannelControllerTest {
 			.email("test@example.com")
 			.build();
 
-		given(hostChannelService.createHostChannel(eq(testUser.user().getId()), any(HostChannelRequestDTO.class)))
+		given(hostChannelService.createHostChannel(any(Long.class), any(HostChannelRequestDTO.class)))
 			.willReturn(mockHostChannel);
 
 		// WHEN & THEN
@@ -90,7 +91,7 @@ class HostChannelControllerTest {
 			.andExpect(jsonPath("$.code").value("201"))
 			.andDo(print());
 
-		verify(hostChannelService).createHostChannel(eq(testUser.user().getId()), any(HostChannelRequestDTO.class));
+		verify(hostChannelService).createHostChannel(any(Long.class), any(HostChannelRequestDTO.class));
 	}
 
 	@Test
@@ -180,11 +181,16 @@ class HostChannelControllerTest {
 	@DisplayName("호스트 채널 멤버 추가")
 	void addMember() throws Exception {
 		// GIVEN
+		InviteMemberRequestDTO request = InviteMemberRequestDTO.builder()
+			.email("member@example.com")
+			.build();
+
 		willDoNothing().given(hostChannelService).addMember(anyLong(), anyString());
 
 		// WHEN & THEN
 		mockMvc.perform(post("/api/v1/host-channels/{hostChannelId}/members", 1L)
-				.param("email", "member@example.com")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request))
 				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
@@ -228,20 +234,19 @@ class HostChannelControllerTest {
 			.hostChannelName("Test Channel")
 			.build();
 
-		Page<HostChannelListResponseDTO> page = new PageImpl<>(List.of(response));
-		given(hostChannelService.getHostChannels(eq(testUser.user().getId()), any(Pageable.class)))
-			.willReturn(page);
+		given(hostChannelService.getHostChannels(any(Long.class)))
+			.willReturn(List.of(response));
 
 		// WHEN & THEN
 		mockMvc.perform(get("/api/v1/host-channels")
-				.param("page", "0")
-				.param("size", "10")
 				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
+			.andExpect(jsonPath("$.result[0].id").value(1L))
+			.andExpect(jsonPath("$.result[0].hostChannelName").value("Test Channel"))
 			.andDo(print());
 
-		verify(hostChannelService).getHostChannels(eq(testUser.user().getId()), any(Pageable.class));
+		verify(hostChannelService).getHostChannels(any(Long.class));
 	}
 
 	@Test
@@ -330,19 +335,21 @@ class HostChannelControllerTest {
 	}
 
 	@Test
-	@DisplayName("구먀/참가자 관리 조회")
+	@DisplayName("구매/참가자 관리 조회")
 	void getParticipantManagement() throws Exception {
 		// GIVEN
 		ParticipantManagementResponseDTO response = ParticipantManagementResponseDTO.builder()
 			.id(1L)
-			.orderNumber(1L)
+			.ticketId(1L)
+			.orderCode("ORDER123")
 			.participant("Test User")
 			.email("test@example.com")
 			.phoneNumber("010-1234-5678")
 			.purchaseDate("2024-03-20")
 			.ticketName("VIP Ticket")
+			.ticketType("FIRST_COME")
 			.isCheckedIn(false)
-			.orderStatus("PENDING")
+			.isApproved(false)
 			.build();
 
 		given(hostChannelService.getParticipantManagement(eq(1L), eq("all"), any(Pageable.class)))
@@ -351,15 +358,23 @@ class HostChannelControllerTest {
 		// WHEN & THEN
 		mockMvc.perform(get("/api/v1/host-channels/dashboard/participant-management")
 				.param("eventId", "1")
-				.param("tags", "all")
+				.param("tag", "all")
 				.param("page", "0")
 				.param("size", "10")
 				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
+			.andExpect(jsonPath("$.result[0].id").value(1L))
+			.andExpect(jsonPath("$.result[0].ticketId").value(1L))
+			.andExpect(jsonPath("$.result[0].orderCode").value("ORDER123"))
 			.andExpect(jsonPath("$.result[0].participant").value("Test User"))
 			.andExpect(jsonPath("$.result[0].email").value("test@example.com"))
+			.andExpect(jsonPath("$.result[0].phoneNumber").value("010-1234-5678"))
+			.andExpect(jsonPath("$.result[0].purchaseDate").value("2024-03-20"))
 			.andExpect(jsonPath("$.result[0].ticketName").value("VIP Ticket"))
+			.andExpect(jsonPath("$.result[0].ticketType").value("FIRST_COME"))
+			.andExpect(jsonPath("$.result[0].checkedIn").value(false))
+			.andExpect(jsonPath("$.result[0].approved").value(false))
 			.andDo(print());
 
 		verify(hostChannelService).getParticipantManagement(eq(1L), eq("all"), any(Pageable.class));

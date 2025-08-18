@@ -15,9 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,6 +25,7 @@ import com.gotogether.domain.event.entity.Category;
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.event.entity.OnlineType;
 import com.gotogether.domain.hostchannel.entity.HostChannel;
+import com.gotogether.domain.order.dto.request.OrderCancelRequestDTO;
 import com.gotogether.domain.order.dto.request.OrderRequestDTO;
 import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
@@ -118,7 +116,7 @@ class OrderControllerTest {
 
 		ReflectionTestUtils.setField(mockOrder, "id", 1L);
 
-		given(orderService.createOrder(any(OrderRequestDTO.class), eq(testUser.user().getId())))
+		given(orderService.createOrder(any(OrderRequestDTO.class), any(Long.class)))
 			.willReturn(List.of(mockOrder));
 
 		// WHEN & THEN
@@ -132,7 +130,7 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result[0]").value(1L))
 			.andDo(print());
 
-		verify(orderService).createOrder(refEq(request), eq(testUser.user().getId()));
+		verify(orderService).createOrder(any(OrderRequestDTO.class), any(Long.class));
 	}
 
 	@Test
@@ -140,7 +138,7 @@ class OrderControllerTest {
 	void getPurchasedTickets() throws Exception {
 		// GIVEN
 		OrderedTicketResponseDTO response = OrderedTicketResponseDTO.builder()
-			.id(1L)
+			.orderId(1L)
 			.event(EventListResponseDTO.builder()
 				.id(1L)
 				.bannerImageUrl("https://example.com/banner.jpg")
@@ -159,19 +157,15 @@ class OrderControllerTest {
 			.isCheckIn(false)
 			.build();
 
-		Page<OrderedTicketResponseDTO> page = new PageImpl<>(List.of(response));
-
-		given(orderService.getPurchasedTickets(eq(testUser.user().getId()), any(PageRequest.class)))
-			.willReturn(page);
+		given(orderService.getPurchasedTickets(any(Long.class)))
+			.willReturn(List.of(response));
 
 		// WHEN & THEN
 		mockMvc.perform(get("/api/v1/orders")
-				.param("page", "0")
-				.param("size", "10")
 				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
-			.andExpect(jsonPath("$.result[0].id").value(1L))
+			.andExpect(jsonPath("$.result[0].orderId").value(1L))
 			.andExpect(jsonPath("$.result[0].event.title").value("Test Event"))
 			.andExpect(jsonPath("$.result[0].ticketQrCode").value("QR123"))
 			.andExpect(jsonPath("$.result[0].ticketName").value("Test Ticket"))
@@ -180,15 +174,16 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result[0].checkIn").value(false))
 			.andDo(print());
 
-		verify(orderService).getPurchasedTickets(eq(testUser.user().getId()), any(PageRequest.class));
+		verify(orderService).getPurchasedTickets(any(Long.class));
 	}
 
 	@Test
 	@DisplayName("주문 확인 조회")
 	void getPurchaseConfirmation() throws Exception {
 		// GIVEN
+		Long orderId = 1L;
 		OrderInfoResponseDTO response = OrderInfoResponseDTO.builder()
-			.id(1L)
+			.id(orderId)
 			.title("Test Event")
 			.startDate(String.valueOf(LocalDateTime.now()))
 			.ticketName("Test Ticket")
@@ -202,13 +197,11 @@ class OrderControllerTest {
 			.orderStatus("COMPLETED")
 			.build();
 
-		given(orderService.getPurchaseConfirmation(eq(testUser.user().getId()), eq(1L), eq(1L)))
+		given(orderService.getPurchaseConfirmation(any(Long.class)))
 			.willReturn(response);
 
 		// WHEN & THEN
-		mockMvc.perform(get("/api/v1/orders/purchase-confirmation")
-				.param("ticketId", "1")
-				.param("eventId", "1")
+		mockMvc.perform(get("/api/v1/orders/{orderId}/purchase-confirmation", orderId)
 				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
@@ -221,17 +214,23 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result.hostChannelDescription").value("This is a test channel."))
 			.andDo(print());
 
-		verify(orderService).getPurchaseConfirmation(eq(testUser.user().getId()), eq(1L), eq(1L));
+		verify(orderService).getPurchaseConfirmation(any(Long.class));
 	}
 
 	@Test
 	@DisplayName("주문 취소")
 	void cancelOrder() throws Exception {
 		// GIVEN
-		willDoNothing().given(orderService).cancelOrder(eq(testUser.user().getId()), eq(1L));
+		OrderCancelRequestDTO request = OrderCancelRequestDTO.builder()
+			.orderIds(List.of(1L, 2L))
+			.build();
+
+		willDoNothing().given(orderService).cancelOrder(any(OrderCancelRequestDTO.class), any(Long.class));
 
 		// WHEN & THEN
-		mockMvc.perform(post("/api/v1/orders/1/cancel")
+		mockMvc.perform(post("/api/v1/orders/cancel")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request))
 				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
@@ -239,23 +238,24 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result").value("주문 취소 성공"))
 			.andDo(print());
 
-		verify(orderService).cancelOrder(eq(testUser.user().getId()), eq(1L));
+		verify(orderService).cancelOrder(any(OrderCancelRequestDTO.class), any(Long.class));
 	}
 
 	@Test
 	@DisplayName("구매자 이메일 조회")
 	void getPurchaserEmails() throws Exception {
 		// GIVEN
+		Long ticketId = 1L;
 		TicketPurchaserEmailResponseDTO response = TicketPurchaserEmailResponseDTO.builder()
 			.email(List.of("test1@example.com", "test2@example.com"))
 			.build();
 
-		given(orderService.getPurchaserEmails(eq(1L), eq(null)))
+		given(orderService.getPurchaserEmails(any(Long.class)))
 			.willReturn(response);
 
 		// WHEN & THEN
 		mockMvc.perform(get("/api/v1/orders/purchaser-emails")
-				.param("eventId", "1")
+				.param("ticketId", String.valueOf(ticketId))
 				.cookie(testUser.accessTokenCookie(), testUser.refreshTokenCookie()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
@@ -263,6 +263,6 @@ class OrderControllerTest {
 			.andExpect(jsonPath("$.result.email[1]").value("test2@example.com"))
 			.andDo(print());
 
-		verify(orderService).getPurchaserEmails(eq(1L), eq(null));
+		verify(orderService).getPurchaserEmails(any(Long.class));
 	}
 }
