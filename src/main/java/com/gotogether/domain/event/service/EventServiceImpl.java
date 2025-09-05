@@ -1,5 +1,6 @@
 package com.gotogether.domain.event.service;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -94,6 +95,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	@Transactional
+	@CacheEvict(key = "#eventId", value = "eventDetail")
 	public Event updateEvent(Long eventId, EventRequestDTO request) {
 		Event event = eventFacade.getEventById(eventId);
 
@@ -119,6 +121,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	@Transactional
+	@CacheEvict(key = "#eventId", value = "eventDetail")
 	public void deleteEvent(Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
 		
