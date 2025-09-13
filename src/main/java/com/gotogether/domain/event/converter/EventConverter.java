@@ -70,7 +70,7 @@ public class EventConverter {
 			.onlineType(String.valueOf(event.getOnlineType()))
 			.status(String.valueOf(event.getStatus()))
 			.bookmarkId(bookmarkId)
-			.isBookmarked(bookmarkId != null)
+			.bookmarked(bookmarkId != null)
 			.build();
 	}
 

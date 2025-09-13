@@ -74,6 +74,9 @@ dependencies {
 
     // CoolSMS
     implementation 'net.nurigo:sdk:4.3.0'
+
+    // Connection Pool
+    implementation 'org.apache.commons:commons-pool2:2.12.0'
 }
 
 tasks.named('test') {

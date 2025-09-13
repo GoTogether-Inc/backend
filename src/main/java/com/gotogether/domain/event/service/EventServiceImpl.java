@@ -1,5 +1,7 @@
 package com.gotogether.domain.event.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -72,6 +74,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(key = "#eventId", value = "eventDetail")
 	public EventDetailResponseDTO getDetailEvent(Long userId, Long eventId) {
 		Event event = eventCustomRepository.findEventWithDetails(eventId)
 			.orElseThrow(() -> new GeneralException(ErrorStatus._EVENT_NOT_FOUND));
@@ -92,6 +95,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	@Transactional
+	@CacheEvict(key = "#eventId", value = "eventDetail")
 	public Event updateEvent(Long eventId, EventRequestDTO request) {
 		Event event = eventFacade.getEventById(eventId);
 
@@ -117,6 +121,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	@Transactional
+	@CacheEvict(key = "#eventId", value = "eventDetail")
 	public void deleteEvent(Long eventId) {
 		Event event = eventFacade.getEventById(eventId);
 		

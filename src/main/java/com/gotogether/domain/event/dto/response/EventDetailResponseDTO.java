@@ -4,11 +4,15 @@ import java.util.List;
 
 import com.gotogether.domain.referencelink.dto.ReferenceLinkDTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EventDetailResponseDTO {
 	private Long id;
 	private Long hostChannelId;
@@ -32,5 +36,5 @@ public class EventDetailResponseDTO {
 	private String onlineType;
 	private String status;
 	private Long bookmarkId;
-	private boolean isBookmarked;
+	private boolean bookmarked;
 }
