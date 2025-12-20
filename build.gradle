@@ -3,7 +3,7 @@ plugins {
     id 'jacoco'
     id 'org.springframework.boot' version '3.2.11'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'com.google.cloud.tools.jib' version '3.4.4'
+    id 'com.google.cloud.tools.jib' version '3.5.2'
 }
 
 group = 'com.togoteam'
@@ -137,7 +137,7 @@ jacocoTestCoverageVerification {
 
 jib {
     from {
-        image = 'openjdk:17'
+        image = 'eclipse-temurin:17-jre'
         platforms {
             platform {
                 architecture = 'amd64'
