@@ -17,7 +17,6 @@ import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
-import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.order.util.OrderCodeGenerator;
@@ -135,11 +134,7 @@ public class OrderServiceImpl implements OrderService {
 
 		String orderCode = generateOrderCode();
 
-		OrderStatus status = (ticket.getType() == TicketType.FIRST_COME)
-			? OrderStatus.COMPLETED
-			: OrderStatus.PENDING;
-
-		Order order = OrderConverter.of(user, ticket, orderCode, status);
+		Order order = Order.create(user, ticket, orderCode, ticket.getType());
 		orderRepository.save(order);
 
 		if (ticket.getType() == TicketType.FIRST_COME && event.getOnlineType() == OnlineType.OFFLINE) {

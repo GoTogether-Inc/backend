@@ -1,6 +1,7 @@
 package com.gotogether.domain.order.entity;
 
 import com.gotogether.domain.ticket.entity.Ticket;
+import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.user.entity.User;
 import com.gotogether.global.common.entity.BaseEntity;
@@ -57,6 +58,19 @@ public class Order extends BaseEntity {
 		this.user = user;
 		this.ticket = ticket;
 	}
+
+    public static Order create(User user, Ticket ticket, String orderCode, TicketType ticketType) {
+        OrderStatus initialStatus = (ticketType == TicketType.FIRST_COME)
+            ? OrderStatus.COMPLETED
+            : OrderStatus.PENDING;
+
+        return Order.builder()
+            .user(user)
+            .ticket(ticket)
+            .orderCode(orderCode)
+            .status(initialStatus)
+            .build();
+    }
 
 	public void updateTicketQrCode(TicketQrCode ticketQrCode) {
 		this.ticketQrCode = ticketQrCode;
