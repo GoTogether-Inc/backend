@@ -215,7 +215,7 @@ class OrderServiceTest {
     @DisplayName("[예외] 이미 종료된 티켓일 때 주문 생성 실패")
     void createOrder_Fail_AlreadyClosed() {
         // GIVEN
-        ticket.updateStatus(TicketStatus.CLOSE); // 상태를 CLOSE로 변경
+        ticket.close(); // 상태를 CLOSE로 변경
         OrderRequestDTO request = OrderRequestDTO.builder().ticketId(1L).ticketCnt(1).build();
 
         when(eventFacade.getUserById(any())).thenReturn(user);

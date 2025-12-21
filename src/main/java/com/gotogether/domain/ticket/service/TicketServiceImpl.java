@@ -11,7 +11,6 @@ import com.gotogether.domain.ticket.converter.TicketConverter;
 import com.gotogether.domain.ticket.dto.request.TicketRequestDTO;
 import com.gotogether.domain.ticket.dto.response.TicketListResponseDTO;
 import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.global.apipayload.code.status.ErrorStatus;
 import com.gotogether.global.apipayload.exception.GeneralException;
@@ -62,7 +61,7 @@ public class TicketServiceImpl implements TicketService {
 	@Transactional
 	public void updateTicketStatusToCompleted(Long ticketId) {
 		Ticket ticket = getTicketById(ticketId);
-		ticket.updateStatus(TicketStatus.CLOSE);
+		ticket.close();
 	}
 
 	private Ticket getTicketById(Long ticketId) {

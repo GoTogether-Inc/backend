@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.gotogether.domain.event.entity.Event;
 import com.gotogether.domain.ticketoptionassignment.entity.TicketOptionAssignment;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.CascadeType;
@@ -83,15 +85,40 @@ public class Ticket extends BaseEntity {
 		this.status = status;
 	}
 
-	public void decreaseAvailableQuantity() {
-		this.availableQuantity--;
-	}
+    public void decreaseStock() {
+        this.availableQuantity--;
+    }
 
-	public void increaseAvailableQuantity() {
-		this.availableQuantity++;
-	}
+    public void restoreStock() {
+        this.availableQuantity++;
+    }
 
-	public void updateStatus(TicketStatus status) {
-		this.status = status;
-	}
+    public void close(){
+        this.status = TicketStatus.CLOSE;
+    }
+
+    public void validatePurchasable(int requestQuantity) {
+        validateQuantity(requestQuantity);
+        validateStatus();
+        validateSalePeriod();
+    }
+
+    private void validateQuantity(int requestQuantity) {
+        if(this.availableQuantity < requestQuantity) {
+            throw new GeneralException(ErrorStatus._TICKET_NOT_ENOUGH);
+        }
+    }
+
+    private void validateStatus() {
+        if(this.status == TicketStatus.CLOSE){
+            throw new GeneralException(ErrorStatus._TICKET_ALREADY_CLOSED);
+        }
+    }
+
+    private void validateSalePeriod() {
+        LocalDateTime now = LocalDateTime.now();
+        if(this.startDate.isAfter(now) || this.endDate.isBefore(now)){
+            throw new GeneralException(ErrorStatus._TICKET_SALE_UNAVAILABLE);
+        }
+    }
 }

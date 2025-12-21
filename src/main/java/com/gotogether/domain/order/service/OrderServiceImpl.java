@@ -1,6 +1,5 @@
 package com.gotogether.domain.order.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +22,6 @@ import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.order.util.OrderCodeGenerator;
 import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
@@ -57,11 +55,8 @@ public class OrderServiceImpl implements OrderService {
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 
 		int ticketCnt = request.getTicketCnt();
-		checkTicketAvailableQuantity(ticket, ticketCnt);
 
-		checkTicketStatus(ticket);
-
-		checkTicketStartDateOrEndDate(ticket);
+        ticket.validatePurchasable(ticketCnt);
 
 		List<Order> orders = new ArrayList<>();
 
@@ -122,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 			metricService.recordOrderCancellation(ticket.getEvent().getId(), ticket.getPrice());
 
 			order.cancelOrder();
-			ticket.increaseAvailableQuantity();
+			ticket.restoreStock();
 			ticketQrCodeService.deleteQrCode(orderId);
 			orderRepository.save(order);
 		}
@@ -133,24 +128,6 @@ public class OrderServiceImpl implements OrderService {
 	public TicketPurchaserEmailResponseDTO getPurchaserEmails(Long ticketId) {
 		List<String> purchaserEmails = orderRepository.findPurchaserEmailsByTicketId(ticketId);
 		return OrderConverter.toPurchaserEmailResponseDTO(purchaserEmails);
-	}
-
-	private void checkTicketAvailableQuantity(Ticket ticket, int ticketCnt) {
-		if (ticket.getAvailableQuantity() < ticketCnt) {
-			throw new GeneralException(ErrorStatus._TICKET_NOT_ENOUGH);
-		}
-	}
-
-	private void checkTicketStatus(Ticket ticket) {
-		if (ticket.getStatus() == TicketStatus.CLOSE) {
-			throw new GeneralException(ErrorStatus._TICKET_ALREADY_CLOSED);
-		}
-	}
-
-	private void checkTicketStartDateOrEndDate(Ticket ticket) {
-		if (ticket.getStartDate().isAfter(LocalDateTime.now()) || ticket.getEndDate().isBefore(LocalDateTime.now())) {
-			throw new GeneralException(ErrorStatus._TICKET_SALE_UNAVAILABLE);
-		}
 	}
 
 	private Order createTicketOrder(User user, Ticket ticket) {
@@ -172,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
 			orderRepository.save(order);
 		}
 
-		ticket.decreaseAvailableQuantity();
+		ticket.decreaseStock();
 		return order;
 	}
 
