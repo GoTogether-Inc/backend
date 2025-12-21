@@ -74,29 +74,6 @@ public class Order extends BaseEntity {
             .build();
     }
 
-    /**
-     * @deprecated Use {@link #assignQrCode(TicketQrCode)} instead
-     */
-    @Deprecated
-	public void updateTicketQrCode(TicketQrCode ticketQrCode) {
-		assignQrCode(ticketQrCode);
-	}
-
-    /**
-     * @deprecated Use {@link #cancel()} instead
-     */
-    @Deprecated
-	public void cancelOrder() {
-		cancel();
-	}
-
-    /**
-     * @deprecated Use {@link #approve()} instead
-     */
-    public void approveOrder() {
-        approve();
-    }
-
     public void validateOwner(User user) {
         if(!this.user.equals(user)) {
             throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
