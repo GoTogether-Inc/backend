@@ -30,7 +30,16 @@ public class TicketServiceImpl implements TicketService {
 	@Transactional
 	public Ticket createTicket(TicketRequestDTO request) {
 		Event event = eventFacade.getEventById(request.getEventId());
-		Ticket ticket = TicketConverter.of(request, event);
+		Ticket ticket = Ticket.create(
+                event,
+                request.getTicketName(),
+                request.getTicketPrice(),
+                request.getTicketDescription(),
+                request.getAvailableQuantity(),
+                request.getStartDate(),
+                request.getEndDate(),
+                request.getTicketType()
+        );
 
 		ticketRepository.save(ticket);
 

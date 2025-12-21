@@ -85,6 +85,29 @@ public class Ticket extends BaseEntity {
 		this.status = status;
 	}
 
+    public static Ticket create(
+            Event event,
+            String name,
+            int price,
+            String description,
+            int availableQuantity,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            TicketType type
+    ) {
+        return Ticket.builder()
+                .event(event)
+                .name(name)
+                .price(price)
+                .description(description)
+                .availableQuantity(availableQuantity)
+                .startDate(startDate)
+                .endDate(endDate)
+                .type(type)
+                .status(TicketStatus.OPEN)
+                .build();
+    }
+
     public void decreaseStock() {
         this.availableQuantity--;
     }
