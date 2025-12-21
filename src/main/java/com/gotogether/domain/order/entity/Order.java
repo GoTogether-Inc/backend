@@ -4,6 +4,8 @@ import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
 import com.gotogether.domain.user.entity.User;
+import com.gotogether.global.apipayload.code.status.ErrorStatus;
+import com.gotogether.global.apipayload.exception.GeneralException;
 import com.gotogether.global.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -72,16 +74,45 @@ public class Order extends BaseEntity {
             .build();
     }
 
+    /**
+     * @deprecated Use {@link #assignQrCode(TicketQrCode)} instead
+     */
+    @Deprecated
 	public void updateTicketQrCode(TicketQrCode ticketQrCode) {
-		this.ticketQrCode = ticketQrCode;
-		ticketQrCode.updateOrder(this);
+		assignQrCode(ticketQrCode);
 	}
 
+    /**
+     * @deprecated Use {@link #cancel()} instead
+     */
+    @Deprecated
 	public void cancelOrder() {
-		this.status = OrderStatus.CANCELED;
+		cancel();
 	}
 
-	public void approveOrder() {
-		this.status = OrderStatus.COMPLETED;
-	}
+    /**
+     * @deprecated Use {@link #approve()} instead
+     */
+    public void approveOrder() {
+        approve();
+    }
+
+    public void validateOwner(User user) {
+        if(!this.user.equals(user)) {
+            throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
+        }
+    }
+
+    public void assignQrCode(TicketQrCode ticketQrCode) {
+        this.ticketQrCode = ticketQrCode;
+        ticketQrCode.updateOrder(this);
+    }
+
+    public void approve(){
+        this.status = OrderStatus.COMPLETED;
+    }
+
+    public void cancel(){
+        this.status = OrderStatus.CANCELED;
+    }
 }

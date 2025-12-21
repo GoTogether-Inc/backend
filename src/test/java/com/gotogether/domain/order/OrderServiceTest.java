@@ -92,7 +92,7 @@ class OrderServiceTest {
 
         ticketQrCode = TicketQrCode.builder().order(order).qrCodeImageUrl("https://example.com/qr-code.png").status(TicketQrCodeStatus.AVAILABLE).build();
 
-        order.updateTicketQrCode(ticketQrCode);
+        order.assignQrCode(ticketQrCode);
     }
 
     @Test

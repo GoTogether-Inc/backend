@@ -107,15 +107,13 @@ public class OrderServiceImpl implements OrderService {
 			Order order = orderRepository.findById(orderId)
 				.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
 
-			if (!order.getUser().equals(user)) {
-				throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
-			}
+			order.validateOwner(user);
 
 			Ticket ticket = eventFacade.getTicketById(order.getTicket().getId());
 
 			metricService.recordOrderCancellation(ticket.getEvent().getId(), ticket.getPrice());
 
-			order.cancelOrder();
+			order.cancel();
 			ticket.restoreStock();
 			ticketQrCodeService.deleteQrCode(orderId);
 			orderRepository.save(order);
@@ -139,7 +137,8 @@ public class OrderServiceImpl implements OrderService {
 
 		if (ticket.getType() == TicketType.FIRST_COME && event.getOnlineType() == OnlineType.OFFLINE) {
 			TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
-			order.updateTicketQrCode(ticketQrCode);
+
+            order.assignQrCode(ticketQrCode);
 
 			orderRepository.save(order);
 		}

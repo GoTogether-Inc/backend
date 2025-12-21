@@ -116,7 +116,7 @@ class TicketQrCodeServiceTest {
 			.build();
 		ReflectionTestUtils.setField(ticketQrCode, "id", 1L);
 
-		order.updateTicketQrCode(ticketQrCode);
+		order.assignQrCode(ticketQrCode);
 	}
 
 	@Test
