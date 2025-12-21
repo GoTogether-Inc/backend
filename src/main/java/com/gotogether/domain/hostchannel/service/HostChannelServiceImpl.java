@@ -231,11 +231,12 @@ public class HostChannelServiceImpl implements HostChannelService {
 
 		if (order.getTicket().getEvent().getOnlineType() == OnlineType.OFFLINE) {
 			TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
-			order.updateTicketQrCode(ticketQrCode);
+			order.assignQrCode(ticketQrCode);
 
 			orderRepository.save(order);
 		}
-		order.approveOrder();
+
+		order.approve();
 	}
 
 	@Override

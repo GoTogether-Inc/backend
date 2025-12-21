@@ -11,22 +11,11 @@ import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
-import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.ticket.entity.Ticket;
 import com.gotogether.domain.ticketqrcode.entity.TicketQrCode;
-import com.gotogether.domain.user.entity.User;
 
 @Component
 public class OrderConverter {
-
-	public static Order of(User user, Ticket ticket, String orderCode, OrderStatus status) {
-		return Order.builder()
-			.user(user)
-			.ticket(ticket)
-			.orderCode(orderCode)
-			.status(status)
-			.build();
-	}
 
 	public static OrderedTicketResponseDTO toOrderedTicketResponseDTO(Order order) {
 		Ticket ticket = order.getTicket();

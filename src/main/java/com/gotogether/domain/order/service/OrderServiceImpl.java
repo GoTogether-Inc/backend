@@ -1,6 +1,5 @@
 package com.gotogether.domain.order.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,12 +17,10 @@ import com.gotogether.domain.order.dto.response.OrderInfoResponseDTO;
 import com.gotogether.domain.order.dto.response.OrderedTicketResponseDTO;
 import com.gotogether.domain.order.dto.response.TicketPurchaserEmailResponseDTO;
 import com.gotogether.domain.order.entity.Order;
-import com.gotogether.domain.order.entity.OrderStatus;
 import com.gotogether.domain.order.repository.OrderCustomRepository;
 import com.gotogether.domain.order.repository.OrderRepository;
 import com.gotogether.domain.order.util.OrderCodeGenerator;
 import com.gotogether.domain.ticket.entity.Ticket;
-import com.gotogether.domain.ticket.entity.TicketStatus;
 import com.gotogether.domain.ticket.entity.TicketType;
 import com.gotogether.domain.ticket.repository.TicketRepository;
 import com.gotogether.domain.ticketoptionanswer.dto.request.TicketOptionAnswerRequestDTO;
@@ -57,11 +54,8 @@ public class OrderServiceImpl implements OrderService {
 			.orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 
 		int ticketCnt = request.getTicketCnt();
-		checkTicketAvailableQuantity(ticket, ticketCnt);
 
-		checkTicketStatus(ticket);
-
-		checkTicketStartDateOrEndDate(ticket);
+        ticket.validatePurchasable(ticketCnt);
 
 		List<Order> orders = new ArrayList<>();
 
@@ -113,16 +107,14 @@ public class OrderServiceImpl implements OrderService {
 			Order order = orderRepository.findById(orderId)
 				.orElseThrow(() -> new GeneralException(ErrorStatus._ORDER_NOT_FOUND));
 
-			if (!order.getUser().equals(user)) {
-				throw new GeneralException(ErrorStatus._ORDER_NOT_MATCH_USER);
-			}
+			order.validateOwner(user);
 
 			Ticket ticket = eventFacade.getTicketById(order.getTicket().getId());
 
 			metricService.recordOrderCancellation(ticket.getEvent().getId(), ticket.getPrice());
 
-			order.cancelOrder();
-			ticket.increaseAvailableQuantity();
+			order.cancel();
+			ticket.restoreStock();
 			ticketQrCodeService.deleteQrCode(orderId);
 			orderRepository.save(order);
 		}
@@ -135,44 +127,23 @@ public class OrderServiceImpl implements OrderService {
 		return OrderConverter.toPurchaserEmailResponseDTO(purchaserEmails);
 	}
 
-	private void checkTicketAvailableQuantity(Ticket ticket, int ticketCnt) {
-		if (ticket.getAvailableQuantity() < ticketCnt) {
-			throw new GeneralException(ErrorStatus._TICKET_NOT_ENOUGH);
-		}
-	}
-
-	private void checkTicketStatus(Ticket ticket) {
-		if (ticket.getStatus() == TicketStatus.CLOSE) {
-			throw new GeneralException(ErrorStatus._TICKET_ALREADY_CLOSED);
-		}
-	}
-
-	private void checkTicketStartDateOrEndDate(Ticket ticket) {
-		if (ticket.getStartDate().isAfter(LocalDateTime.now()) || ticket.getEndDate().isBefore(LocalDateTime.now())) {
-			throw new GeneralException(ErrorStatus._TICKET_SALE_UNAVAILABLE);
-		}
-	}
-
 	private Order createTicketOrder(User user, Ticket ticket) {
 		Event event = ticket.getEvent();
 
 		String orderCode = generateOrderCode();
 
-		OrderStatus status = (ticket.getType() == TicketType.FIRST_COME)
-			? OrderStatus.COMPLETED
-			: OrderStatus.PENDING;
-
-		Order order = OrderConverter.of(user, ticket, orderCode, status);
+		Order order = Order.create(user, ticket, orderCode, ticket.getType());
 		orderRepository.save(order);
 
 		if (ticket.getType() == TicketType.FIRST_COME && event.getOnlineType() == OnlineType.OFFLINE) {
 			TicketQrCode ticketQrCode = ticketQrCodeService.createQrCode(order);
-			order.updateTicketQrCode(ticketQrCode);
+
+            order.assignQrCode(ticketQrCode);
 
 			orderRepository.save(order);
 		}
 
-		ticket.decreaseAvailableQuantity();
+		ticket.decreaseStock();
 		return order;
 	}
 
